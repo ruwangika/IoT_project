@@ -1,0 +1,39 @@
+
+#notification,
+.widget-color,
+.sidebar-widget,
+.settings-modal-content,
+.equationBar{
+    background-color:#2A2A2A ; /** #2A2A2A **/
+}
+
+.widget-background-color{
+    background-color: #272727;  /** #272727 **/
+}
+
+.dashboard-background-color{
+    background-color: #101214;   /** #101214 **/
+}
+
+.portal-button:hover,
+.portal-pane-button:hover{
+    background-color: #4B4B4B;   /** #4B4B4B **/
+}
+
+.widget-background-color,
+.dashboard-background-color,
+.settings-modal-title{
+    color: lightgray;     /** lightgray **/
+}
+
+.widget-color,
+.sidebar-widget,
+#notification{
+    color: #787878;   /** #787878 **/
+}
+
+.portal-button,
+.portal-pane-button{
+    color: #B88F51;   /** #B88F51 **/
+}
+

@@ -1,0 +1,1 @@
+{"query":"SELECT date_time,1*ph2_current FROM powerpro WHERE code=? AND date_time BETWEEN ? AND ?","param":["202202","2017-01-01","2017-01-31"]}
