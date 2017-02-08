@@ -50,7 +50,7 @@ function getStartDate(days){
 }
 
 // This function renders a line chart:something vs date
-function initLineChart(chartID,title,chartData) {
+function initLineChart(chartID,title, chartData) {
     lineChart = new CanvasJS.Chart(chartID, {
         zoomEnabled: true,
         backgroundColor: "#2A2A2A",

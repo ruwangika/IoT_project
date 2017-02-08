@@ -287,6 +287,7 @@ function saveGrid() {
     var nodes = $('.grid-stack > .grid-stack-item:visible');
     var _len = nodes.length;
     var user_grid = [];
+    var theme = document.getElementById("themeCombo").value;
     for (var i = 0; i < _len; i++) {
         var el = $(nodes[i]);
         var node = el.data('_gridstack_node');
@@ -310,7 +311,8 @@ function saveGrid() {
         data: {
             r_type: 'save_grid',
             userID: userID,
-            grid: user_grid
+            grid: user_grid,
+            theme: theme,
         },
         dataType: "text",
         success: function(data, status) {
@@ -330,7 +332,7 @@ function loadGrid() {
         method: "POST",
         data: {
             r_type: 'load_grid',
-            userID: userID
+            userID: userID,
         },
         dataType: "json",
         success: function(data, status) {
@@ -339,6 +341,26 @@ function loadGrid() {
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
             console.log("Load grid: error");
+            console.log(XMLHttpRequest);
+        }
+    });
+}
+
+function loadTheme() {
+    $.ajax({
+        url: "back/user_data.php",
+        method: "POST",
+        data: {
+            r_type: 'load_theme',
+            userID: userID,
+        },
+        dataType: "json",
+        success: function(data, status) {
+            console.log("Load theme: " + status);
+            changeTheme(data);
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            console.log("Load theme: error");
             console.log(XMLHttpRequest);
         }
     });
@@ -621,6 +643,7 @@ function addGauge(widgetID, graphID, data, w, h, x, y){
 function chageUserEnvironment() {
     loadEquations();
     loadGrid();
+    loadTheme();
 }
 
 function addNote(content) {
@@ -866,4 +889,30 @@ function showLed(value) {
 
 function imageIsLoaded(e) {
     $('#customerLogo').attr('src', e.target.result);
-};
+}
+
+ function changeTheme(themeId) {
+    var sheet = "";
+    var lineChartjs="";
+    var columnChartjs="";
+    var pieChartjs="";
+
+    if (themeId=="dark") {
+        sheet = "css/colordark.jl.css";
+        lineChartjs="js/linechart-dark.jl.js";
+        columnChartjs="js/columnchart-dark.jl.js";
+        pieChartjs="js/piechart-dark.jl.js";
+    } else {
+        sheet = "css/colorlight.jl.css";
+        lineChartjs="js/linechart-light.jl.js";
+        columnChartjs="js/columnchart-light.jl.js";
+        pieChartjs="js/piechart-light.jl.js";
+    }
+    document.getElementById("themelink").setAttribute("href", sheet);
+    document.getElementById("lineChartScript").setAttribute("src", lineChartjs);
+    document.getElementById("columnChartScript").setAttribute("src", columnChartjs);
+    document.getElementById("pieChartScript").setAttribute("src", pieChartjs);
+}
+
+
+;

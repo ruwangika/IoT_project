@@ -303,6 +303,21 @@ img {
     transition-duration: 0.4s;
     cursor: pointer;
 }
+
+.portal-dropdown{
+    background-color: inherit; /* Green */
+    border: none;
+    padding: 10px 20px;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 13px;
+    margin: 4px 2px;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+    cursor: pointer;
+    float: right;
+}
+
 .portal-pane-button{
     background-color: inherit; /* Green */
     border: none;

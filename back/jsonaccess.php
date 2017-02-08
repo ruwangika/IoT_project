@@ -21,10 +21,11 @@
 		return [];
 	}
 
-	function saveGrid($userID,$grid){
+	function saveGrid($userID,$grid, $theme){
 		global $userdataFile;
 		$userdata = json_decode(file_get_contents($userdataFile),TRUE);
 		$userdata[$userID]["Grid"] = $grid;
+	 	$userdata[$userID]["Theme"] = $theme;
 		file_put_contents($userdataFile, json_encode($userdata,TRUE));
 		return True;	
 	}
@@ -38,8 +39,18 @@
 			}
 			 
 		}
-		return [];
-		
+		return [];		
 	}
+
+	function loadTheme($userID){
+		global $userdataFile;
+		$userdata = json_decode(file_get_contents($userdataFile),TRUE);
+		if(isset($userdata[$userID])){
+			if(isset($userdata[$userID]["Theme"])){
+				return $userdata[$userID]["Theme"];
+			}			 
+		}
+		return [];		
+	}	
 
 ?>
