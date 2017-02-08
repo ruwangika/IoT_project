@@ -38,9 +38,9 @@
 <script src="js/gridstack.js"></script>
 <script src="js/canvasjs.min.js"></script>
 <script src="js/gridstack.jQueryUI.js"></script>
-<script id="lineChartScript" type="text/javascript" src="js/linechart-dark.jl.js"></script>    <!--Line chart theme-->
-<script id="columnChartScript" src="js/columnchart-dark.jl.js"></script>    <!--Column chart theme-->
-<script id="pieChartScript" src="js/piechart-dark.jl.js"></script>   <!--Pie chart theme-->
+<!-- <script id="lineChartScript" type="text/javascript" src="js/linechart-dark.jl.js"></script>    Line chart theme-->
+<!-- <script id="columnChartScript" src="js/columnchart-dark.jl.js"></script>    Column chart theme-->
+<!-- <script id="pieChartScript" src="js/piechart-dark.jl.js"></script>   Pie chart theme-->
 <script src="js/equations.jl.js"></script>
 <script src="js/common.jl.js"></script>
 <script src="js/epoch.js"></script>

@@ -892,27 +892,36 @@ function imageIsLoaded(e) {
 }
 
  function changeTheme(themeId) {
-    var sheet = "";
-    var lineChartjs="";
-    var columnChartjs="";
-    var pieChartjs="";
 
     if (themeId=="dark") {
-        sheet = "css/colordark.jl.css";
-        lineChartjs="js/linechart-dark.jl.js";
-        columnChartjs="js/columnchart-dark.jl.js";
-        pieChartjs="js/piechart-dark.jl.js";
+        loadCSS("css/colordark.jl.css");
+        loadJS("js/linechart-dark.jl.js");
+        loadJS("js/columnchart-dark.jl.js");
+        loadJS("js/piechart-dark.jl.js");
+        loadGrid();
     } else {
-        sheet = "css/colorlight.jl.css";
-        lineChartjs="js/linechart-light.jl.js";
-        columnChartjs="js/columnchart-light.jl.js";
-        pieChartjs="js/piechart-light.jl.js";
+        loadCSS("css/colorlight.jl.css");
+        loadJS("js/linechart-light.jl.js");
+        loadJS("js/columnchart-light.jl.js");
+        loadJS("js/piechart-light.jl.js");
+        loadGrid();
     }
-    document.getElementById("themelink").setAttribute("href", sheet);
-    document.getElementById("lineChartScript").setAttribute("src", lineChartjs);
-    document.getElementById("columnChartScript").setAttribute("src", columnChartjs);
-    document.getElementById("pieChartScript").setAttribute("src", pieChartjs);
 }
 
+/** Function to dynamically load JavaScript files */
+function loadJS(file) {
+    var jsElm = document.createElement("script");
+    jsElm.type = "text/javascript";
+    jsElm.src = file;
+    document.body.appendChild(jsElm);
+}
+
+function loadCSS(file) {
+    var cssElm = document.createElement("link");
+    cssElm.rel = "stylesheet";
+    cssElm.type = "text/css";
+    cssElm.href = file;
+    document.body.appendChild(cssElm);
+}
 
 ;

@@ -65,7 +65,7 @@ function initLineChart(chartID,title, chartData) {
         },
         legend: {
             cursor: "pointer",
-            fontColor: "lightgray",
+            fontColor: "#333333",
             itemclick: function(e) {
                 if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
                     e.dataSeries.visible = false;
