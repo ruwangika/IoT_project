@@ -27,7 +27,7 @@
 <link rel="stylesheet" href="css/epoch.css">
 <link rel="stylesheet" href="css/w3.css">
 <link rel="stylesheet" href="css/common.jl.css">
-<link id="themelink" rel="stylesheet" type="text/css" href="css/color-dark.jl.css"> <!--Stylesheet for theme-->
+<!-- <link id="themelink" rel="stylesheet" type="text/css" href="css/color-dark.jl.css"> Stylesheet for theme-->
 
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -321,8 +321,8 @@
 
         </div>
     </div>
-    <div id="addLogoModal" class="settings-modal">
-        
+
+    <div id="addLogoModal" class="settings-modal">        
         <div class="settings-modal-content widget-font">
             <span id="addLogoModalCloseBtn" class="settings-close"><img src="img/delete.png"></span>
             <p class="settings-modal-title">Add Icon</p>
@@ -365,7 +365,7 @@
                 <div class="sidebar-widget">
                     <div class="sidebar-widget-header"><span class="w3-margin-right">Weather</span></div>
                     <div class="sidebar-widget">
-                        <iframe src="https://www.meteoblue.com/en/weather/widget/three/colombo_sri-lanka_1248991?geoloc=detect&nocurrent=1&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=dark"  frameborder="0" scrolling="NO" allowtransparency="false" sandbox="allow-same-origin allow-scripts allow-popups" style="width: 80%;height: 210px"></iframe><div><!-- DO NOT REMOVE THIS LINK --><a href="https://www.meteoblue.com/en/weather/forecast/week/colombo_sri-lanka_1248991?utm_source=weather_widget&utm_medium=linkus&utm_content=three&utm_campaign=Weather%2BWidget" target="_blank"></a></div>
+                        <iframe id="weatherWidget" src="https://www.meteoblue.com/en/weather/widget/three/colombo_sri-lanka_1248991?geoloc=detect&nocurrent=1&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=dark"  frameborder="0" scrolling="NO" allowtransparency="false" sandbox="allow-same-origin allow-scripts allow-popups" style="width: 80%;height: 210px"></iframe><div><!-- DO NOT REMOVE THIS LINK --><a href="https://www.meteoblue.com/en/weather/forecast/week/colombo_sri-lanka_1248991?utm_source=weather_widget&utm_medium=linkus&utm_content=three&utm_campaign=Weather%2BWidget" target="_blank"></a></div>
                     </div>
                 </div>
 
@@ -415,19 +415,19 @@
 
     </div>
 
-    <!-- Footer -->
-    <div class="w3-container w3-padding-8 widget-color w3-center w3-margin-top w3-opacity" style="margin-top:60px;position: relative">
-        <button id="fullScreenButton" class="portal-button" onclick="">FULL SCREEN</button>
-        <button id="saveGridButton" class="portal-button" onclick="saveGrid()">SAVE DASHBOARD</button>
-        <div class="w3-xlarge w3-padding-16">
+        <!-- Footer -->
+        <div class="w3-container w3-padding-8 widget-color w3-center w3-margin-top w3-opacity" style="margin-top:60px;position: relative">
+            <button id="fullScreenButton" class="portal-button" onclick="fullscreen()">FULL SCREEN</button>
+            <button id="saveGridButton" class="portal-button" onclick="saveGrid()">SAVE DASHBOARD</button>
+            <div class="w3-xlarge w3-padding-16">
 
-            <a href="#" class="w3-hover-text-indigo"><i class="fa fa-facebook-official"></i></a>
-            <a href="#" class="w3-hover-text-red"><i class="fa fa-pinterest-p"></i></a>
-            <a href="#" class="w3-hover-text-light-blue"><i class="fa fa-twitter"></i></a>
-            <a href="#" class="w3-hover-text-grey"><i class="fa fa-flickr"></i></a>
-            <a href="#" class="w3-hover-text-indigo"><i class="fa fa-linkedin"></i></a>
+                <a href="#" class="w3-hover-text-indigo"><i class="fa fa-facebook-official"></i></a>
+                <a href="#" class="w3-hover-text-red"><i class="fa fa-pinterest-p"></i></a>
+                <a href="#" class="w3-hover-text-light-blue"><i class="fa fa-twitter"></i></a>
+                <a href="#" class="w3-hover-text-grey"><i class="fa fa-flickr"></i></a>
+                <a href="#" class="w3-hover-text-indigo"><i class="fa fa-linkedin"></i></a>
+            </div>
         </div>
-    </div>
     </div> 
  
     <script>
@@ -471,7 +471,7 @@
                 $("#settingsButton").hide();
             }
             userID = id;
-
+            
             loadEquations();
             loadGrid();
             loadTheme();

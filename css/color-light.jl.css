@@ -6,12 +6,9 @@
     background-color: white ; /** white **/
 }
 
-.sidebar-widget {
-    background-color: #999999; /** #999999 **/
-}
-
-.widget-background-color{
-    background-color: #999999;  /** #999999 **/
+.sidebar-widget,
+.widget-background-color {
+    background-color: #b3b3b3; /** #b3b3b3 **/
 }
 
 .dashboard-background-color{

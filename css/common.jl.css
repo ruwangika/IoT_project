@@ -161,7 +161,7 @@ h1 {
 }
 
 img {
-    margin-bottom: -7px
+    margin-bottom: 2px
 }
 
 .w3-row-padding img {
@@ -281,8 +281,9 @@ img {
 }
 
 .chart-title-font{
-    font-family: "Times New Roman", Times, serif;
+    font-family: "Calibri";
     font-size: large;
+    font-weight: normal;
     text-align: center;
 }
 

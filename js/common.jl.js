@@ -894,13 +894,15 @@ function imageIsLoaded(e) {
  function changeTheme(themeId) {
 
     if (themeId=="dark") {
-        loadCSS("css/colordark.jl.css");
+        document.getElementById("weatherWidget").src="https://www.meteoblue.com/en/weather/widget/three/colombo_sri-lanka_1248991?geoloc=detect&nocurrent=1&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=dark";
+        loadCSS("css/color-dark.jl.css");
         loadJS("js/linechart-dark.jl.js");
         loadJS("js/columnchart-dark.jl.js");
         loadJS("js/piechart-dark.jl.js");
         loadGrid();
     } else {
-        loadCSS("css/colorlight.jl.css");
+        document.getElementById("weatherWidget").src="https://www.meteoblue.com/en/weather/widget/three/colombo_sri-lanka_1248991?geoloc=detect&nocurrent=1&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=bright";
+        loadCSS("css/color-light.jl.css");
         loadJS("js/linechart-light.jl.js");
         loadJS("js/columnchart-light.jl.js");
         loadJS("js/piechart-light.jl.js");
@@ -924,4 +926,16 @@ function loadCSS(file) {
     document.body.appendChild(cssElm);
 }
 
+function fullscreen() {
+    var elem = document.documentElement;
+    if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+    } else if (elem.msRequestFullscreen) {
+    elem.msRequestFullscreen();
+    } else if (elem.mozRequestFullScreen) {
+    elem.mozRequestFullScreen();
+    } else if (elem.webkitRequestFullscreen) {
+    elem.webkitRequestFullscreen();
+    }
+}
 ;
