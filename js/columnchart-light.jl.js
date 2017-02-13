@@ -25,7 +25,7 @@ function initBarChart(chartID,title, chartData,axisX) {
             data: chartData,
           legend:{
             cursor:"pointer",
-            fontColor: "#333333",
+            fontColor: "lightgray",
             itemclick: function(e){
               if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
                 e.dataSeries.visible = false;
@@ -51,13 +51,11 @@ function updateBarChartData(chartData) {
 }
 
 // This function will return the data array when parameters are provided
-function loadBarChartData(chartID,title,devices, channels, units, xAxis, startDate, endDate, accInt,tarrifs,type) {
+function loadBarChartData(chartID,title,equationList, xAxis, startDate, endDate, accInt,tarrifs,type) {
     graphs[chartID] = {};
     var cData = {
         title: title,
-        devices: devices,
-        channels: channels,
-        units: units,
+        equationList: equationList,
         xAxis: xAxis,
         startDate: startDate,
         endDate: endDate,
@@ -67,6 +65,20 @@ function loadBarChartData(chartID,title,devices, channels, units, xAxis, startDa
     };
     
     graphs[chartID]["chartData"] = cData;
+
+    //Get devices channels and units from equationList
+    var devices = [];
+    var channels = [];
+    var units = [];
+    for(i = 0; i < equationList.length; i++){
+        for(j = 0; j < equationList[i].length; j++){
+            var expression = equationList[i][j];
+            devices.push(expression.device);
+            channels.push(expression.number + expression.op + expression.channel);
+            units.push(expression.unit);
+        }
+    }
+
     $.ajax({
         url: "back/load_data.php",
         method: "POST",
@@ -103,35 +115,49 @@ function loadBarChartData(chartID,title,devices, channels, units, xAxis, startDa
                 labelAngle: -30,
                 labelFontSize: 13,
             }
+            if(data == null){
+                initBarChart(chartID,"No Data...",chartData,axisX);
+                $(".filter-button").removeAttr("disabled");
+                return "No data";
+            }
 
-            for(i = 0; i < devices.length; i++){
-                var channel = channels[i];
-                var device = devices[i];
-                var unit = units[i];
+
+            for(i = 0; i < equationList.length; i++){
+                var equation = equationList[i];
+                var equationData = [];
+                for(j = 0; j < equation.length; j++){
+                    var expression = equation[j];
+                    var channel = expression.number + expression.op + expression.channel;
+                    var device = expression.device;
+                    if(data[device] == null){
+                        continue;
+                    }else{
+                        channelCounter++;
+                    }
+                    var _len = data[device][xAxis].length;
+                    for(k = 0; k < _len ; k++){
+                        if(j == 0){
+                            equationData[k] = 0;
+                        }
+                        equationData[k] += data[device][channel][k];
+                        
+                    }
+                    
+
+                }
+                
                 var column={
-                    name: device + ': '+ channel,
+                    name: parseEquation(equation),
                     type: "column", showInLegend: true,
-                    yValueFormatString:"#.## "+unit,
+                    yValueFormatString:"#.## "+equation[equation.length-1].unit,
                 };
                 var dataPoints = [];
-                // For loop code
-                if(data == null){
-                    initBarChart(chartID,"No Data...",chartData,axisX);
-                    $(".filter-button").removeAttr("disabled");
-                    return "No data";
-                }
-
-                if(data[device] == null){
-                    continue;
-                }else{
-                    channelCounter++;
-                }
+                
                 var _len = data[device][xAxis].length;
                 for(j = 0; j < _len ; j++){
-                    //console.log(new Date(data[xAxis][j])+" : "+data[yAxis][j]);
                     dataPoints.push({
                         x: new Date(data[device][xAxis][j]),
-                        y: data[device][channel][j]
+                        y: equationData[j]
                     });
                 }
                 

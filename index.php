@@ -27,8 +27,6 @@
 <link rel="stylesheet" href="css/epoch.css">
 <link rel="stylesheet" href="css/w3.css">
 <link rel="stylesheet" href="css/common.jl.css">
-<!-- <link id="themelink" rel="stylesheet" type="text/css" href="css/color-dark.jl.css"> Stylesheet for theme-->
-
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.0/jquery-ui.js"></script>
@@ -38,9 +36,9 @@
 <script src="js/gridstack.js"></script>
 <script src="js/canvasjs.min.js"></script>
 <script src="js/gridstack.jQueryUI.js"></script>
-<!-- <script id="lineChartScript" type="text/javascript" src="js/linechart-dark.jl.js"></script>    Line chart theme-->
-<!-- <script id="columnChartScript" src="js/columnchart-dark.jl.js"></script>    Column chart theme-->
-<!-- <script id="pieChartScript" src="js/piechart-dark.jl.js"></script>   Pie chart theme-->
+<script src="js/linechart-light.jl.js"></script>
+<script src="js/columnchart-light.jl.js"></script>
+<script src="js/piechart-light.jl.js"></script>
 <script src="js/equations.jl.js"></script>
 <script src="js/common.jl.js"></script>
 <script src="js/epoch.js"></script>
@@ -66,34 +64,40 @@
             </div>
             <div class="w3-row w3-padding-8 widget-color">
                 <div class="w3-col w3-container" style="width:20%">
-                    <input type="text" id="prefixEquationText" placeholder="Equation prefix here." onkeyup="updateEquationText()" >
+                    <input type="text" id="prefixEquationText" placeholder="Equation prefix here."" >
                 </div>
                 <div class="w3-col w3-container" style="width:10%">
                     <p class="label-1">Device</p>
                 </div>
                 <div class="w3-col w3-container" style="width:20%">
-                    <select id="deviceCombo" class="combo-1" onchange="updateEquationText()"></select>
+                    <select id="deviceCombo" class="combo-1"></select>
                 </div>
                 <div class="w3-col w3-container" style="width:10%">
                     <p class="label-1">Channel</p>
                 </div>
                 <div class="w3-col w3-container" style="width:20%">
-                    <select id="channelCombo" class="combo-1" onchange="updateEquationText()"></select>
+                    <select id="channelCombo" class="combo-1"></select>
                 </div>
-                <div class="w3-col w3-container" style="width:20%">
-                   <input type="text" id="equationUnitText" placeholder="Unit" onkeyup="updateEquationText()" >
+                <div class="w3-col w3-container" style="width:10%">
+                   <input type="text" size="6" id="equationUnitText" placeholder="Unit">
+                </div>
+                <div class="w3-col w3-container" style="width:10%">
+                   <p><button class="portal-pane-button" onclick="addExpression()" style="font-size:12px">Add Expression</button></p>
                 </div>
 
             </div>
 
             <div class="w3-row w3-padding-8 widget-color">
-                <div class="w3-col w3-container" style="width:70%">
+                <div class="w3-col w3-container" style="width:80%">
                     <p id="equationText"></p>
-                    
                 </div>
-                <div class="w3-col w3-container w3-right" style="width:30%">
-                <p><button class="portal-pane-button" onclick="addEquation()" style="font-size:22px">Add Equation</button></p>
+                <div class="w3-col w3-container w3-right" style="width:10%">
+                    <p><button class="portal-pane-button" onclick="addEquation()" style="font-size:14px">Add Equation</button></p>
                 </div>
+                <div class="w3-col w3-container w3-right" style="width:10%">
+                    <p><button class="portal-pane-button" onclick="clearExpressions()" style="font-size:12px">Clear Expressions</button></p>
+                </div>
+                
             </div>
                     
             <div class="w3-container">
@@ -321,8 +325,8 @@
 
         </div>
     </div>
-
-    <div id="addLogoModal" class="settings-modal">        
+    <div id="addLogoModal" class="settings-modal">
+        
         <div class="settings-modal-content widget-font">
             <span id="addLogoModalCloseBtn" class="settings-close"><img src="img/delete.png"></span>
             <p class="settings-modal-title">Add Icon</p>
@@ -415,19 +419,19 @@
 
     </div>
 
-        <!-- Footer -->
-        <div class="w3-container w3-padding-8 widget-color w3-center w3-margin-top w3-opacity" style="margin-top:60px;position: relative">
-            <button id="fullScreenButton" class="portal-button" onclick="fullscreen()">FULL SCREEN</button>
-            <button id="saveGridButton" class="portal-button" onclick="saveGrid()">SAVE DASHBOARD</button>
-            <div class="w3-xlarge w3-padding-16">
+    <!-- Footer -->
+    <div class="w3-container w3-padding-8 widget-color w3-center w3-margin-top w3-opacity" style="margin-top:60px;position: relative">
+        <button id="fullScreenButton" class="portal-button" onclick="toggleFullscreen()" >FULLSCREEN</button>
+        <button id="saveGridButton" class="portal-button" onclick="saveGrid()">SAVE DASHBOARD</button>
+        <div class="w3-xlarge w3-padding-16">
 
-                <a href="#" class="w3-hover-text-indigo"><i class="fa fa-facebook-official"></i></a>
-                <a href="#" class="w3-hover-text-red"><i class="fa fa-pinterest-p"></i></a>
-                <a href="#" class="w3-hover-text-light-blue"><i class="fa fa-twitter"></i></a>
-                <a href="#" class="w3-hover-text-grey"><i class="fa fa-flickr"></i></a>
-                <a href="#" class="w3-hover-text-indigo"><i class="fa fa-linkedin"></i></a>
-            </div>
+            <a href="#" class="w3-hover-text-indigo"><i class="fa fa-facebook-official"></i></a>
+            <a href="#" class="w3-hover-text-red"><i class="fa fa-pinterest-p"></i></a>
+            <a href="#" class="w3-hover-text-light-blue"><i class="fa fa-twitter"></i></a>
+            <a href="#" class="w3-hover-text-grey"><i class="fa fa-flickr"></i></a>
+            <a href="#" class="w3-hover-text-indigo"><i class="fa fa-linkedin"></i></a>
         </div>
+    </div>
     </div> 
  
     <script>
@@ -442,6 +446,7 @@
         var gaugeIndex = 0;
         var indicatorIndex = 0; 
         var globalEqList = [];
+        var tempExpressionsList=[];
         var gauges = [];
         var tempGraph;
         var tempParent;
@@ -471,7 +476,7 @@
                 $("#settingsButton").hide();
             }
             userID = id;
-            
+
             loadEquations();
             loadGrid();
             loadTheme();

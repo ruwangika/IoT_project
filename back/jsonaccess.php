@@ -39,18 +39,20 @@
 			}
 			 
 		}
-		return [];		
+		return [];
+		
 	}
 
 	function loadTheme($userID){
 		global $userdataFile;
+		$default = "light";
 		$userdata = json_decode(file_get_contents($userdataFile),TRUE);
 		if(isset($userdata[$userID])){
 			if(isset($userdata[$userID]["Theme"])){
 				return $userdata[$userID]["Theme"];
 			}			 
 		}
-		return [];		
-	}	
+		return $default;		
+	}
 
 ?>

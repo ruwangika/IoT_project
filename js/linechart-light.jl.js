@@ -65,7 +65,7 @@ function initLineChart(chartID,title, chartData) {
         },
         legend: {
             cursor: "pointer",
-            fontColor: "#333333",
+            fontColor: "lightgray",
             itemclick: function(e) {
                 if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
                     e.dataSeries.visible = false;
@@ -94,13 +94,11 @@ function updatelineChartData(chart,chartData) {
 }
 
 // This function will return the data array when parameters are provided
-function loadlineChartData(chartID,title,devices, channels, units, xAxis, startDate, endDate, interval,type) {
+function loadlineChartData(chartID,title,equationList, xAxis, startDate, endDate, interval,type) {
     graphs[chartID] = {};
     var cData = {
         title: title,
-        devices: devices,
-        channels: channels,
-        units: units,
+        equationList: equationList,
         xAxis: xAxis,
         startDate: startDate,
         endDate: endDate,
@@ -109,6 +107,19 @@ function loadlineChartData(chartID,title,devices, channels, units, xAxis, startD
     };
 
     graphs[chartID]["chartData"] = cData;
+
+    //Get devices channels and units from equationList
+    var devices = [];
+    var channels = [];
+    var units = [];
+    for(i = 0; i < equationList.length; i++){
+        for(j = 0; j < equationList[i].length; j++){
+            var expression = equationList[i][j];
+            devices.push(expression.device);
+            channels.push(expression.number + expression.op + expression.channel);
+            units.push(expression.unit);
+        }
+    }
 
     $.ajax({
         url: "back/load_data.php",

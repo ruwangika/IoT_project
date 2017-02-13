@@ -1,18 +1,28 @@
 var pieChart;
 
-function loadPieChartData(chartID,title,devices,total,channel,units,startDate,endDate,dataType,type){
+function loadPieChartData(chartID,title,equationList,total,startDate,endDate,dataType,type){
 	graphs[chartID] = {};
     var cData = {
         title: title,
-        devices: devices,
+        equationList: equationList,
         total: total,
-        channel: channel,
-        units: units,
         startDate: startDate,
         endDate: endDate,
         dataType: dataType,
         type: type
     };
+    var devices = [];
+    var channels = [];
+    var units = [];
+    for(i = 0; i < equationList.length; i++){
+        for(j = 0; j < equationList[i].length; j++){
+            var expression = equationList[i][j];
+            devices.push(expression.device);
+            channels.push(expression.number + expression.op + expression.channel);
+            units.push(expression.unit);
+        }
+    }
+
     graphs[chartID]["chartData"] = cData;
     if(total != -1){
         if (devices.indexOf(total) < 0) {
@@ -22,7 +32,7 @@ function loadPieChartData(chartID,title,devices,total,channel,units,startDate,en
 	$.ajax({
         url: "back/load_data.php",
         method: "POST",
-        data: {devices: devices, channel: channel, startDate: startDate, endDate: endDate, dataType: dataType, type: type},
+        data: {devices: devices, channel: channels[0], startDate: startDate, endDate: endDate, dataType: dataType, type: type},
         dataType: "json",
         success: function(data, status) {
             console.log("Pie chart load data: " + status);

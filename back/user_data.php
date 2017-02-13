@@ -30,11 +30,9 @@
         echo json_encode(loadGrid($userID));
 
     }
-
     else if($type == 'load_theme') {
         $userID = $_POST["userID"];
         echo json_encode(loadTheme($userID));
-    }
-
+    }    
 
 ?>

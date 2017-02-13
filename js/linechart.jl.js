@@ -49,25 +49,15 @@ function getStartDate(days){
     return year + '-' + month + '-' + day;
 }
 
-var theme = document.getElementById("themeCombo");
-var bgcolor = "";
-var fcolor ="";
-if (theme="dark") {
-    bgcolor = "#2A2A2A";
-    fcolor = "lightgray";
-} else if (theme="light"){
-    bgcolor = "white";
-    fcolor = "#0d1a26";
-}
 // This function renders a line chart:something vs date
-function initLineChart(chartID,title,chartData) {
+function initLineChart(chartID,title, chartData) {
     lineChart = new CanvasJS.Chart(chartID, {
         zoomEnabled: true,
-        backgroundColor: bgcolor,
+        backgroundColor: "#2A2A2A",
         theme: "theme2",
         title: {
             text: title,
-            fontColor: fcolor,
+            fontColor: "lightgray",
             fontStyle: "normal",
             fontWeight: "lighter",
             fontFamily: "calibri",
@@ -104,13 +94,11 @@ function updatelineChartData(chart,chartData) {
 }
 
 // This function will return the data array when parameters are provided
-function loadlineChartData(chartID,title,devices, channels, units, xAxis, startDate, endDate, interval,type) {
+function loadlineChartData(chartID,title,equationList, xAxis, startDate, endDate, interval,type) {
     graphs[chartID] = {};
     var cData = {
         title: title,
-        devices: devices,
-        channels: channels,
-        units: units,
+        equationList: equationList,
         xAxis: xAxis,
         startDate: startDate,
         endDate: endDate,
@@ -119,6 +107,19 @@ function loadlineChartData(chartID,title,devices, channels, units, xAxis, startD
     };
 
     graphs[chartID]["chartData"] = cData;
+
+    //Get devices channels and units from equationList
+    var devices = [];
+    var channels = [];
+    var units = [];
+    for(i = 0; i < equationList.length; i++){
+        for(j = 0; j < equationList[i].length; j++){
+            var expression = equationList[i][j];
+            devices.push(expression.device);
+            channels.push(expression.number + expression.op + expression.channel);
+            units.push(expression.unit);
+        }
+    }
 
     $.ajax({
         url: "back/load_data.php",

@@ -1,4 +1,16 @@
 function addEquation(){
+    
+    var equation = parseEquation(tempExpressionsList);
+    $("#equationList").append("<li id=\"li"+equation+"\" value=\""+equation+"\">"+equation+"<span onclick=\"deleteEquation('"+equation+"',this)\" class=\"w3-closebtn w3-margin-right w3-medium\">&times;</span></li>");
+    globalEqList.push(tempExpressionsList);
+}
+
+function clearExpressions(){
+    tempExpressionsList = [];
+    document.getElementById("equationText").innerHTML = "";
+}
+
+function addExpression(){
     var device =  document.getElementById("deviceCombo").value;      
     var channel =  document.getElementById("channelCombo").value;      
     var prefix = document.getElementById("prefixEquationText").value;
@@ -24,17 +36,20 @@ function addEquation(){
                 unit: unit
             };
 
-            if(searchEquation(eq) == -1){
-                console.log(globalEqList);
-                var equation = parseEquation(eq);
-                $("#equationList").append("<li id=\"li"+equation+"\" value=\""+equation+"\">"+equation+"<span onclick=\"deleteEquation('"+equation+"',this)\" class=\"w3-closebtn w3-margin-right w3-medium\">&times;</span></li>");
-                globalEqList.push(eq);
-            }
+            
+            var equation = parseExpression(eq);
+            
+            tempExpressionsList.push(eq);
+
+            document.getElementById("equationText").innerHTML = parseEquation(tempExpressionsList);
         }
         
     }
-    
 }
+
+function updateEquationText() {
+}
+
 
 function showEquations(){
     
@@ -56,7 +71,7 @@ function showEquations(){
     }else if(graphType == 'bar chart'){
         $("#barChartConfigPanel").show();
         for (var i = 0; i < _len; i++) {
-            if((globalEqList[i].channel).includes("energy")){
+            if((parseEquation(globalEqList[i])).includes("energy")){
                 var eq = globalEqList[i];
                 var eqStr = parseEquation(eq);
                 $("#equationListDisp").append("<li id=\""+eqStr+"\" index=\""+i+"\">"+eqStr+"<span onclick=\"selectEquation('"+eqStr+"','"+i+"',this)\" class=\"w3-closebtn w3-margin-right w3-medium\">+</span></li>");    
@@ -66,7 +81,7 @@ function showEquations(){
         $("#pieChartConfigPanel").show();
         loadPieChartTotalCombo();
         for (var i = 0; i < _len; i++) {
-            if((globalEqList[i].channel).includes("energy")){
+            if((parseEquation(globalEqList[i])).includes("energy")){
                 var eq = globalEqList[i];
                 var eqStr = parseEquation(eq);
                 $("#equationListDisp").append("<li id=\""+eqStr+"\" index=\""+i+"\">"+eqStr+"<span onclick=\"selectEquation('"+eqStr+"','"+i+"',this)\" class=\"w3-closebtn w3-margin-right w3-medium\">+</span></li>");    
@@ -109,13 +124,29 @@ var deleteEquation = function(eqStr,object){
     }
 }
 
-function parseEquation(ar){
+function parseExpression(ar){
     var eq = "";
     if(!(ar.number == "1" && ar.op == "*")){
         eq += ar.number+" "+ar.op;
     }
-    return eq+" "+ar.device+":"+ar.channel+" "+ar.unit;
+    return eq+" "+ar.device+":"+ar.channel;
 }
+
+function parseEquation(expressionList){
+    
+    var equation = "";
+    var _len = expressionList.length;
+    for (var i = 0; i < _len; i++) {
+        equation += "("+parseExpression(expressionList[i])+")";
+        if(i != _len-1){
+            equation += " + ";
+        }
+    }
+
+    return equation+" "+ expressionList[_len-1].unit;
+}
+
+
 
 function saveEquations(){
     
