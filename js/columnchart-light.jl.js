@@ -25,7 +25,7 @@ function initBarChart(chartID,title, chartData,axisX) {
             data: chartData,
           legend:{
             cursor:"pointer",
-            fontColor: "lightgray",
+            fontColor: "#0d1a26",
             itemclick: function(e){
               if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
                 e.dataSeries.visible = false;

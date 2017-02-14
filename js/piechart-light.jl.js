@@ -85,7 +85,7 @@ function initPieChart(chartID,title,chartData,unit){
         legend: {
             verticalAlign: "bottom",
             horizontalAlign: "center",
-            fontColor: "lightgray"
+            fontColor: "#0d1a26"
         },
         data: [{
             type: "pie",
