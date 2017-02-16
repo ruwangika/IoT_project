@@ -2,7 +2,6 @@
 <?php
     
     require 'jsonaccess.php';
-    
     $type = $_POST["r_type"];
     if($type == 'save_equations'){
     	

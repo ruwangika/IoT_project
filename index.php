@@ -66,26 +66,35 @@
                 </div>
             </div>
             <div class="w3-row w3-padding-8 widget-color">
-                <div class="w3-col w3-container" style="width:20%">
-                    <input type="text" id="prefixEquationText" placeholder="Equation prefix here."" >
+                <div class="w3-col w3-container" style="width:15%">
+                    <input type="text" id="prefixEquationText" placeholder="Expression prefix" style="width:100%" >
+                </div>
+            <!---->       
+                <div class="w3-col w3-container" style="width:11%">
+                    <p class="label-2">Device type</p>
                 </div>
                 <div class="w3-col w3-container" style="width:10%">
-                    <p class="label-1">Device</p>
+                    <select id="deviceTypeCombo" class="combo-1" onchange="updateDevicesCombo(); updateDeviceChannels()">
+                    </select>
                 </div>
-                <div class="w3-col w3-container" style="width:20%">
-                    <select id="deviceCombo" class="combo-1"></select>
+            <!---->                    
+                <div class="w3-col w3-container" style="width:10%">
+                    <p class="label-2">Device</p>
                 </div>
                 <div class="w3-col w3-container" style="width:10%">
-                    <p class="label-1">Channel</p>
+                    <select id="deviceCombo" class="combo-1" onchange="updateDeviceChannels()"></select>
                 </div>
-                <div class="w3-col w3-container" style="width:20%">
+                <div class="w3-col w3-container" style="width:10%">
+                    <p class="label-2">Channel</p>
+                </div>
+                <div class="w3-col w3-container" style="width:14%">
                     <select id="channelCombo" class="combo-1"></select>
                 </div>
                 <div class="w3-col w3-container" style="width:10%">
                    <input type="text" size="6" id="equationUnitText" placeholder="Unit">
                 </div>
                 <div class="w3-col w3-container" style="width:10%">
-                   <p><button class="portal-pane-button" onclick="addExpression()" style="font-size:12px">Add Expression</button></p>
+                   <p><button class="portal-pane-button" onclick="addExpression()">Add Expression</button></p>
                 </div>
 
             </div>
@@ -94,21 +103,35 @@
                 <div class="w3-col w3-container" style="width:80%">
                     <p id="equationText"></p>
                 </div>
+                <!--
                 <div class="w3-col w3-container w3-right" style="width:10%">
                     <p><button class="portal-pane-button" onclick="addEquation()" style="font-size:14px">Add Equation</button></p>
                 </div>
+                -->
                 <div class="w3-col w3-container w3-right" style="width:10%">
-                    <p><button class="portal-pane-button" onclick="clearExpressions()" style="font-size:12px">Clear Expressions</button></p>
+                    <p><button class="portal-pane-button" onclick="clearExpressions()">Clear Expressions</button></p>
                 </div>
                 
             </div>
+<!---->
+            <div class="w3-row w3-padding-8 widget-color">
+                <div class="w3-col w3-container" style="width:15%">
+                    <p class="label-1">Equation Name</p>
+                </div>            
+                <div class="w3-col w3-container" style="width:20%">
+                   <input type="text" size="6" id="equationNameText" style="width:100%">
+                </div>
+                <div class="w3-col w3-container" style="width:20%">
+                    <p><button class="portal-pane-button" onclick="addEquation()" style="width:80%; height:35px; font-size:18px">Add Equation</button></p>
+                </div>                
+            </div>
+<!---->
                     
             <div class="w3-container">
               <ul class="w3-ul w3-card-4" id="equationList">
                 
               </ul>
             </div>
-
         </div>
     </nav>
 
@@ -257,7 +280,7 @@
                 </div>
             </div>
             <div class="w3-row w3-padding-8 widget-color w3-center">
-                <button class="portal-pane-button" style="font-size:22px" onclick="addGraph()">Done</button>
+                <button class="portal-pane-button" style="font-size:22px; width:auto" onclick="addGraph()">Done</button>
             </div>
 
             <div class="w3-container">
@@ -467,8 +490,11 @@
         window.onload = function(){
             decComponents();
             updateEquationText();
-            loadDevicesCombo();
-            loadChannelCombo();
+            loadDeviceTypes();
+            updateDevicesCombo();
+            updateDeviceChannels();
+
+
         }
         function decComponents() {
             var id = <?php echo '"'.$id.'"'?>;

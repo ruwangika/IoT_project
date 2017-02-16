@@ -1,11 +1,21 @@
-function loadDevicesCombo() {
+function updateDevicesCombo() {
+    var defaultType = "ePro1000";
+    var deviceType = document.getElementById("deviceTypeCombo").value;
+    if (deviceType) {
+        loadDevicesCombo(deviceType);
+    } else {
+        loadDevicesCombo(defaultType);
+    }
+}
+
+function loadDevicesCombo(Type) {//private method
     var deviceCombo = $("#deviceCombo");
     deviceCombo.empty();
     $.ajax({
         url: "back/load_misc_data.php",
         method: "POST",
         data: {
-            field: 'devices'
+            field: 'devices_'+Type
         },
         dataType: "json",
         success: function(data, status) {
@@ -25,15 +35,93 @@ function loadDevicesCombo() {
         }
     });
 }
+///////////////Edited by Dileep(15-02-2017)
+function loadDeviceTypes(){//load supported device types
+    var deviceTypeCombo = $("#deviceTypeCombo");
+    deviceTypeCombo.empty();
+    $.ajax({
+        url: "back/load_misc_data.php",
+        method: "POST",
+        data: {
+            field: 'deviceTypes'
+        },
+        dataType: "json",
+        success: function(data, status) {
+            
+            var _len = data.Type.length;
+            for (j = 0; j < _len; j++) {
+                $('#deviceTypeCombo').append($('<option/>', {
+                    
+                    value: data.Type[j],
+                    text : data.Type[j]
+                }));
+            }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            console.log(XMLHttpRequest);
 
-function loadChannelCombo() {
+        }
+    });
+}
+
+function updateDeviceChannels() {
+    var defaultType = "ePro1000";
+    var defaultDevice = "1076";
+
+    var deviceType = document.getElementById("deviceTypeCombo").value;
+    var deviceId = document.getElementById("deviceCombo").value;
+    if (!deviceType) {
+        loadDeviceChannels(defaultType, defaultDevice);
+    } else {
+        loadDeviceChannels(deviceType, deviceId);
+    }    
+}
+
+function loadDeviceChannels(Type,id){
+    if(Type=='ePro1000'){
+        loadChannelComboEpro();
+    }
+    else if(Type=='Custom'){
+        var deviceCombo = $("#channelCombo");
+        deviceCombo.empty();
+        $.ajax({
+            url: "back/load_misc_data.php",
+            method: "POST",
+            data: {
+                field: 'custom_channels',
+                id: id
+            },
+            dataType: "json",
+            success: function(data, status) {
+                window.alert(status,data);
+                var _len = data.Channel.length;
+                for (j = 0; j < _len; j++) {
+                    var channel = data.Channel[j];
+                    $('#channelCombo').append($('<option/>', {
+                        value: channel,
+                        text: channel
+                    }));
+                }
+                //updateEquationText();
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                console.log(XMLHttpRequest);
+
+            }
+        });
+    }
+}
+///////////////////////////////////////////////////////////
+
+
+function loadChannelComboEpro() {//Private method
     var deviceCombo = $("#channelCombo");
     deviceCombo.empty();
     $.ajax({
         url: "back/load_misc_data.php",
         method: "POST",
         data: {
-            field: 'channels'
+            field: 'epro_channels'
         },
         dataType: "json",
         success: function(data, status) {
@@ -867,14 +955,14 @@ function imageIsLoaded(e) {
 function changeTheme(themeId) {
 
     if (themeId=="dark") {
-        document.getElementById("weatherWidget").src="https://www.meteoblue.com/en/weather/widget/three?geoloc=detect&nocurrent=1&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=dark";
+        document.getElementById("weatherWidget").src="https://www.meteoblue.com/en/weather/widget/three/colombo_sri-lanka_1248991?geoloc=detect&nocurrent=1&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=dark";
         loadCSS("css/color-dark.jl.css");
         loadJS("js/linechart-dark.jl.js");
         loadJS("js/columnchart-dark.jl.js");
         loadJS("js/piechart-dark.jl.js");
         loadGrid();
     } else {
-        document.getElementById("weatherWidget").src="https://www.meteoblue.com/en/weather/widget/three?geoloc=detect&nocurrent=1&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=bright";
+        document.getElementById("weatherWidget").src="https://www.meteoblue.com/en/weather/widget/three/colombo_sri-lanka_1248991?geoloc=detect&nocurrent=1&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=bright";
         loadCSS("css/color-light.jl.css");
         loadJS("js/linechart-light.jl.js");
         loadJS("js/columnchart-light.jl.js");

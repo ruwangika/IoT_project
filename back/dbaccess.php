@@ -1,6 +1,6 @@
 <?php
 
-require 'dbconn.php';
+    require 'dbconn.php';
 
     $errorlogfile = "../test/errorlog.txt";
 
@@ -146,7 +146,9 @@ require 'dbconn.php';
     }
 
 
-    function getDeviceList(){
+
+
+    function getEproDeviceList(){
         $con = getConnection();
         $sql = "SELECT DeviceId,DeviceName FROM device";
         $results = mysqli_query($con,$sql);
@@ -167,7 +169,7 @@ require 'dbconn.php';
         
     }
 
-    function getChannelList(){
+    function getEProChannelList(){
         $con = getConnection();
         $sql = "SHOW columns FROM powerpro";
         $results = mysqli_query($con,$sql);
@@ -202,5 +204,57 @@ require 'dbconn.php';
             return "Null Device";
         }
             
+    }
+
+
+
+    function getCustomDeviceList(){
+        $con=getIoTDeviceDataConnection();
+        $query="select ID,Name from device";
+        $results=mysqli_query($con,$query);//To execute query
+
+        $nor = mysqli_num_rows($results);
+        $counter = 0;
+        if($nor > 0){
+            while ($row=mysqli_fetch_assoc($results)) {
+                $data["DeviceName"][$counter] = $row["Name"]; 
+                $data["DeviceId"][$counter++] = $row["ID"]; 
+            }
+            closeConnection($con);
+            return $data;
+        }else{
+            closeConnection($con);
+            return "Null Data";
+        }
+    }
+
+    function getDeviceTypes(){
+        $con=getIoTDeviceDataConnection();
+        $query="select distinct(Type) from device_columns";
+        $results=mysqli_query($con,$query);//To execute query
+
+        $nor = mysqli_num_rows($results);
+        $counter = 0;
+        if($nor > 0){
+            while ($row=mysqli_fetch_assoc($results)) {
+                $data["Type"][$counter++] = $row["Type"]; 
+            }
+            $data["Type"][$counter++] = "Custom";
+            closeConnection($con);
+            return $data;
+        }else{
+            closeConnection($con);
+            return "Null Data";
+        }
+    }
+    
+    function getCustomDeviceChennels($id){
+        $data=null;
+        $con=getMongoConnection($id);
+        $result=$con->listCollections();
+        foreach ($result as $collection) {
+             $data["Channel"][$counter++] = $collection; 
+        }
+        return $data;
     }
 ?> 

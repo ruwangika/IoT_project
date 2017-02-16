@@ -329,7 +329,8 @@ img {
     padding: 3px 20px;
     text-decoration: none;
     display: inline-block;
-    font-size: 12px;
+    width: 100%;
+    font-size: 14px;
     margin: 4px 2px;
     -webkit-transition-duration: 0.4s; /* Safari */
     transition-duration: 0.4s;
@@ -394,9 +395,9 @@ input[type=text]:focus, textarea:focus {
     border-radius: 3px;
     text-align: left;
     color: #808080;
-    width: 190px; 
+    width: 100%; 
     background-color: inherit;   
-    margin-top: 8px;
+    margin-top: 5px;
     border: 1px solid #999999;
     padding: 3px 0px 3px 3px;
     
@@ -416,6 +417,12 @@ select option{
     margin-top: 8px;
     margin-left: 10px;
     text-align: left;
+}
+
+.label-2{
+    margin-top: 8px;
+    margin-left: 10px;
+    text-align: right;
 }
 
 /* Animation CSS here on*/
@@ -537,6 +544,12 @@ select option{
     bottom: 15px; 
     width: 70px;  
     text-align: left;
+}
+
+.div-pane {
+    width: 10%;
+    height: inherit;
+    float: left;
 }
 
 @-webkit-keyframes sk-scaleout {
