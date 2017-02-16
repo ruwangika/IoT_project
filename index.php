@@ -29,6 +29,8 @@
 <link rel="stylesheet" href="css/common.jl.css">
 <link rel="stylesheet" href="css/color-light.jl.css">
 
+<link href="css/datepicker.css" rel="stylesheet" type="text/css"/>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.0/jquery-ui.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
@@ -49,7 +51,7 @@
 
     <!-- Sidenav -->
     <nav class="w3-sidenav w3-card-2 w3-animate-zoom widget-font widget-background-color" style="display:none;padding-top:20px" id="equationNav">
-        <a href="javascript:void(0)" onclick="w3_close()" class="w3-closenav w3-xlarge w3-right w3-display-topright" style="padding:12px;">
+        <a href="javascript:void(0)" onclick="w3_close()" class="w3-closenav w3-xlarge w3-right w3-display-topright" style="padding:12px;" onmouseover="this.style.backgroundColor='inherit'">
             <i class="fa fa-remove"></i>
         </a>
         
@@ -112,7 +114,7 @@
 
     <!-- WidgetNav -->
     <nav class="w3-sidenav w3-card-2 w3-animate-zoom widget-font widget-background-color" style="display:none;padding-top:20px" id="widgetNav">
-        <a href="javascript:void(0)" onclick="widgetnav_close()" class="w3-closenav w3-xlarge w3-right w3-display-topright" style="padding:12px;">
+        <a href="javascript:void(0)" onclick="widgetnav_close()" class="w3-closenav w3-xlarge w3-right w3-display-topright" style="padding:12px;" onmouseover="this.style.backgroundColor='inherit'">
             <i class="fa fa-remove"></i>
         </a>
         
@@ -124,12 +126,12 @@
                 </div>
                 <div class="w3-col w3-container" style="width:20%">
                       <select id="graphTypeCombo" onchange="showEquations()" class="combo-1">
-                        <option>Line chart</option>
-                        <option>Bar chart</option>
-                        <option>Pie chart</option>
-                        <option>Gauge</option>
-                        <option>LED</option>
-                        <option>Indicator</option>
+                        <option value="line">Line chart</option>
+                        <option value="bar">Bar chart</option>
+                        <option value="pie">Pie chart</option>
+                        <option value="guage">Gauge</option>
+                        <option value="led">LED</option>
+                        <option value="ind">Indicator</option>
                     </select>
                 </div>
                 <div class="w3-col w3-container" style="width:10%">
@@ -350,8 +352,8 @@
             <button id="logoutButton" class="portal-button" onclick="logout()">LOGOUT</button>
             <select id="themeCombo" class="portal-dropdown" onchange="changeTheme(this.value);">
                 <option selected hidden>THEME</option>
-                <option value='light' class="option-background">Light</option>
-                <option value='dark' class="option-background">Dark</option>
+                <option value="light" class="option-background">Light</option>
+                <option value="dark" class="option-background">Dark</option>
             </select>
         </header>
         
@@ -367,10 +369,10 @@
             <!-- Sidebar -->
             <div  class="w3-col" style="width:20%; float: right;">
                 <!-- Weather widget -->
-                <div class="sidebar-widget">
+                <div class="sidebar-widget" style="pointer-events:none">
                     <div class="sidebar-widget-header"><span class="w3-margin-right">Weather</span></div>
                     <div class="sidebar-widget">
-                        <iframe id="weatherWidget" src="https://www.meteoblue.com/en/weather/widget/three/colombo_sri-lanka_1248991?geoloc=detect&nocurrent=1&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=dark"  frameborder="0" scrolling="NO" allowtransparency="false" sandbox="allow-same-origin allow-scripts allow-popups" style="width: 80%;height: 210px"></iframe><div><!-- DO NOT REMOVE THIS LINK --><a href="https://www.meteoblue.com/en/weather/forecast/week/colombo_sri-lanka_1248991?utm_source=weather_widget&utm_medium=linkus&utm_content=three&utm_campaign=Weather%2BWidget" target="_blank"></a></div>
+                        <iframe id="weatherWidget" src="https://www.meteoblue.com/en/weather/widget/three?geoloc=detect&nocurrent=1&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=bright"  frameborder="0" scrolling="NO" allowtransparency="false" sandbox="allow-same-origin allow-scripts allow-popups" style="width: 210px;height: 210px"></iframe><div><!-- DO NOT REMOVE THIS LINK --><a href="https://www.meteoblue.com/en/weather/forecast/week?utm_source=weather_widget&utm_medium=linkus&utm_content=three&utm_campaign=Weather%2BWidget" target="_blank"></a></div>
                     </div>
                 </div>
 

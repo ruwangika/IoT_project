@@ -457,7 +457,7 @@ function addGraph() {
     var width = parseInt($("#graphWidthCombo").val());
 
     var graphType = document.getElementById("graphTypeCombo").value;
-    if (graphType == 'line chart') {
+    if (graphType == "line") {
         if (_len == 0) {
             console.log("No equations selected");
             return;
@@ -483,7 +483,7 @@ function addGraph() {
         graphy += 6;
 
 
-    } else if (graphType == 'bar chart') {
+    } else if (graphType == "bar") {
         if (_len == 0) {
             console.log("No equations selected");
             return;
@@ -511,7 +511,7 @@ function addGraph() {
         addDivtoWidget(div, width, 6, 0, graphy, widgetID);
         graphy += 6;
 
-    } else if (graphType == 'pie chart') {
+    } else if (graphType == "pie") {
         if (_len == 0) {
             console.log("No equations selected");
             return;
@@ -535,7 +535,7 @@ function addGraph() {
         pieChartIndex++;
         addDivtoWidget(div, width, 6, 0, graphy, widgetID);
         graphy += 6;
-    } else if (graphType == 'gauge') {
+    } else if (graphType == "guage") {
         
         var ip = $("#gaugeIPAddress").val();
         var title = $("#gaugeTitle").val();
@@ -557,9 +557,9 @@ function addGraph() {
         addGauge(widgetID, chartID, cData, 3, 3, 0, graphy);
         graphy += 3;
         
-    } else if (graphType == 'led') {
+    } else if (graphType == "led") {
 
-    }else if (graphType == 'indicator') {
+    }else if (graphType == "ind") {
         var ip = $("#indicatorIPAddress").val();
         var title = $("#indicatorTitle").val();
         var chartTitle = $("#chartTitleText").val();
@@ -867,14 +867,14 @@ function imageIsLoaded(e) {
 function changeTheme(themeId) {
 
     if (themeId=="dark") {
-        document.getElementById("weatherWidget").src="https://www.meteoblue.com/en/weather/widget/three/colombo_sri-lanka_1248991?geoloc=detect&nocurrent=1&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=dark";
+        document.getElementById("weatherWidget").src="https://www.meteoblue.com/en/weather/widget/three?geoloc=detect&nocurrent=1&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=dark";
         loadCSS("css/color-dark.jl.css");
         loadJS("js/linechart-dark.jl.js");
         loadJS("js/columnchart-dark.jl.js");
         loadJS("js/piechart-dark.jl.js");
         loadGrid();
     } else {
-        document.getElementById("weatherWidget").src="https://www.meteoblue.com/en/weather/widget/three/colombo_sri-lanka_1248991?geoloc=detect&nocurrent=1&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=bright";
+        document.getElementById("weatherWidget").src="https://www.meteoblue.com/en/weather/widget/three?geoloc=detect&nocurrent=1&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=bright";
         loadCSS("css/color-light.jl.css");
         loadJS("js/linechart-light.jl.js");
         loadJS("js/columnchart-light.jl.js");

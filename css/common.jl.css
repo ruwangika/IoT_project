@@ -2,6 +2,10 @@
 html, body{min-height:100%;}
 body{font-family: "Calibri"; font-size:11px;}
 
+li {
+    cursor: pointer;
+}
+
 
 .equationBar{
     background-color: brown;
@@ -322,7 +326,7 @@ img {
 .portal-pane-button{
     background-color: inherit; /* Green */
     border: none;
-    padding: 3px 30px;
+    padding: 3px 20px;
     text-decoration: none;
     display: inline-block;
     font-size: 12px;
@@ -362,6 +366,9 @@ img {
 }
 
 input[type=text], textarea {
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
   -webkit-transition: all 0.30s ease-in-out;
   -moz-transition: all 0.30s ease-in-out;
   -ms-transition: all 0.30s ease-in-out;
@@ -369,8 +376,8 @@ input[type=text], textarea {
   outline: none;
   padding: 3px 0px 3px 3px;
   margin: 5px 1px 3px 0px;
-  border: 1px solid #3D3D3D;
-  color: #CFD0D0;
+  border: 1px solid #999999;
+  color: #808080;
   background-color: inherit;
 }
  
@@ -382,12 +389,15 @@ input[type=text]:focus, textarea:focus {
 }
 
 .combo-1{
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
     text-align: left;
-    color: #CFD0D0;
+    color: #808080;
     width: 190px; 
     background-color: inherit;   
     margin-top: 8px;
-    border: 1px solid #3D3D3D;
+    border: 1px solid #999999;
     padding: 3px 0px 3px 3px;
     
 }
@@ -398,7 +408,7 @@ input[type=text]:focus, textarea:focus {
 }
 
 select option{
-    background: #2A2A2A;
+    background: inherit;
     
 }
 
@@ -528,7 +538,6 @@ select option{
     width: 70px;  
     text-align: left;
 }
-
 
 @-webkit-keyframes sk-scaleout {
   0% { -webkit-transform: scale(0) }

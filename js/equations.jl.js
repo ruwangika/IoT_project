@@ -56,43 +56,44 @@ function showEquations(){
     var graphType =  document.getElementById("graphTypeCombo").value;
     var eqList = [];
     var _len = globalEqList.length;
+    
     $("#equationListDisp").empty();
     $("#barChartConfigPanel").hide();
     $("#pieChartConfigPanel").hide();
     $("#gaugeConfigPanel").hide();
     $("#indicatorConfigPanel").hide();
     $("#dateRangeChooser").show();
-    if(graphType == 'line chart'){
+    if(graphType == "line"){
         for (var i = 0; i < _len; i++) {
             var eq = globalEqList[i];    
             var eqStr = parseEquation(eq);
-            $("#equationListDisp").append("<li id=\""+eqStr+"\" index=\""+i+"\">"+eqStr+"<span onclick=\"selectEquation('"+eqStr+"','"+i+"',this)\" class=\"w3-closebtn w3-margin-right w3-medium\">+</span></li>");
+            $("#equationListDisp").append("<li onclick=\"selectEquation('"+eqStr+"','"+i+"',this)\" id=\""+eqStr+"\" index=\""+i+"\">"+eqStr+"<span class=\"w3-closebtn w3-margin-right w3-medium\">+</span></li>");
         }
-    }else if(graphType == 'bar chart'){
+    }else if(graphType == "bar"){
         $("#barChartConfigPanel").show();
         for (var i = 0; i < _len; i++) {
             if((parseEquation(globalEqList[i])).includes("energy")){
                 var eq = globalEqList[i];
                 var eqStr = parseEquation(eq);
-                $("#equationListDisp").append("<li id=\""+eqStr+"\" index=\""+i+"\">"+eqStr+"<span onclick=\"selectEquation('"+eqStr+"','"+i+"',this)\" class=\"w3-closebtn w3-margin-right w3-medium\">+</span></li>");    
+                $("#equationListDisp").append("<li onclick=\"selectEquation('"+eqStr+"','"+i+"',this)\" id=\""+eqStr+"\" index=\""+i+"\">"+eqStr+"<span class=\"w3-closebtn w3-margin-right w3-medium\">+</span></li>");    
             }
         }   
-    }else if(graphType == 'pie chart'){
+    }else if(graphType == "pie"){
         $("#pieChartConfigPanel").show();
         loadPieChartTotalCombo();
         for (var i = 0; i < _len; i++) {
             if((parseEquation(globalEqList[i])).includes("energy")){
                 var eq = globalEqList[i];
                 var eqStr = parseEquation(eq);
-                $("#equationListDisp").append("<li id=\""+eqStr+"\" index=\""+i+"\">"+eqStr+"<span onclick=\"selectEquation('"+eqStr+"','"+i+"',this)\" class=\"w3-closebtn w3-margin-right w3-medium\">+</span></li>");    
+                $("#equationListDisp").append("<li onclick=\"selectEquation('"+eqStr+"','"+i+"',this)\" id=\""+eqStr+"\" index=\""+i+"\">"+eqStr+"<span class=\"w3-closebtn w3-margin-right w3-medium\">+</span></li>");    
             }
         }   
-    }else if(graphType == 'gauge'){
+    }else if(graphType == "guage"){
         $("#gaugeConfigPanel").show();
         $("#dateRangeChooser").hide();
-    }else if(graphType == 'led'){
+    }else if(graphType == "led"){
         
-    }else if(graphType == 'indicator'){
+    }else if(graphType == "ind"){
         $("#indicatorConfigPanel").show();
         $("#dateRangeChooser").hide();
     }
@@ -102,14 +103,14 @@ var selectEquation =function(eqStr,index,object){
     var li = document.getElementById(eqStr);
     li.style.display = "none";
     li.remove();
-    $("#selectedEquationList").append("<li id=\""+eqStr+"\" index=\""+index+"\">"+eqStr+"<span onclick=\"removeEquation('"+eqStr+"','"+index+"',this)\" class=\"w3-closebtn w3-margin-right w3-medium\">-</span></li>");
+    $("#selectedEquationList").append("<li onclick=\"removeEquation('"+eqStr+"','"+index+"',this)\" id=\""+eqStr+"\" index=\""+index+"\">"+eqStr+"<span class=\"w3-closebtn w3-margin-right w3-medium\">-</span></li>");
 };  
 
 var removeEquation =function(eqStr,index,object){  
     var li = document.getElementById(eqStr);
     li.style.display = "none";
     li.remove();
-    $("#equationListDisp").append("<li id=\""+eqStr+"\" index=\""+index+"\">"+eqStr+"<span onclick=\"selectEquation('"+eqStr+"','"+index+"',this)\" class=\"w3-closebtn w3-margin-right w3-medium\">+</span></li>");
+    $("#equationListDisp").append("<li onclick=\"selectEquation('"+eqStr+"','"+index+"',this)\" id=\""+eqStr+"\" index=\""+index+"\">"+eqStr+"<span class=\"w3-closebtn w3-margin-right w3-medium\">+</span></li>");
 }; 
 
 var deleteEquation = function(eqStr,object){
