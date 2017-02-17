@@ -1,8 +1,10 @@
 function addEquation(){
     
     var equation = parseEquation(tempExpressionsList);
-    $("#equationList").append("<li id=\"li"+equation+"\" value=\""+equation+"\">"+equation+"<span onclick=\"deleteEquation('"+equation+"',this)\" class=\"w3-closebtn w3-margin-right w3-medium\">&times;</span></li>");
+    var eqName = document.getElementById("equationNameText").value;
+    $("#equationList").append("<li id=\"li"+equation+"\" value=\""+equation+"\" style=\"cursor:default\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+equation+"\">"+eqName+"<span onclick=\"deleteEquation('"+equation+"',this)\" class=\"w3-closebtn w3-margin-right w3-medium\">&times;</span></li>");
     globalEqList.push(tempExpressionsList);
+    globalEqNameList.push(eqName);
 }
 
 function clearExpressions(){
@@ -28,7 +30,7 @@ function addExpression(){
                 number = "1";
             }
 
-            var eq = {
+            var ex = {
                 device: device,
                 channel: channel,
                 number: number,
@@ -37,9 +39,9 @@ function addExpression(){
             };
 
             
-            var equation = parseExpression(eq);
+            var expression = parseExpression(ex);
             
-            tempExpressionsList.push(eq);
+            tempExpressionsList.push(ex);
 
             document.getElementById("equationText").innerHTML = parseEquation(tempExpressionsList);
         }
@@ -120,6 +122,7 @@ var deleteEquation = function(eqStr,object){
     for (var i = 0; i < _len; i++) {
         if(parseEquation(globalEqList[i]) == eqStr){
             globalEqList.splice(i, 1);
+            globalEqNameList.splice(i, 1);
             break;
         }
     }
@@ -154,7 +157,7 @@ function saveEquations(){
     $.ajax({
         url: "back/user_data.php",
         method: "POST",
-        data: {r_type: 'save_equations', userID: userID, eqList: globalEqList},
+        data: {r_type: 'save_equations', userID: userID, eqList: globalEqList, eqNameList: globalEqNameList},
         dataType: "text",
         success: function(data, status) {
             console.log("Save Equations: " + status);
@@ -177,10 +180,31 @@ function loadEquations(){
         success: function(data, status) {
             console.log("Load Equations: " + status);
             globalEqList = data;
-            loadEquationList();
+            loadEquationNames();
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) { 
             console.log("Load equations error");
+            console.log(XMLHttpRequest);
+        }    
+    });
+
+}
+
+// New
+function loadEquationNames(){
+    
+    $.ajax({
+        url: "back/user_data.php",
+        method: "POST",
+        data: {r_type: 'get_equation_names', userID: userID},
+        dataType: "json",
+        success: function(data, status) {
+            console.log("Load Equation names: " + status);
+            globalEqNameList = data;
+            loadEquationList();
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) { 
+            console.log("Load equation name list error");
             console.log(XMLHttpRequest);
         }    
     });
@@ -203,9 +227,10 @@ function loadEquationList(){
     var _len = globalEqList.length;
     $("#equationList").empty();
     for (var i = 0; i < _len; i++) {
-        var eq = globalEqList[i];    
+        var eq = globalEqList[i];  
+        var eqName = globalEqNameList[i];  
         var eqStr = parseEquation(eq);
-        $("#equationList").append("<li id=\"li"+eqStr+"\" value=\""+eqStr+"\">"+eqStr+"<span onclick=\"deleteEquation('"+eqStr+"',this)\" class=\"w3-closebtn w3-margin-right w3-medium\">&times;</span></li>");
+        $("#equationList").append("<li id=\"li"+eqStr+"\" value=\""+eqStr+"\" style=\"cursor:default\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+eqStr+"\">"+eqName+"<span onclick=\"deleteEquation('"+eqStr+"',this)\" class=\"w3-closebtn w3-margin-right w3-medium\">&times;</span></li>");
     }
 
 }

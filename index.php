@@ -66,32 +66,32 @@
                 </div>
             </div>
             <div class="w3-row w3-padding-8 widget-color">
-                <div class="w3-col w3-container" style="width:15%">
+                <div class="w3-col w3-container" style="width:14%">
                     <input type="text" id="prefixEquationText" placeholder="Expression prefix" style="width:100%" >
                 </div>
             <!---->       
                 <div class="w3-col w3-container" style="width:11%">
                     <p class="label-2">Device type</p>
                 </div>
-                <div class="w3-col w3-container" style="width:10%">
+                <div class="w3-col w3-container" style="width:12%">
                     <select id="deviceTypeCombo" class="combo-1" onchange="updateDevicesCombo(); updateDeviceChannels()">
                     </select>
                 </div>
             <!---->                    
-                <div class="w3-col w3-container" style="width:10%">
+                <div class="w3-col w3-container" style="width:8%">
                     <p class="label-2">Device</p>
                 </div>
-                <div class="w3-col w3-container" style="width:10%">
+                <div class="w3-col w3-container" style="width:8%">
                     <select id="deviceCombo" class="combo-1" onchange="updateDeviceChannels()"></select>
                 </div>
                 <div class="w3-col w3-container" style="width:10%">
                     <p class="label-2">Channel</p>
                 </div>
-                <div class="w3-col w3-container" style="width:14%">
+                <div class="w3-col w3-container" style="width:18%">
                     <select id="channelCombo" class="combo-1"></select>
                 </div>
-                <div class="w3-col w3-container" style="width:10%">
-                   <input type="text" size="6" id="equationUnitText" placeholder="Unit">
+                <div class="w3-col w3-container" style="width:9%">
+                   <input type="text" size="6" id="equationUnitText" placeholder="Unit" style="width:100%">
                 </div>
                 <div class="w3-col w3-container" style="width:10%">
                    <p><button class="portal-pane-button" onclick="addExpression()">Add Expression</button></p>
@@ -472,6 +472,8 @@
         var gaugeIndex = 0;
         var indicatorIndex = 0; 
         var globalEqList = [];
+        //new:
+        var globalEqNameList = [];
         var tempExpressionsList=[];
         var gauges = [];
         var tempGraph;
