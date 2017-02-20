@@ -194,16 +194,6 @@ img {
     top: 45px;
 }
 
-#logoutButton{
-    position: absolute;
-    right: 0px;
-    top: 10px;
-    cursor: pointer;
-    margin-right: 15px;
-    width: 100px;
-    text-align: left;
-}
-
 #settingsButton{
     position: absolute;
     right: 110px;
@@ -211,11 +201,29 @@ img {
     width: 160px;   
     text-align: left;
 }
+#logoutButton{
+    position: absolute;
+    right: 0px;
+    top: 10px;
+    cursor: pointer;
+    margin-right: 15px;
+    width: 110px;
+    text-align: left;
+}
 #addWidgetButton{
     position: absolute;
     right: 110px;
     top: 48px;   
     width: 160px;
+    text-align: left;
+}
+#themeCombo{
+    position: absolute;
+    right: 0px;
+    top: 49px;
+    margin-right: 15px;
+    width: 110px;
+    /*height: 39px;*/
     text-align: left;
 }
 
@@ -307,20 +315,6 @@ img {
     -webkit-transition-duration: 0.4s; /* Safari */
     transition-duration: 0.4s;
     cursor: pointer;
-}
-
-.portal-dropdown{
-    background-color: inherit; /* Green */
-    border: none;
-    padding: 10px 20px;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 13px;
-    margin: 4px 2px;
-    -webkit-transition-duration: 0.4s; /* Safari */
-    transition-duration: 0.4s;
-    cursor: pointer;
-    float: right;
 }
 
 .portal-pane-button{

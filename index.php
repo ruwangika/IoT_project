@@ -68,16 +68,14 @@
             <div class="w3-row w3-padding-8 widget-color">
                 <div class="w3-col w3-container" style="width:14%">
                     <input type="text" id="prefixEquationText" placeholder="Expression prefix" style="width:100%" >
-                </div>
-            <!---->       
+                </div>   
                 <div class="w3-col w3-container" style="width:11%">
                     <p class="label-2">Device type</p>
                 </div>
                 <div class="w3-col w3-container" style="width:12%">
                     <select id="deviceTypeCombo" class="combo-1" onchange="updateDevicesCombo(); updateDeviceChannels()">
                     </select>
-                </div>
-            <!---->                    
+                </div>                    
                 <div class="w3-col w3-container" style="width:8%">
                     <p class="label-2">Device</p>
                 </div>
@@ -103,17 +101,11 @@
                 <div class="w3-col w3-container" style="width:80%">
                     <p id="equationText"></p>
                 </div>
-                <!--
-                <div class="w3-col w3-container w3-right" style="width:10%">
-                    <p><button class="portal-pane-button" onclick="addEquation()" style="font-size:14px">Add Equation</button></p>
-                </div>
-                -->
                 <div class="w3-col w3-container w3-right" style="width:10%">
                     <p><button class="portal-pane-button" onclick="clearExpressions()">Clear Expressions</button></p>
-                </div>
-                
+                </div>                
             </div>
-<!---->
+
             <div class="w3-row w3-padding-8 widget-color">
                 <div class="w3-col w3-container" style="width:15%">
                     <p class="label-1">Equation Name</p>
@@ -125,7 +117,6 @@
                     <p><button class="portal-pane-button" onclick="addEquation()" style="width:80%; height:35px; font-size:18px">Add Equation</button></p>
                 </div>                
             </div>
-<!---->
                     
             <div class="w3-container">
               <ul class="w3-ul w3-card-4" id="equationList">
@@ -201,7 +192,13 @@
                     <p class="label-1">Interval</p>    
                 </div>
                 <div class="w3-col w3-container" style="width:20%">
-                    <input id="accIntText" type="text" value="DAY">
+                    <select id="accIntCombo" class="combo-1">
+                        <option>HOUR</option>
+                        <option selected>DAY</option>
+                        <option>WEEK</option>
+                        <option>MONTH</option>
+                        <option>YEAR</option>
+                    </select>
                 </div>
             </div>
              
@@ -373,7 +370,7 @@
             <button id="addWidgetButton" class="portal-button" onclick="addWidget()">ADD PANE</button>
             <button id="settingsButton" class="portal-button" onclick="w3_open()">ADMIN CONSOLE</button>
             <button id="logoutButton" class="portal-button" onclick="logout()">LOGOUT</button>
-            <select id="themeCombo" class="portal-dropdown" onchange="changeTheme(this.value);">
+            <select id="themeCombo" class="portal-button" onchange="changeTheme(this.value);">
                 <option selected hidden>THEME</option>
                 <option value="light" class="option-background">Light</option>
                 <option value="dark" class="option-background">Dark</option>

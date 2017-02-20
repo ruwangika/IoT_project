@@ -60,6 +60,7 @@ function showEquations(){
     var _len = globalEqList.length;
     
     $("#equationListDisp").empty();
+    $("#selectedEquationList").empty();
     $("#barChartConfigPanel").hide();
     $("#pieChartConfigPanel").hide();
     $("#gaugeConfigPanel").hide();
@@ -69,7 +70,8 @@ function showEquations(){
         for (var i = 0; i < _len; i++) {
             var eq = globalEqList[i];    
             var eqStr = parseEquation(eq);
-            $("#equationListDisp").append("<li onclick=\"selectEquation('"+eqStr+"','"+i+"',this)\" id=\""+eqStr+"\" index=\""+i+"\">"+eqStr+"<span class=\"w3-closebtn w3-margin-right w3-medium\">+</span></li>");
+            var eqName = globalEqNameList[i];
+            $("#equationListDisp").append("<li onclick=\"selectEquation('"+eqStr+"','"+i+"',this)\" id=\""+eqStr+"\" index=\""+i+"\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+eqStr+"\">"+eqName+"<span class=\"w3-closebtn w3-margin-right w3-medium\">+</span></li>");
         }
     }else if(graphType == "bar"){
         $("#barChartConfigPanel").show();
@@ -77,7 +79,8 @@ function showEquations(){
             if((parseEquation(globalEqList[i])).includes("energy")){
                 var eq = globalEqList[i];
                 var eqStr = parseEquation(eq);
-                $("#equationListDisp").append("<li onclick=\"selectEquation('"+eqStr+"','"+i+"',this)\" id=\""+eqStr+"\" index=\""+i+"\">"+eqStr+"<span class=\"w3-closebtn w3-margin-right w3-medium\">+</span></li>");    
+                var eqName = globalEqNameList[i];
+                $("#equationListDisp").append("<li onclick=\"selectEquation('"+eqStr+"','"+i+"',this)\" id=\""+eqStr+"\" index=\""+i+"\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+eqStr+"\">"+eqName+"<span class=\"w3-closebtn w3-margin-right w3-medium\">+</span></li>");    
             }
         }   
     }else if(graphType == "pie"){
@@ -87,7 +90,8 @@ function showEquations(){
             if((parseEquation(globalEqList[i])).includes("energy")){
                 var eq = globalEqList[i];
                 var eqStr = parseEquation(eq);
-                $("#equationListDisp").append("<li onclick=\"selectEquation('"+eqStr+"','"+i+"',this)\" id=\""+eqStr+"\" index=\""+i+"\">"+eqStr+"<span class=\"w3-closebtn w3-margin-right w3-medium\">+</span></li>");    
+                var eqName = globalEqNameList[i];
+                $("#equationListDisp").append("<li onclick=\"selectEquation('"+eqStr+"','"+i+"',this)\" id=\""+eqStr+"\" index=\""+i+"\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+eqStr+"\">"+eqName+"<span class=\"w3-closebtn w3-margin-right w3-medium\">+</span></li>");    
             }
         }   
     }else if(graphType == "guage"){
@@ -105,14 +109,16 @@ var selectEquation =function(eqStr,index,object){
     var li = document.getElementById(eqStr);
     li.style.display = "none";
     li.remove();
-    $("#selectedEquationList").append("<li onclick=\"removeEquation('"+eqStr+"','"+index+"',this)\" id=\""+eqStr+"\" index=\""+index+"\">"+eqStr+"<span class=\"w3-closebtn w3-margin-right w3-medium\">-</span></li>");
+    var eqName = globalEqNameList[index];
+    $("#selectedEquationList").append("<li onclick=\"removeEquation('"+eqStr+"','"+index+"',this)\" id=\""+eqStr+"\" index=\""+index+"\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+eqStr+"\">"+eqName+"<span class=\"w3-closebtn w3-margin-right w3-medium\">-</span></li>");
 };  
 
 var removeEquation =function(eqStr,index,object){  
     var li = document.getElementById(eqStr);
     li.style.display = "none";
     li.remove();
-    $("#equationListDisp").append("<li onclick=\"selectEquation('"+eqStr+"','"+index+"',this)\" id=\""+eqStr+"\" index=\""+index+"\">"+eqStr+"<span class=\"w3-closebtn w3-margin-right w3-medium\">+</span></li>");
+    var eqName = globalEqNameList[index];
+    $("#equationListDisp").append("<li onclick=\"selectEquation('"+eqStr+"','"+index+"',this)\" id=\""+eqStr+"\" index=\""+index+"\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+eqStr+"\">"+eqName+"<span class=\"w3-closebtn w3-margin-right w3-medium\">+</span></li>");
 }; 
 
 var deleteEquation = function(eqStr,object){

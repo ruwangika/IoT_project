@@ -93,7 +93,6 @@ function loadDeviceChannels(Type,id){
             },
             dataType: "json",
             success: function(data, status) {
-                window.alert(status,data);
                 var _len = data.Channel.length;
                 for (j = 0; j < _len; j++) {
                     var channel = data.Channel[j];
@@ -585,7 +584,7 @@ function addGraph() {
         var xAxis = 'date_time';
         var startDate = $("#startDatePicker").val();
         var endDate = $("#endDatePicker").val();
-        var accInt = $("#accIntText").val();
+        var accInt = $("#accIntCombo").val();
         var type = 'column';
         var tarrifs = [
             ["0-0-0 00:00", "0-0-0 12:00"]
