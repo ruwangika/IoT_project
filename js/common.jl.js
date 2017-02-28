@@ -304,7 +304,7 @@ function loadChartData(type, chartID, data,period) {
         }else if(period == "week"){
             accInt = "DAY";
         }else if(period == "month"){
-            accInt = "WEEK";
+            accInt = "DAY";
         }else if(period == "year"){
             accInt = "MONTH";
         }
@@ -544,6 +544,7 @@ function addGraph() {
     var width = parseInt($("#graphWidthCombo").val());
 
     var graphType = document.getElementById("graphTypeCombo").value;
+    
     if (graphType == "line") {
         if (_len == 0) {
             console.log("No equations selected");

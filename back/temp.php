@@ -1,4 +1,6 @@
 <?php
-require "dbaccess.php";
-echo "hi";
+//require 'dbaccess.php';
+//require 'mongo_access.php';
+require 'dbconn.php';
+echo "test";
 ?>

@@ -13,6 +13,7 @@
     	$interval = $_POST["interval"];
     	$data = getLineChartData($codes,$yAxes,$xAxis,$startDate,$endDate,$interval);
     	echo json_encode($data);
+		//echo $type;
 
     }else if($type == 'column'){
     	

@@ -1,1 +1,1 @@
-{"query":"SELECT date_time,12*ph1_active_energy FROM powerpro WHERE code=? AND date_time BETWEEN ? AND ?","param":["1076","2017-01-08","2017-02-07"]}
+{"query":"SELECT date_time,2*ph3_reactive_energy FROM powerpro WHERE code=? AND date_time BETWEEN ? AND ?","param":["1053","2017-01-25","2017-02-24"]}

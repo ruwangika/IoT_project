@@ -112,9 +112,9 @@ function loadlineChartData(chartID,title,equationList, xAxis, startDate, endDate
     var devices = [];
     var channels = [];
     var units = [];
-    for(i = 0; i < equationList.length; i++){
+    for(i = 0; i < equationList.length; i++){//ith equation
         for(j = 0; j < equationList[i].length; j++){
-            var expression = equationList[i][j];
+            var expression = equationList[i][j];//
             devices.push(expression.device);
             channels.push(expression.number + expression.op + expression.channel);
             units.push(expression.unit);
