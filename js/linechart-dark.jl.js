@@ -93,6 +93,19 @@ function updatelineChartData(chart,chartData) {
     chart.render();
 }
 
+//Find the min xAxis length of devices in an equation
+function getMinLength(equation, data, xAxis) { 
+    var len = Number.POSITIVE_INFINITY;
+    for(j = 0; j < equation.length; j++){
+        var device = equation[j].device;
+        if (data[device][xAxis]) {
+            if (data[device][xAxis].length < len)
+            len = data[device][xAxis].length;
+        }       
+    }
+    return len;
+}
+
 // This function will return the data array when parameters are provided
 function loadlineChartData(chartID,title,equationList, xAxis, startDate, endDate, interval,type) {
     graphs[chartID] = {};
@@ -112,9 +125,9 @@ function loadlineChartData(chartID,title,equationList, xAxis, startDate, endDate
     var devices = [];
     var channels = [];
     var units = [];
-    for(i = 0; i < equationList.length; i++){
+    for(i = 0; i < equationList.length; i++){//ith equation
         for(j = 0; j < equationList[i].length; j++){
-            var expression = equationList[i][j];
+            var expression = equationList[i][j];//
             devices.push(expression.device);
             channels.push(expression.number + expression.op + expression.channel);
             units.push(expression.unit);
@@ -130,51 +143,55 @@ function loadlineChartData(chartID,title,equationList, xAxis, startDate, endDate
             console.log("Line chart load data: " + status);
             var chartData = [];
             var channelCounter = 0;
-            for(i = 0; i < devices.length; i++){
-                var channel = channels[i];
-                var device = devices[i];
-                var unit = units[i];
-                //console.log(Math.max(data[device][channel]));
-                
-                var dataPoints = [];
-                if(data[device][xAxis] == null){
-                    continue;
-                }else{
-                    channelCounter++;
-                }
-                var _len = data[device][xAxis].length;
+            for(i = 0; i < equationList.length; i++) {
+                _len=getMinLength(equationList[i],data,xAxis);   
+                var data_points = [];
                 var sum = 0;
-                var min = data[device][channel][0];
-                var max = data[device][channel][0];
-                for(j = 0; j < _len ; j++){
-                    var x = new Date(data[device][xAxis][j]);
-                    var y = data[device][channel][j];
-                    
+                var min = Number.POSITIVE_INFINITY;
+                var max = Number.NEGATIVE_INFINITY;
+                var dataPoints = [];
+                var unit;
+                if (_len== null)
+                    continue;
+                channelCounter++;
+                for(count=0;count<_len;count++){
+                   var p_x=0;
+                   var p_y=0;
+                   for(j = 0; j < equationList[i].length; j++) {
+                        var expression = equationList[i][j];
+                        var device = expression.device;
+                        var channel = expression.number + expression.op + expression.channel;
+                        t_unit = expression.unit;
+                        if (!data[device][xAxis]) continue;
+                        if(t_unit!=null)
+                            unit=t_unit;
+                        p_x = new Date(data[device][xAxis][count]);
+                        p_y += data[device][channel][count];
+                   }
+                   sum+=p_y;
+                   if(min>p_y)
+                       min=p_y;
+                   if(max<p_y)
+                      max=p_y;
                     dataPoints.push({
-                        x: x,
-                        y: y
+                            x: p_x,
+                            y: p_y
                     });
-
-                    sum += y;
-                    if(min > y){
-                        min = y;
-                    }if(max < y){
-                        max = y;
-                    }
                 }
                 var avg = Math.round(sum/_len * 100) / 100;
                 min = Math.round(min * 10) / 10;
                 max = Math.round(max * 10) / 10;
                 var line={
-                    name: device+':'+channel+', avg='+avg+', max='+max+', min='+min,
+                    name: parseEquation(equationList[i])+', avg='+avg+', max='+max+', min='+min,
                     type: "line", showInLegend: true,
                     yValueFormatString:"#.## "+unit,
                     connectNullData:true,
                     nullDataLineDashType:"dot"
                 };
                 line.dataPoints = dataPoints;
-                chartData.push(line);
-            } 
+                chartData.push(line);                    
+                        
+            }
             if(channelCounter == 0){
                 return initLineChart(chartID,"No Data..",chartData);    
             } 
@@ -188,6 +205,7 @@ function loadlineChartData(chartID,title,equationList, xAxis, startDate, endDate
         }    
     });
 }
+
 /*
 function updateLineChart(chartID,title,devices, channels, xAxis, startDate, endDate, interval,type) {
     graphs[chartID] = {};

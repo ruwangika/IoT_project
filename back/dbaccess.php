@@ -7,7 +7,7 @@
 
     function getDeviceData($con,$deviceID,$channelID,$xAxis,$startDate,$endDate,$accInt){
        // echo "test";
-
+        $accInt=$accInt*60;
         global $errorlogfile;
         //$sql = 'SELECT '.$xAxis.','.$channelID.' FROM powerpro WHERE code=? AND date_time BETWEEN ? AND ?';
         $sql = 'SELECT '.$xAxis.', AVG('.$channelID.') FROM powerpro WHERE code=? AND date_time BETWEEN ? AND ? GROUP BY UNIX_TIMESTAMP(date_time) DIV '.$accInt;
@@ -83,8 +83,8 @@
             $needle='M';
             if (strpos($deviceID,$needle)===0){////toto need to be changed into mongo//////////////////////////////////////////////////////////////////
                     $ar=getBarChartDataOnDevice($deviceID,$channelID,$xAxis,$startDate,$endDate,$accInt); 
-                    $data[$deviceID][$channelID][$i] = $ar[1];
-                    $data[$deviceID][$xAxis][$i] = $ar[0];
+                    $data[$deviceID][$channelID] = $ar[1];
+                    $data[$deviceID][$xAxis] = $ar[0];
             }
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             else{
@@ -104,7 +104,7 @@
 
 function getMaxSampInterval($deviceIds) {
     //Find the max sampling interval of the devices from db
-    return 60;
+    return 1;
 }
 
 //Return desired sample rate
@@ -112,7 +112,7 @@ function getMaxSampInterval($deviceIds) {
         $n = 1000; //No. of points for a graph - constant
         $maxInt = getMaxSampInterval($ids);
         $timediff = strtotime($endDate) - strtotime($startDate);
-        $noOfPoints = $timediff / $maxInt;
+        $noOfPoints = $timediff / ($maxInt*60);
         if ($noOfPoints <= $n) {
             return $maxInt;
         }

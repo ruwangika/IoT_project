@@ -298,7 +298,7 @@
     </nav>
 
     <nav class="w3-sidenav w3-card-4 w3-animate-top w3-center widget-background-color" style="display:none;padding-top:5%;" id="graphnav">
-        <a href="javascript:void(0)" onclick="graphnav_close()" class="w3-closenav w3-xlarge w3-right w3-display-topright" style="padding:12px;">
+        <a href="javascript:void(0)" onclick="graphnav_close()" class="w3-closenav w3-xlarge w3-right w3-display-topright" style="padding: 12px; background-color: inherit;">
             <i class="fa fa-remove"></i>
         </a>
         <div style="padding-bottom:10px;opacity: 1;" class="">
@@ -358,6 +358,11 @@
             </span>
         </div>
     </div>
+    <!--Loader modal-->
+    <div id="divLoading" class="loader-modal" style="display:none">
+            <img src="img/loadinggif.gif">
+    </div>    
+
 
     <div class="w3-content" style="max-width:100%">
         
@@ -370,7 +375,7 @@
             <button id="addWidgetButton" class="portal-button" onclick="addWidget()">ADD PANE</button>
             <button id="settingsButton" class="portal-button" onclick="w3_open()">ADMIN CONSOLE</button>
             <button id="logoutButton" class="portal-button" onclick="logout()">LOGOUT</button>
-            <select id="themeCombo" class="portal-button" onchange="changeTheme(this.value);">
+            <select id="themeCombo" class="portal-button" onchange="alertSaveGrid();">
                 <option selected hidden>THEME</option>
                 <option value="light" class="option-background">Light</option>
                 <option value="dark" class="option-background">Dark</option>
@@ -484,6 +489,7 @@
         var indicatorLiveTimer = {};
         var tempWidget;
         var gridSaved = true;
+        var defaultTheme = "THEME";
         
 
         window.onload = function(){

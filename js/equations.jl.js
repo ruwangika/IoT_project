@@ -2,6 +2,7 @@ function addEquation(){
     
     var equation = parseEquation(tempExpressionsList);
     var eqName = document.getElementById("equationNameText").value;
+    if (!eqName) eqName = equation;
     $("#equationList").append("<li id=\"li"+equation+"\" value=\""+equation+"\" style=\"cursor:default\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+equation+"\">"+eqName+"<span onclick=\"deleteEquation('"+equation+"',this)\" class=\"w3-closebtn w3-margin-right w3-medium\">&times;</span></li>");
     globalEqList.push(tempExpressionsList);
     globalEqNameList.push(eqName);
@@ -68,7 +69,8 @@ function showEquations(){
     $("#dateRangeChooser").show();
     if(graphType == "line"){
         for (var i = 0; i < _len; i++) {
-            var eq = globalEqList[i];    
+            var eq = globalEqList[i];   
+            //window.alert(eq); 
             var eqStr = parseEquation(eq);
             var eqName = globalEqNameList[i];
             $("#equationListDisp").append("<li onclick=\"selectEquation('"+eqStr+"','"+i+"',this)\" id=\""+eqStr+"\" index=\""+i+"\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+eqStr+"\">"+eqName+"<span class=\"w3-closebtn w3-margin-right w3-medium\">+</span></li>");
@@ -76,7 +78,7 @@ function showEquations(){
     }else if(graphType == "bar"){
         $("#barChartConfigPanel").show();
         for (var i = 0; i < _len; i++) {
-            if((parseEquation(globalEqList[i])).includes("energy")){
+            if((parseEquation(globalEqList[i])).includes("")){
                 var eq = globalEqList[i];
                 var eqStr = parseEquation(eq);
                 var eqName = globalEqNameList[i];
@@ -108,6 +110,8 @@ function showEquations(){
 var selectEquation =function(eqStr,index,object){  
     var li = document.getElementById(eqStr);
     li.style.display = "none";
+    // var parent = document.getElementById("equationListDisp");
+    // parent.removeChild(li);    
     li.remove();
     var eqName = globalEqNameList[index];
     $("#selectedEquationList").append("<li onclick=\"removeEquation('"+eqStr+"','"+index+"',this)\" id=\""+eqStr+"\" index=\""+index+"\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+eqStr+"\">"+eqName+"<span class=\"w3-closebtn w3-margin-right w3-medium\">-</span></li>");
@@ -123,7 +127,10 @@ var removeEquation =function(eqStr,index,object){
 
 var deleteEquation = function(eqStr,object){
     var li = document.getElementById("li"+eqStr);
-    li.style.display = "none";
+    //li.style.display = "none";
+    // var parent = document.getElementById("equationList");
+    // parent.removeChild(li);
+    li.remove();
     var _len = globalEqList.length;
     for (var i = 0; i < _len; i++) {
         if(parseEquation(globalEqList[i]) == eqStr){
@@ -234,6 +241,7 @@ function loadEquationList(){
     $("#equationList").empty();
     for (var i = 0; i < _len; i++) {
         var eq = globalEqList[i];  
+        //window.alert(eq);
         var eqName = globalEqNameList[i];  
         var eqStr = parseEquation(eq);
         $("#equationList").append("<li id=\"li"+eqStr+"\" value=\""+eqStr+"\" style=\"cursor:default\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+eqStr+"\">"+eqName+"<span onclick=\"deleteEquation('"+eqStr+"',this)\" class=\"w3-closebtn w3-margin-right w3-medium\">&times;</span></li>");

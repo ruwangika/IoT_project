@@ -20,7 +20,7 @@ function initBarChart(chartID,title, chartData,axisX) {
                 shared: true
             },          
             axisY: {
-                title: "Energy"
+                //title: "Energy"
             }, axisX:axisX,
             data: chartData,
           legend:{
@@ -132,7 +132,8 @@ function loadBarChartData(chartID,title,equationList, xAxis, startDate, endDate,
                     if(data[device] == null){
                         continue;
                     }else{
-                        channelCounter++;
+                        if (!data[device][xAxis]) continue;
+                        else channelCounter++;
                     }
                     var _len = data[device][xAxis].length;
                     for(k = 0; k < _len ; k++){
@@ -153,7 +154,7 @@ function loadBarChartData(chartID,title,equationList, xAxis, startDate, endDate,
                 };
                 var dataPoints = [];
                 
-                var _len = data[device][xAxis].length;
+                //var _len = data[device][xAxis].length;
                 for(j = 0; j < _len ; j++){
                     dataPoints.push({
                         x: new Date(data[device][xAxis][j]),

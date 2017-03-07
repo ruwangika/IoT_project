@@ -251,6 +251,7 @@ function graphdbclick(graph, id) {
 }
 
 function graphFilterDay() {
+    //$("#divLoading").show();
     $(".filter-button").attr("disabled", "disabled");
     var graphID = tempId;
     var endDate = todayTime();
@@ -262,6 +263,7 @@ function graphFilterDay() {
 }
 
 function graphFilterWeek() {
+    //$("#divLoading").show();
     $(".filter-button").attr("disabled", "disabled");
     var graphID = tempId;
     var endDate = todayTime();
@@ -273,6 +275,7 @@ function graphFilterWeek() {
 }
 
 function graphFilterMonth() {
+    //$("#divLoading").show();
     $(".filter-button").attr("disabled", "disabled");
     var graphID = tempId;
     var endDate = todayTime();
@@ -284,6 +287,7 @@ function graphFilterMonth() {
 }
 
 function graphFilterYear() {
+    //$("#divLoading").show();
     $(".filter-button").attr("disabled", "disabled");
     var graphID = tempId;
     var endDate = todayTime();
@@ -294,7 +298,7 @@ function graphFilterYear() {
     loadChartData(graphs[graphID].type, graphID, data,"year");
 }
 
-function loadChartData(type, chartID, data,period) {
+function loadChartData(type, chartID, data, period) {
     if (type == "lineChart") {
         loadlineChartData(chartID, data.title, data.equationList, data.xAxis, data.startDate, data.endDate, data.interval, data.type);
     } else if (type == "colChart") {
@@ -312,6 +316,7 @@ function loadChartData(type, chartID, data,period) {
     } else if (type == "pieChart") {
         loadPieChartData(chartID, data.title, data.equationList, data.total, data.startDate, data.endDate, data.dataType, data.type);
     }
+    //$("#divLoading").hide();
 }
 
 // Open and close sidenav
@@ -732,6 +737,7 @@ function openSettingsModal(widgetID){
 }
 
 function changeWidgetSettings(){
+    gridSaved = false;
     var title = $("#chartTitleTextWS").val();
     var graphID = tempwidget.substring(7);
     var chartData = graphs[graphID]["chartData"];
@@ -811,6 +817,7 @@ $(function() {
             reader.readAsDataURL(this.files[0]);
         }
         $("#addLogoModal").hide();
+        $("#loaderModal").hide();
     });
 
     $("#addLogoBtn").click(function(){
@@ -868,6 +875,7 @@ function addDivtoWidget(div, w, h, x, y, widgetID) {
                 //$('#widget'+widgetCount).remove();
                 $(this).parent().parent().remove();
                 //widgetCount--;
+                gridSaved = false;
             });
 
             $('#settings' + widgetID).click(function(id) {
@@ -952,22 +960,43 @@ function imageIsLoaded(e) {
     $('#customerLogo').attr('src', e.target.result);
 }
 
-function changeTheme(themeId) {
+function alertSaveGrid() {
+    var theme_combo = document.getElementById("themeCombo");
+    var themeId = theme_combo.value;
+    if (!gridSaved) {
+        if (confirm("Proceed without saving your changes?") == true) {
+            changeTheme(themeId);
+            gridSaved = true;
+        } else {
+            theme_combo.value = "THEME";
+            return;
+        }
+    }
+    else {
+        changeTheme(themeId);
+    }
+}
 
-    if (themeId=="dark") {
-        document.getElementById("weatherWidget").src="https://www.meteoblue.com/en/weather/widget/three/colombo_sri-lanka_1248991?geoloc=detect&nocurrent=1&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=dark";
-        loadCSS("css/color-dark.jl.css");
-        loadJS("js/linechart-dark.jl.js");
-        loadJS("js/columnchart-dark.jl.js");
-        loadJS("js/piechart-dark.jl.js");
-        loadGrid();
-    } else {
-        document.getElementById("weatherWidget").src="https://www.meteoblue.com/en/weather/widget/three/colombo_sri-lanka_1248991?geoloc=detect&nocurrent=1&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=bright";
-        loadCSS("css/color-light.jl.css");
-        loadJS("js/linechart-light.jl.js");
-        loadJS("js/columnchart-light.jl.js");
-        loadJS("js/piechart-light.jl.js");
-        loadGrid();
+function changeTheme(themeId) {
+    if (themeId == defaultTheme) return;
+    else {
+        if (themeId=="dark") {
+            document.getElementById("weatherWidget").src="https://www.meteoblue.com/en/weather/widget/three/colombo_sri-lanka_1248991?geoloc=detect&nocurrent=1&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=dark";
+            loadCSS("css/color-dark.jl.css");
+            loadJS("js/linechart-dark.jl.js");
+            loadJS("js/columnchart-dark.jl.js");
+            loadJS("js/piechart-dark.jl.js");
+            defaultTheme = "dark";
+            loadGrid();
+        } else {
+            document.getElementById("weatherWidget").src="https://www.meteoblue.com/en/weather/widget/three/colombo_sri-lanka_1248991?geoloc=detect&nocurrent=1&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=bright";
+            loadCSS("css/color-light.jl.css");
+            loadJS("js/linechart-light.jl.js");
+            loadJS("js/columnchart-light.jl.js");
+            loadJS("js/piechart-light.jl.js");
+            defaultTheme = "light";
+            loadGrid();
+        }
     }
 }
 
