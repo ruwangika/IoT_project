@@ -1,6 +1,6 @@
 <?php
 
-
+	$conn=new MongoClient("mongodb://development.enetlk.com:27017");
 	function getConnection(){
 		$con=mysqli_connect("localhost","Thimal","Th1m@l123","c_epro_5000"); //connection string
 		if ($con->connect_error) {
@@ -21,10 +21,9 @@
 			return $con;
 		}
 	}
-	function getMongoDB($Host="development.enetlk.com",$Port=27017,$id)
+	function getMongoDB($id)
 	{
-		$conn=new MongoClient("mongodb://$Host:$Port");
-		$db=$conn->selectDB($id);
+		$db=$GLOBALS['conn']->selectDB($id);
 		return $db;
 	}
 	

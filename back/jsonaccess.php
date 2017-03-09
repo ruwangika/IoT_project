@@ -1,53 +1,45 @@
 <?php
 
 	$userdataFile = "../data/userdata.json";
-
-	function writeEquations($userID,$eqList,$eqNameList){
-		global $userdataFile;
+	$json_directory = "../data/";
+	function writeEquations($userID,$eqList){
+		global $json_directory;
+		$userdataFile=$json_directory."".$userID.".json";
 		$userdata = json_decode(file_get_contents($userdataFile),TRUE);
-		$userdata[$userID]["EqList"] = $eqList;
-		$userdata[$userID]["EqNameList"] = $eqNameList;
+		$userdata["EqList"] = $eqList;
 		file_put_contents($userdataFile, json_encode($userdata,TRUE));
 		return True;
 	}
 
 	function getEquations($userID){
-		global $userdataFile;
+		global $json_directory;
+		$userdataFile=$json_directory."".$userID.".json";
 		$userdata = json_decode(file_get_contents($userdataFile),TRUE);
-		if(isset($userdata[$userID])){
-			if(isset($userdata[$userID]["EqList"])){
-				return $userdata[$userID]["EqList"];
-			} 
-		}
-		return [];
-	}
-
-	function getEquationNames($userID){
-		global $userdataFile;
-		$userdata = json_decode(file_get_contents($userdataFile),TRUE);
-		if(isset($userdata[$userID])){
-			if(isset($userdata[$userID]["EqNameList"])){
-				return $userdata[$userID]["EqNameList"];
+		if(isset($userdata)){
+			if(isset($userdata["EqList"])){
+				return $userdata["EqList"];
 			} 
 		}
 		return [];
 	}
 
 	function saveGrid($userID,$grid, $theme){
-		global $userdataFile;
+		global $json_directory;
+		$userdataFile=$json_directory."".$userID.".json";
 		$userdata = json_decode(file_get_contents($userdataFile),TRUE);
-		$userdata[$userID]["Grid"] = $grid;
-	 	$userdata[$userID]["Theme"] = $theme;
+		$userdata["Grid"] = $grid;
+	 	$userdata["Theme"] = $theme;
 		file_put_contents($userdataFile, json_encode($userdata,TRUE));
 		return True;	
 	}
 
 	function loadGrid($userID){
-		global $userdataFile;
+		global $json_directory;
+		$userdataFile=$json_directory."".$userID.".json";
 		$userdata = json_decode(file_get_contents($userdataFile),TRUE);
-		if(isset($userdata[$userID])){
-			if(isset($userdata[$userID]["Grid"])){
-				return $userdata[$userID]["Grid"];
+		if(isset($userdata)){
+			if(isset($userdata["Grid"])){
+				return $userdata["Grid"];
 			}
 			 
 		}
@@ -56,12 +48,13 @@
 	}
 
 	function loadTheme($userID){
-		global $userdataFile;
+		global $json_directory;
+		$userdataFile=$json_directory."".$userID.".json";
 		$default = "light";
 		$userdata = json_decode(file_get_contents($userdataFile),TRUE);
-		if(isset($userdata[$userID])){
-			if(isset($userdata[$userID]["Theme"])){
-				return $userdata[$userID]["Theme"];
+		if(isset($userdata)){
+			if(isset($userdata["Theme"])){
+				return $userdata["Theme"];
 			}			 
 		}
 		return $default;		

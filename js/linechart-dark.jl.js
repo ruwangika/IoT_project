@@ -34,6 +34,7 @@ function todayTime() {
     return today;
 }
 
+/*
 function getStartDate(days){
     var date = new Date();
     var last = new Date(date.getTime() - (days * 24 * 60 * 60 * 1000));
@@ -42,6 +43,59 @@ function getStartDate(days){
         day = '0' + day
     }
     var month=last.getMonth()+1;
+    if (month < 10) {
+        month = '0' + month
+    }
+    var year=last.getFullYear();
+    return year + '-' + month + '-' + day;
+}
+*/
+
+// Gets the start date for a chart
+function getStartDate(endDate, interval){
+    var days = 1;
+    var current;
+    var end;
+    var diff = 0;
+    if (interval == "day") {
+        var last = new Date((new Date(endDate)).getTime() - (days * 24 * 60 * 60 * 1000));
+        var day = last.getDate();
+        if (day < 10) {
+            day = '0' + day
+        }
+        var month=last.getMonth()+1;
+        if (month < 10) {
+            month = '0' + month
+        }
+        var year=last.getFullYear();
+        return year + '-' + month + '-' + day;
+    } else if (interval == "week") {
+        days = 7;
+        current = new Date().getWeek();
+        end = (new Date(endDate)).getWeek();
+        diff = current - end;
+        if (diff < 0) diff += 52;
+    } else if (interval == "month") {
+        days = 30;
+        current = new Date().getMonth();
+        end = (new Date(endDate)).getMonth();
+        diff = current - end;
+        if (diff < 0) diff += 12;
+    } else if (interval == "year") {
+        days = 365;
+        current = new Date().getFullYear();
+        end = (new Date(endDate)).getFullYear();
+        diff = current - end;
+    }
+
+    days *= (1 + diff);
+    var date = new Date();
+    var last = new Date(date.getTime() - (days * 24 * 60 * 60 * 1000));
+    var day = last.getDate();
+    if (day < 10) {
+        day = '0' + day
+    }
+    var month=last.getMonth() + 1;
     if (month < 10) {
         month = '0' + month
     }
@@ -81,6 +135,7 @@ function initLineChart(chartID,title, chartData) {
         data: chartData,
     });
     lineChart.render();
+    //$("#divLoading").hide();
     graphs[chartID]["chart"] = lineChart;
     graphs[chartID]["type"] = "lineChart";
     $(".filter-button").removeAttr("disabled");
@@ -101,13 +156,14 @@ function getMinLength(equation, data, xAxis) {
         if (data[device][xAxis]) {
             if (data[device][xAxis].length < len)
             len = data[device][xAxis].length;
-        }       
+        }    
+        else continue;     
     }
     return len;
 }
 
 // This function will return the data array when parameters are provided
-function loadlineChartData(chartID,title,equationList, xAxis, startDate, endDate, interval,type) {
+function loadlineChartData(chartID,title,equationList, xAxis, startDate, endDate, interval, type) {
     graphs[chartID] = {};
     var cData = {
         title: title,
@@ -144,14 +200,14 @@ function loadlineChartData(chartID,title,equationList, xAxis, startDate, endDate
             var chartData = [];
             var channelCounter = 0;
             for(i = 0; i < equationList.length; i++) {
-                _len=getMinLength(equationList[i],data,xAxis);   
+                _len = getMinLength(equationList[i], data, xAxis);   
                 var data_points = [];
                 var sum = 0;
                 var min = Number.POSITIVE_INFINITY;
                 var max = Number.NEGATIVE_INFINITY;
                 var dataPoints = [];
                 var unit;
-                if (_len== null)
+                if (_len == null || _len == Number.POSITIVE_INFINITY)
                     continue;
                 channelCounter++;
                 for(count=0;count<_len;count++){
@@ -161,8 +217,8 @@ function loadlineChartData(chartID,title,equationList, xAxis, startDate, endDate
                         var expression = equationList[i][j];
                         var device = expression.device;
                         var channel = expression.number + expression.op + expression.channel;
-                        t_unit = expression.unit;
                         if (!data[device][xAxis]) continue;
+                        t_unit = expression.unit;
                         if(t_unit!=null)
                             unit=t_unit;
                         p_x = new Date(data[device][xAxis][count]);

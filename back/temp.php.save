@@ -1,0 +1,9 @@
+<?php
+        $conn=new MongoClient("mongodb://development.enetlk.com:27017");
+	$db=$conn->selectDB("test");
+        $collection=$db["humidity"];
+//	$nothing = $collection->find( {"_id":{ "$gt":"2010-11-10","$lte":"2018-11-12"});
+//      echo $nothing;
+	echo "dummy";
+
+?>

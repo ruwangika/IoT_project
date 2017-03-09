@@ -10,10 +10,9 @@
 	    $xAxis = $_POST["xAxis"];
 	    $startDate = $_POST["startDate"];
 	    $endDate = $_POST["endDate"];
-    	$interval = $_POST["interval"];
-    	$data = getLineChartData($codes,$yAxes,$xAxis,$startDate,$endDate,$interval);
+    	// $interval = $_POST["interval"];
+    	$data = getLineChartData($codes,$yAxes,$xAxis,$startDate,$endDate/*,$interval*/);
     	echo json_encode($data);
-		//echo $type;
 
     }else if($type == 'column'){
     	

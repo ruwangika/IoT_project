@@ -170,18 +170,18 @@
                     <input id="chartTitleText" type="text" value="chart">
                 </div>
                 <div id="dateRangeChooser">
-                <div class="w3-col w3-container" style="width:10%">
-                    <p class="label-1">Start Date</p>
-                </div>
-                <div class="w3-col w3-container" style="width:20%">
-                    <input type="text" id="startDatePicker" >
-                </div>
-                <div class="w3-col w3-container" style="width:10%">
-                    <p class="label-1">End Date</p>
-                </div>
-                <div class="w3-col w3-container" style="width:15%">
-                    <input type="text" id="endDatePicker">
-                </div>
+                    <!--<div class="w3-col w3-container" style="width:10%">
+                        <p class="label-1">Start Date</p>
+                    </div>
+                    <div class="w3-col w3-container" style="width:20%">
+                        <input type="text" id="startDatePicker" >
+                    </div>-->
+                    <div class="w3-col w3-container" style="width:10%">
+                        <p class="label-1">End Date</p>
+                    </div>
+                    <div class="w3-col w3-container" style="width:15%">
+                        <input type="text" id="endDatePicker">
+                    </div>
                 </div>
                 <div class="w3-col w3-container w3-right" style="width:15%">
                 </div>
@@ -192,12 +192,11 @@
                     <p class="label-1">Interval</p>    
                 </div>
                 <div class="w3-col w3-container" style="width:20%">
-                    <select id="accIntCombo" class="combo-1">
-                        <option>HOUR</option>
-                        <option selected>DAY</option>
-                        <option>WEEK</option>
-                        <option>MONTH</option>
-                        <option>YEAR</option>
+                    <select id="intervalCombo" class="combo-1">
+                        <option value = "day" selected>DAY</option>
+                        <option value = "week">WEEK</option>
+                        <option value = "month">MONTH</option>
+                        <option value = "year">YEAR</option>
                     </select>
                 </div>
             </div>
@@ -302,10 +301,12 @@
             <i class="fa fa-remove"></i>
         </a>
         <div style="padding-bottom:10px;opacity: 1;" class="">
+            <button class="portal-button filter-button" onclick="graphPrevInterval()"><i class="fa fa-arrow-left" aria-hidden="true"></i></button>        
             <button class="portal-button filter-button" onclick="graphFilterDay()">Day</button>
             <button class="portal-button filter-button" onclick="graphFilterWeek()">Week</button>
             <button class="portal-button filter-button" onclick="graphFilterMonth()">Month</button>
             <button class="portal-button filter-button" onclick="graphFilterYear()">Year</button>
+            <button class="portal-button filter-button" onclick="graphNextInterval()"><i class="fa fa-arrow-right" aria-hidden="true"></i></button>        
         </div>
         <div id="graphContainer" class="w3-center" style="width: 100%; padding-right:50px; padding-left:50px;opacity: 1;"></div>
     </nav>
@@ -475,7 +476,7 @@
         var indicatorIndex = 0; 
         var globalEqList = [];
         //new:
-        var globalEqNameList = [];
+        //var globalEqNameList = [];
         var tempExpressionsList=[];
         var gauges = [];
         var tempGraph;
@@ -489,7 +490,7 @@
         var indicatorLiveTimer = {};
         var tempWidget;
         var gridSaved = true;
-        var defaultTheme = "THEME";
+        var defaultTheme = "light";
         
 
         window.onload = function(){

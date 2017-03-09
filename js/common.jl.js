@@ -161,8 +161,8 @@ function loadPieChartTotalCombo() {
     }));
     for (j = 0; j < _len; j++) {
 
-        if ((parseEquation(globalEqList[j])).includes("energy")) {
-            var eq = globalEqList[j];
+        if ((parseEquation(globalEqList[j].equation)).includes("energy")) {
+            var eq = globalEqList[j].equation;
             var eqStr = parseEquation(eq);
             totalCombo.append($('<option/>', {
                 text: eqStr,
@@ -202,7 +202,7 @@ function loadUserCombo() {
 
 function userChanged() {
     userID = $('#userCombo option:selected').val();
-    chageUserEnvironment();
+    changeUserEnvironment();
 
 }
 
@@ -254,9 +254,9 @@ function graphFilterDay() {
     //$("#divLoading").show();
     $(".filter-button").attr("disabled", "disabled");
     var graphID = tempId;
-    var endDate = todayTime();
-    var startDate = todayDate();
     var data = graphs[graphID]["chartData"];
+    var endDate = data.endDate;
+    var startDate = getStartDate(endDate, "day");
     data.startDate = startDate;
     data.endDate = endDate;
     loadChartData(graphs[graphID].type, graphID, data,"day");
@@ -266,9 +266,9 @@ function graphFilterWeek() {
     //$("#divLoading").show();
     $(".filter-button").attr("disabled", "disabled");
     var graphID = tempId;
-    var endDate = todayTime();
-    var startDate = getStartDate(7);
     var data = graphs[graphID]["chartData"];
+    var endDate = data.endDate;
+    var startDate = getStartDate(endDate, "week");
     data.startDate = startDate;
     data.endDate = endDate;
     loadChartData(graphs[graphID].type, graphID, data,"week");
@@ -278,9 +278,9 @@ function graphFilterMonth() {
     //$("#divLoading").show();
     $(".filter-button").attr("disabled", "disabled");
     var graphID = tempId;
-    var endDate = todayTime();
-    var startDate = getStartDate(30);
     var data = graphs[graphID]["chartData"];
+    var endDate = data.endDate;
+    var startDate = getStartDate(endDate, "month");
     data.startDate = startDate;
     data.endDate = endDate;
     loadChartData(graphs[graphID].type, graphID, data,"month");
@@ -290,12 +290,44 @@ function graphFilterYear() {
     //$("#divLoading").show();
     $(".filter-button").attr("disabled", "disabled");
     var graphID = tempId;
-    var endDate = todayTime();
-    var startDate = getStartDate(365);
     var data = graphs[graphID]["chartData"];
+    var endDate = data.endDate;
+    var startDate = getStartDate(endDate, "year");
     data.startDate = startDate;
     data.endDate = endDate;
     loadChartData(graphs[graphID].type, graphID, data,"year");
+}
+
+// New ** 08-03-17
+function graphPrevInterval() {
+    //$("#divLoading").show();
+    $(".filter-button").attr("disabled", "disabled");
+    var graphID = tempId;
+    var data = graphs[graphID]["chartData"];
+    var endDate = data.startDate;
+    var interval = data.interval;
+    //window.alert(data.interval);
+    var startDate = getStartDate(endDate, interval);
+    // window.alert(startDate);
+    // window.alert(endDate);
+    data.startDate = startDate;
+    data.endDate = endDate;
+    loadChartData(graphs[graphID].type, graphID, data,interval);
+}
+
+function graphNextInterval() {
+    //$("#divLoading").show();
+    $(".filter-button").attr("disabled", "disabled");
+    var graphID = tempId;
+    var data = graphs[graphID]["chartData"];
+    var startDate = data.endDate;
+    var interval = data.interval;
+    var endDate = getEndDate(startDate, interval);
+    // window.alert(startDate);
+    // window.alert(endDate);
+    data.startDate = startDate;
+    data.endDate = endDate;
+    loadChartData(graphs[graphID].type, graphID, data,interval);
 }
 
 function loadChartData(type, chartID, data, period) {
@@ -557,15 +589,15 @@ function addGraph() {
         }
         var equationList = [];
         for (var i = 0; i < _len; i++) {
-            equationList.push(globalEqList[selEqs[i]]);
+            equationList.push(globalEqList[selEqs[i]].equation);
         }
 
         var chartID = "linechart" + lineChartIndex;
         var title = $("#chartTitleText").val();
         var xAxis = 'date_time';
-        var startDate = $("#startDatePicker").val();
+        var interval = $("#intervalCombo").val();
         var endDate = $("#endDatePicker").val();
-        var interval = 1;
+        var startDate = getStartDate(endDate, interval);
         var type = 'line';
         var data = loadlineChartData(chartID, title, equationList, xAxis, startDate, endDate, interval, type);
 
@@ -583,14 +615,14 @@ function addGraph() {
         }
         var equationList = [];
         for (var i = 0; i < _len; i++) {
-            equationList.push(globalEqList[selEqs[i]]);
+            equationList.push(globalEqList[selEqs[i]].equation);
         }
         var chartID = "colchart" + colChartIndex;
         var title = $("#chartTitleText").val();
         var xAxis = 'date_time';
-        var startDate = $("#startDatePicker").val();
         var endDate = $("#endDatePicker").val();
-        var accInt = $("#accIntCombo").val();
+        var startDate = getStartDate(endDate, interval);
+        var accInt = $("#intervalCombo").val();
         var type = 'column';
         var tarrifs = [
             ["0-0-0 00:00", "0-0-0 12:00"]
@@ -613,7 +645,7 @@ function addGraph() {
         var title = $("#chartTitleText").val();
         var equationList = [];
         for (var i = 0; i < _len; i++) {
-            equationList.push(globalEqList[selEqs[i]]);
+            equationList.push(globalEqList[selEqs[i]].equation);
         }
         var total = $('#pieChartTotalCombo option:selected').val();
         var startDate = $("#startDatePicker").val();
@@ -706,7 +738,7 @@ function addGauge(widgetID, graphID, data, w, h, x, y){
 
 
 
-function chageUserEnvironment() {
+function changeUserEnvironment() {
     loadEquations();
     loadGrid();
     loadTheme();
@@ -791,12 +823,12 @@ $(function() {
     
     $("#startDatePicker").datepicker("option", "dateFormat", "yy-mm-dd");
     $("#endDatePicker").datepicker("option", "dateFormat", "yy-mm-dd");
-    $("#startDatePicker").datepicker("setDate", getStartDate(30));
+    $("#startDatePicker").datepicker("setDate", getStartDate(new Date(), "month"));
     $("#endDatePicker").datepicker("setDate", todayDate());
 
     $("#startDatePickerWS").datepicker("option", "dateFormat", "yy-mm-dd");
     $("#endDatePickerWS").datepicker("option", "dateFormat", "yy-mm-dd");
-    $("#startDatePickerWS").datepicker("setDate", getStartDate(30));
+    $("#startDatePickerWS").datepicker("setDate", getStartDate(new Date(), "month"));
     $("#endDatePickerWS").datepicker("setDate", todayDate());
 
 
@@ -1054,3 +1086,38 @@ function toggleFullscreen() {
   }
 }
 ;
+
+/**
+ * Returns the week number for this date.  dowOffset is the day of week the week
+ * "starts" on for your locale - it can be from 0 to 6. If dowOffset is 1 (Monday),
+ * the week returned is the ISO 8601 week number.
+ * @param int dowOffset
+ * @return int
+ */
+Date.prototype.getWeek = function (dowOffset) {
+/*getWeek() was developed by Nick Baicoianu at MeanFreePath: http://www.meanfreepath.com */
+
+    dowOffset = typeof(dowOffset) == 'int' ? dowOffset : 0; //default dowOffset to zero
+    var newYear = new Date(this.getFullYear(),0,1);
+    var day = newYear.getDay() - dowOffset; //the day of week the year begins on
+    day = (day >= 0 ? day : day + 7);
+    var daynum = Math.floor((this.getTime() - newYear.getTime() - 
+    (this.getTimezoneOffset()-newYear.getTimezoneOffset())*60000)/86400000) + 1;
+    var weeknum;
+    //if the year starts before the middle of a week
+    if(day < 4) {
+        weeknum = Math.floor((daynum+day-1)/7) + 1;
+        if(weeknum > 52) {
+            nYear = new Date(this.getFullYear() + 1,0,1);
+            nday = nYear.getDay() - dowOffset;
+            nday = nday >= 0 ? nday : nday + 7;
+            /*if the next year starts before the middle of
+              the week, it is week #1 of that year*/
+            weeknum = nday < 4 ? 1 : 53;
+        }
+    }
+    else {
+        weeknum = Math.floor((daynum+day-1)/7);
+    }
+    return weeknum;
+};

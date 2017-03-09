@@ -4,11 +4,10 @@
     require 'jsonaccess.php';
     $type = $_POST["r_type"];
     if($type == 'save_equations'){
-    	
-        $eqNameList = $_POST["eqNameList"];
+        
     	$eqList = $_POST["eqList"];
         $userID = $_POST["userID"];
-      	echo writeEquations($userID,$eqList,$eqNameList);
+      	echo writeEquations($userID,$eqList);
 
     }
     else if($type == 'get_equations'){
@@ -16,11 +15,11 @@
         $userID = $_POST["userID"];
         echo json_encode(getEquations($userID));
     }
-    else if($type == 'get_equation_names'){
+    // else if($type == 'get_equation_names'){
         
-        $userID = $_POST["userID"];
-        echo json_encode(getEquationNames($userID));
-    }
+    //     $userID = $_POST["userID"];
+    //     echo json_encode(getEquationNames($userID));
+    // }
     else if($type == 'save_grid'){
         
         $grid = $_POST["grid"];

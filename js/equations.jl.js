@@ -4,8 +4,13 @@ function addEquation(){
     var eqName = document.getElementById("equationNameText").value;
     if (!eqName) eqName = equation;
     $("#equationList").append("<li id=\"li"+equation+"\" value=\""+equation+"\" style=\"cursor:default\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+equation+"\">"+eqName+"<span onclick=\"deleteEquation('"+equation+"',this)\" class=\"w3-closebtn w3-margin-right w3-medium\">&times;</span></li>");
-    globalEqList.push(tempExpressionsList);
-    globalEqNameList.push(eqName);
+
+    var eqn = {
+        eqName: eqName,
+        equation: tempExpressionsList
+    };
+
+    globalEqList.push(eqn);
 }
 
 function clearExpressions(){
@@ -69,19 +74,19 @@ function showEquations(){
     $("#dateRangeChooser").show();
     if(graphType == "line"){
         for (var i = 0; i < _len; i++) {
-            var eq = globalEqList[i];   
-            //window.alert(eq); 
+        $("#barChartConfigPanel").show();
+            var eq = globalEqList[i].equation;
             var eqStr = parseEquation(eq);
-            var eqName = globalEqNameList[i];
+            var eqName = globalEqList[i].eqName;
             $("#equationListDisp").append("<li onclick=\"selectEquation('"+eqStr+"','"+i+"',this)\" id=\""+eqStr+"\" index=\""+i+"\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+eqStr+"\">"+eqName+"<span class=\"w3-closebtn w3-margin-right w3-medium\">+</span></li>");
         }
     }else if(graphType == "bar"){
         $("#barChartConfigPanel").show();
         for (var i = 0; i < _len; i++) {
-            if((parseEquation(globalEqList[i])).includes("")){
-                var eq = globalEqList[i];
+            if((parseEquation(globalEqList[i].equation)).includes("")){
+                var eq = globalEqList[i].equation;
                 var eqStr = parseEquation(eq);
-                var eqName = globalEqNameList[i];
+                var eqName = globalEqList[i].eqName;
                 $("#equationListDisp").append("<li onclick=\"selectEquation('"+eqStr+"','"+i+"',this)\" id=\""+eqStr+"\" index=\""+i+"\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+eqStr+"\">"+eqName+"<span class=\"w3-closebtn w3-margin-right w3-medium\">+</span></li>");    
             }
         }   
@@ -89,10 +94,10 @@ function showEquations(){
         $("#pieChartConfigPanel").show();
         loadPieChartTotalCombo();
         for (var i = 0; i < _len; i++) {
-            if((parseEquation(globalEqList[i])).includes("energy")){
-                var eq = globalEqList[i];
+            if((parseEquation(globalEqList[i].equation)).includes("energy")){
+                var eq = globalEqList[i].equation;
                 var eqStr = parseEquation(eq);
-                var eqName = globalEqNameList[i];
+                var eqName = globalEqList[i].eqName;
                 $("#equationListDisp").append("<li onclick=\"selectEquation('"+eqStr+"','"+i+"',this)\" id=\""+eqStr+"\" index=\""+i+"\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+eqStr+"\">"+eqName+"<span class=\"w3-closebtn w3-margin-right w3-medium\">+</span></li>");    
             }
         }   
@@ -113,7 +118,7 @@ var selectEquation =function(eqStr,index,object){
     // var parent = document.getElementById("equationListDisp");
     // parent.removeChild(li);    
     li.remove();
-    var eqName = globalEqNameList[index];
+    var eqName = globalEqList[index].eqName;
     $("#selectedEquationList").append("<li onclick=\"removeEquation('"+eqStr+"','"+index+"',this)\" id=\""+eqStr+"\" index=\""+index+"\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+eqStr+"\">"+eqName+"<span class=\"w3-closebtn w3-margin-right w3-medium\">-</span></li>");
 };  
 
@@ -121,21 +126,17 @@ var removeEquation =function(eqStr,index,object){
     var li = document.getElementById(eqStr);
     li.style.display = "none";
     li.remove();
-    var eqName = globalEqNameList[index];
+    var eqName = globalEqList[index].eqName;
     $("#equationListDisp").append("<li onclick=\"selectEquation('"+eqStr+"','"+index+"',this)\" id=\""+eqStr+"\" index=\""+index+"\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+eqStr+"\">"+eqName+"<span class=\"w3-closebtn w3-margin-right w3-medium\">+</span></li>");
 }; 
 
 var deleteEquation = function(eqStr,object){
     var li = document.getElementById("li"+eqStr);
-    //li.style.display = "none";
-    // var parent = document.getElementById("equationList");
-    // parent.removeChild(li);
     li.remove();
     var _len = globalEqList.length;
     for (var i = 0; i < _len; i++) {
-        if(parseEquation(globalEqList[i]) == eqStr){
+        if(parseEquation(globalEqList[i].equation) == eqStr){
             globalEqList.splice(i, 1);
-            globalEqNameList.splice(i, 1);
             break;
         }
     }
@@ -170,7 +171,7 @@ function saveEquations(){
     $.ajax({
         url: "back/user_data.php",
         method: "POST",
-        data: {r_type: 'save_equations', userID: userID, eqList: globalEqList, eqNameList: globalEqNameList},
+        data: {r_type: 'save_equations', userID: userID, eqList: globalEqList},
         dataType: "text",
         success: function(data, status) {
             console.log("Save Equations: " + status);
@@ -193,31 +194,10 @@ function loadEquations(){
         success: function(data, status) {
             console.log("Load Equations: " + status);
             globalEqList = data;
-            loadEquationNames();
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown) { 
-            console.log("Load equations error");
-            console.log(XMLHttpRequest);
-        }    
-    });
-
-}
-
-// New
-function loadEquationNames(){
-    
-    $.ajax({
-        url: "back/user_data.php",
-        method: "POST",
-        data: {r_type: 'get_equation_names', userID: userID},
-        dataType: "json",
-        success: function(data, status) {
-            console.log("Load Equation names: " + status);
-            globalEqNameList = data;
             loadEquationList();
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) { 
-            console.log("Load equation name list error");
+            console.log("Load equations error");
             console.log(XMLHttpRequest);
         }    
     });
@@ -228,7 +208,7 @@ function searchEquation(eq){
     var _len = globalEqList.length;
     var eqStr = parseEquation(eq);
     for (var i = 0; i < _len; i++) {
-        if(parseEquation(globalEqList[i]) == eqStr){
+        if(parseEquation(globalEqList[i].equation) == eqStr){
             return i;
         }
     }
@@ -240,9 +220,8 @@ function loadEquationList(){
     var _len = globalEqList.length;
     $("#equationList").empty();
     for (var i = 0; i < _len; i++) {
-        var eq = globalEqList[i];  
-        //window.alert(eq);
-        var eqName = globalEqNameList[i];  
+        var eq = globalEqList[i].equation;
+        var eqName = globalEqList[i].eqName;  
         var eqStr = parseEquation(eq);
         $("#equationList").append("<li id=\"li"+eqStr+"\" value=\""+eqStr+"\" style=\"cursor:default\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+eqStr+"\">"+eqName+"<span onclick=\"deleteEquation('"+eqStr+"',this)\" class=\"w3-closebtn w3-margin-right w3-medium\">&times;</span></li>");
     }

@@ -7,15 +7,15 @@
 
     function getDeviceData($con,$deviceID,$channelID,$xAxis,$startDate,$endDate,$accInt){
        // echo "test";
-        $accInt=$accInt*60;
+        $accInt=intval($accInt)*60;
         global $errorlogfile;
         //$sql = 'SELECT '.$xAxis.','.$channelID.' FROM powerpro WHERE code=? AND date_time BETWEEN ? AND ?';
-        $sql = 'SELECT '.$xAxis.', AVG('.$channelID.') FROM powerpro WHERE code=? AND date_time BETWEEN ? AND ? GROUP BY UNIX_TIMESTAMP(date_time) DIV '.$accInt;
+        $sql = 'SELECT  floor((UNIX_TIMESTAMP(date_time) - UNIX_TIMESTAMP(?))/(?)) as  t, '.$xAxis.', AVG('.$channelID.') FROM powerpro WHERE code=? AND date_time BETWEEN ? AND ? GROUP BY t';
         $counter = 0;
         if ($stmt = mysqli_prepare($con, $sql)) {
-            mysqli_stmt_bind_param($stmt,"iss",$deviceID,$startDate,$endDate);
+            mysqli_stmt_bind_param($stmt,"siiss",$startDate,$accInt,$deviceID,$startDate,$endDate);
             mysqli_stmt_execute($stmt);
-            mysqli_stmt_bind_result($stmt, $xValue, $yValue);
+            mysqli_stmt_bind_result($stmt,$tValue, $xValue, $yValue);
             
             while(mysqli_stmt_fetch($stmt)) {
                 $data[$deviceID][$channelID][$counter] = $yValue;
@@ -33,7 +33,18 @@
     }
 
     function getDeviceSDCounters($con,$deviceID,$startDate,$endDate,$accInt){
-
+        
+        $accInt= strtolower($accInt);
+        if ($accInt==="hour")
+            $accInt='year(date_time),month(date_time),day(date_time),hour';
+        elseif ($accInt==="day")
+            $accInt='year(date_time),month(date_time),day';
+        elseif ($accInt==="month")
+            $accInt='year(date_time),month';
+        elseif ($accInt==="year")
+            $accInt='year';
+        else
+            return $accInt;
         $sql =  'SELECT MIN(sdCounter),MAX(sdCounter) FROM powerpro WHERE code=? AND date_time BETWEEN ? AND ?  GROUP BY '.$accInt.'(date_time)';
         if ($stmt = mysqli_prepare($con, $sql)) {
             mysqli_stmt_bind_param($stmt,"iss",$deviceID,$startDate,$endDate);
@@ -75,14 +86,16 @@
 
 ///////////////////////////////////////////////////////////////////////////Start chart data load calls/////////////////////////////////////////////////////////////////////////////////////////////////////////////
     function getBarChartData($deviceIDs,$channelIDs,$xAxis,$startDate,$endDate,$accInt,$tarrifs){
-        $con = getConnection();
+        $con = getConnection();  
         $d_len = count($deviceIDs);
         for ($d_i=0; $d_i <  $d_len; $d_i++) { 
             $deviceID = $deviceIDs[$d_i];
             $channelID = $channelIDs[$d_i];
             $needle='M';
             if (strpos($deviceID,$needle)===0){////toto need to be changed into mongo//////////////////////////////////////////////////////////////////
-                    $ar=getBarChartDataOnDevice($deviceID,$channelID,$xAxis,$startDate,$endDate,$accInt); 
+                    
+                    $db=getMongoDB($deviceID);
+                    $ar=getBarChartDataOnDevice($db,$deviceID,$channelID,$xAxis,$startDate,$endDate,$accInt); 
                     $data[$deviceID][$channelID] = $ar[1];
                     $data[$deviceID][$xAxis] = $ar[0];
             }
@@ -121,14 +134,13 @@ function getMaxSampInterval($deviceIds) {
         }
     }
 
-    function getLineChartData ($deviceIDs,$channelIDs,$xAxis,$startDate,$endDate,$samplingRatio){
+    function getLineChartData ($deviceIDs,$channelIDs,$xAxis,$startDate,$endDate){
     // DeviceIDs = [device1,device2....]
     // ChannelIDs = [channel1,channel2....]
     // Return data 
         $samplingInterval=getSampleRate($deviceIDs,$startDate,$endDate);
 
         $con = getConnection();
-        $mysql_conn_iot=getIoTDeviceDataConnection();
         $counter = 0;
         for ($i=0; $i < count($deviceIDs); $i++) { 
             
@@ -136,9 +148,11 @@ function getMaxSampInterval($deviceIds) {
             $channelID = $channelIDs[$i];
             $needle='M';
             if (strpos($deviceID,$needle)===0){////toto need to be changed into mongo//////////////////////////////////////////////////////////////////
-                $deviceData = getLineChartDataOnDevice($mysql_conn_iot,$deviceID,$channelID,$xAxis,$startDate,$endDate,$samplingInterval);
-                $data[$deviceID][$channelID] = $deviceData[$deviceID][$channelID];
-                $data[$deviceID][$xAxis] = $deviceData[$deviceID][$xAxis];
+                
+                $db=getMongoDB($deviceID);
+                $deviceData = getLineChartDataOnDevice($db,$deviceID,$channelID,$xAxis,$startDate,$endDate,$samplingInterval);
+                $data[$deviceID][$channelID] = $deviceData[1];
+                $data[$deviceID][$xAxis] = $deviceData[0];
             }/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             else{
                 $deviceData = getDeviceData($con,$deviceID,$channelID,$xAxis,$startDate,$endDate,$samplingInterval);
@@ -326,15 +340,7 @@ function getMaxSampInterval($deviceIds) {
     }
     
     function getCustomDeviceChennels($id){
-        $con=getIoTDeviceDataConnection();
-        $query='select Host,Port from device where ID="'.$id.'"';
-        $results=mysqli_query($con,$query);//To execute query
-		$nor = mysqli_num_rows($results);
-		while($row=mysqli_fetch_assoc($results)){
-			$data=array($row["Host"],$row["Port"],$id);
-			closeConnection($con);
-		}
-        $db=getMongoDB($data[0],$data[1],$id);
+        $db=getMongoDB($id);
         $collections=$db->getCollectionNames();
         $count=0;
         foreach ($collections as $collection) {

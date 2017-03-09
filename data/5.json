@@ -1,0 +1,1 @@
+{"EqList":[{"eqName":"eqn_1","equation":[{"device":"1076","channel":"ph1_active_energy","number":"2","op":"*","unit":"J"}]},{"eqName":"eqn_2","equation":[{"device":"1082","channel":"ph1_active_energy","number":"1","op":"*","unit":"J"},{"device":"1082","channel":"ph1_reactive_energy","number":"1","op":"*","unit":"J"}]}]}
