@@ -87,7 +87,7 @@ function getStartDate(endDate, interval){
         diff = current - end;
     }
 
-    days *= (1 + diff);
+    days *= (diff + 1);
     var date = new Date();
     var last = new Date(date.getTime() - (days * 24 * 60 * 60 * 1000));
     var day = last.getDate();
@@ -124,24 +124,24 @@ function getEndDate(startDate, interval){
         days = 7;
         current = new Date().getWeek();
         start = (new Date(startDate)).getWeek();
-        diff = start - current;
-        //if (diff < 0) diff += 52;
+        diff = current - start;
+        if (diff < 0) diff += 52;
     } else if (interval == "month") {
         days = 30;
         current = new Date().getMonth();
         start = (new Date(startDate)).getMonth();
-        diff = start - current;
-        //if (diff < 0) diff += 12;
+        diff = current - start;
+        if (diff < 0) diff += 12;
     } else if (interval == "year") {
         days = 365;
         current = new Date().getFullYear();
         start = (new Date(startDate)).getFullYear();
-        diff = start - current;
+        diff = current - start;
     }
 
-    days *= (1 + diff);
+    days *= (diff - 1);
     var date = new Date();
-    var last = new Date(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    var last = new Date(date.getTime() - (days * 24 * 60 * 60 * 1000));
     var day = last.getDate();
     if (day < 10) {
         day = '0' + day

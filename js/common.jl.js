@@ -306,10 +306,7 @@ function graphPrevInterval() {
     var data = graphs[graphID]["chartData"];
     var endDate = data.startDate;
     var interval = data.interval;
-    //window.alert(data.interval);
     var startDate = getStartDate(endDate, interval);
-    // window.alert(startDate);
-    // window.alert(endDate);
     data.startDate = startDate;
     data.endDate = endDate;
     loadChartData(graphs[graphID].type, graphID, data,interval);
@@ -323,8 +320,6 @@ function graphNextInterval() {
     var startDate = data.endDate;
     var interval = data.interval;
     var endDate = getEndDate(startDate, interval);
-    // window.alert(startDate);
-    // window.alert(endDate);
     data.startDate = startDate;
     data.endDate = endDate;
     loadChartData(graphs[graphID].type, graphID, data,interval);
@@ -332,19 +327,19 @@ function graphNextInterval() {
 
 function loadChartData(type, chartID, data, period) {
     if (type == "lineChart") {
-        loadlineChartData(chartID, data.title, data.equationList, data.xAxis, data.startDate, data.endDate, data.interval, data.type);
+        loadlineChartData(chartID, data.title, data.equationList, data.xAxis, data.startDate, data.endDate, period, data.type);
     } else if (type == "colChart") {
-        var accInt = "DAY";
-        if(period == "day"){
-            accInt = "HOUR";
-        }else if(period == "week"){
-            accInt = "DAY";
-        }else if(period == "month"){
-            accInt = "DAY";
-        }else if(period == "year"){
-            accInt = "MONTH";
-        }
-        loadBarChartData(chartID, data.title, data.equationList, data.xAxis, data.startDate, data.endDate, accInt, data.tarrifs, data.type)
+        //var accInt = getAccInt(period);
+        // if(period == "day"){
+        //     accInt = "HOUR";
+        // }else if(period == "week"){
+        //     accInt = "DAY";
+        // }else if(period == "month"){
+        //     accInt = "DAY";
+        // }else if(period == "year"){
+        //     accInt = "MONTH";
+        // }
+        loadBarChartData(chartID, data.title, data.equationList, data.xAxis, data.startDate, data.endDate, period, data.tarrifs, data.type)
     } else if (type == "pieChart") {
         loadPieChartData(chartID, data.title, data.equationList, data.total, data.startDate, data.endDate, data.dataType, data.type);
     }
@@ -507,7 +502,7 @@ function loadGraph(widgetID, graphID, data, w, h, x, y) {
             lineChartIndex = l_i + 1;
         }
     } else if (type == "column") {
-        loadBarChartData(graphID, data.title, data.equationList,data.xAxis, data.startDate, endDate, data.accInt, data.tarrifs, data.type);
+        loadBarChartData(graphID, data.title, data.equationList,data.xAxis, data.startDate, endDate, data.interval, data.tarrifs, data.type);
         var div = generateChartDiv(graphID);
         addDivtoWidget(div, w, h, x, y, widgetID);
         var c_i = parseInt(graphID.substring(8));
@@ -621,14 +616,15 @@ function addGraph() {
         var title = $("#chartTitleText").val();
         var xAxis = 'date_time';
         var endDate = $("#endDatePicker").val();
+        var interval = $("#intervalCombo").val();
         var startDate = getStartDate(endDate, interval);
-        var accInt = $("#intervalCombo").val();
+        //var accInt = $("#intervalCombo").val();
         var type = 'column';
         var tarrifs = [
             ["0-0-0 00:00", "0-0-0 12:00"]
         ];
 
-        var data = loadBarChartData(chartID, title, equationList, xAxis, startDate, endDate, accInt, tarrifs, type);
+        var data = loadBarChartData(chartID, title, equationList, xAxis, startDate, endDate, interval, tarrifs, type);
 
         var div = generateChartDiv("colchart" + colChartIndex);
         var widgetID = "widget_" + "colchart" + colChartIndex + "";
@@ -797,7 +793,7 @@ function refreshGraph(chartID,data){
         if (data.type == "line") {
             loadlineChartData(chartID, data.title, data.equationList, data.xAxis, data.startDate, data.endDate, data.interval, data.type);
         } else if (data.type == "column") {
-            loadBarChartData(chartID, data.title, data.equationList, data.xAxis, data.startDate, data.endDate, data.accInt, data.tarrifs, data.type)
+            loadBarChartData(chartID, data.title, data.equationList, data.xAxis, data.startDate, data.endDate, data.interval, data.tarrifs, data.type)
         } else if (data.type == "pie") {
             loadPieChartData(chartID, data.title, data.equationList, data.total, data.startDate, data.endDate, data.dataType, data.type);
         }
@@ -939,9 +935,9 @@ function initMQQTClient(id,ip,title,gauge){
     var client = mqtt.connect(ip); // you add a ws:// url here
     client.subscribe(title);
     client.on("message", function(topic, payload) {
-        var msg_ = [payload].join("");
-        console.log(msg_);
-        var value_ = parseFloat(msg_.split(",")[1]);        // Messege is given by [packetID,value];
+        //var msg_ = [payload].join("");
+        console.log(payload);
+        var value_ = parseFloat(payload);        // Messege is given by [packetID,value];
         gauge.update(value_);
         setGaugeLive(id);
     });
@@ -1085,7 +1081,6 @@ function toggleFullscreen() {
     }
   }
 }
-;
 
 /**
  * Returns the week number for this date.  dowOffset is the day of week the week

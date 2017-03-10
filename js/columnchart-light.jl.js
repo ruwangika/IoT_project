@@ -51,7 +51,7 @@ function updateBarChartData(chartData) {
 }
 
 // This function will return the data array when parameters are provided
-function loadBarChartData(chartID,title,equationList, xAxis, startDate, endDate, accInt,tarrifs,type) {
+function loadBarChartData(chartID,title,equationList, xAxis, startDate, endDate, interval, tarrifs,type) {
     graphs[chartID] = {};
     var cData = {
         title: title,
@@ -59,12 +59,24 @@ function loadBarChartData(chartID,title,equationList, xAxis, startDate, endDate,
         xAxis: xAxis,
         startDate: startDate,
         endDate: endDate,
-        accInt: accInt,
+        interval: interval,
         tarrifs: tarrifs,
         type: type
     };
     
     graphs[chartID]["chartData"] = cData;
+
+// Get accInt from interval
+    var accInt = "DAY";
+    if(interval == "day"){
+        accInt = "HOUR";
+    }else if (interval == "week"){
+        accInt = "DAY";
+    }else if(interval == "month"){
+        accInt = "DAY";
+    }else if(interval == "year"){
+        accInt = "MONTH";
+    }
 
     //Get devices channels and units from equationList
     var devices = [];
@@ -82,7 +94,7 @@ function loadBarChartData(chartID,title,equationList, xAxis, startDate, endDate,
     $.ajax({
         url: "back/load_data.php",
         method: "POST",
-        data: {devices: devices, channels: channels, xAxis: xAxis, startDate: startDate, endDate: endDate, accInt: accInt,tarrifs: tarrifs, type: type},
+        data: {devices: devices, channels: channels, xAxis: xAxis, startDate: startDate, endDate: endDate, accInt: accInt, tarrifs: tarrifs, type: type},
         dataType: "json",
         success: function(data, status) {
             console.log("Bar chart load data: " + status);
