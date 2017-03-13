@@ -1,3 +1,72 @@
+
+// onload
+$(function() {
+    var options = {
+        float: true,
+        resizable: {
+            handles: 'e,w' // To enable only east resizing
+        }
+    };
+    $('.grid-stack').gridstack(options);
+    $("#startDatePicker").datepicker();
+    $("#endDatePicker").datepicker();
+    $("#startDatePickerWS").datepicker();
+    $("#endDatePickerWS").datepicker();
+
+    
+    
+    $("#startDatePicker").datepicker("option", "dateFormat", "yy-mm-dd");
+    $("#endDatePicker").datepicker("option", "dateFormat", "yy-mm-dd");
+    $("#startDatePicker").datepicker("setDate", getIntDate(new Date(), "month", "start"));
+    $("#endDatePicker").datepicker("setDate", todayDate());
+
+    $("#startDatePickerWS").datepicker("option", "dateFormat", "yy-mm-dd");
+    $("#endDatePickerWS").datepicker("option", "dateFormat", "yy-mm-dd");
+    $("#startDatePickerWS").datepicker("setDate", getIntDate(new Date(), "month", "start"));
+    $("#endDatePickerWS").datepicker("setDate", todayDate());
+
+
+    $('#settingsCloseBtn').click(function(id) {            
+        $("#settingsModal").hide();
+    });
+
+    $('#addLogoModalCloseBtn').click(function(id) {            
+        $("#addLogoModal").hide();
+    });
+    
+
+        
+    $(":file").change(function () {
+        if (this.files && this.files[0]) {
+            var reader = new FileReader();
+            reader.onload = imageIsLoaded;
+            reader.readAsDataURL(this.files[0]);
+        }
+        $("#addLogoModal").hide();
+        $("#loaderModal").hide();
+    });
+
+    $("#addLogoBtn").click(function(){
+        console.log("Add Logo Btn");
+        $("#addLogoModal").show();
+    });
+    
+    window.onbeforeunload = function() {
+        console.log("Grid Saved : "+gridSaved);
+        if(gridSaved){
+            
+        }else{
+            window.scrollTo(0,document.body.scrollHeight);
+            return "Data will be lost if you leave the page, Please press the save button to save your configuration.";
+        }
+    };
+
+    $(window).resize(function(){
+        console.log("resize");
+    });
+
+});
+
 function updateDevicesCombo() {
     var defaultType = "ePro1000";
     var deviceType = document.getElementById("deviceTypeCombo").value;
@@ -6,6 +75,33 @@ function updateDevicesCombo() {
     } else {
         loadDevicesCombo(defaultType);
     }
+}
+
+function updateGraphColor(backgroundColor, fontColor, theme) {
+    var nodes = $('.grid-stack > .grid-stack-item:visible');
+    var _len = nodes.length;
+    for (var i = 0; i < _len; i++) {
+        var el = $(nodes[i]);
+        var node = el.data('_gridstack_node');
+        var widgetID = node.el[0].id;
+
+        if (graphs[widgetID.substring(7)]["type"].includes("Chart")) {
+            var chart =  graphs[widgetID.substring(7)]["chart"];
+            chart.options.backgroundColor = backgroundColor;
+            chart.options.theme = theme;
+            chart.options.title.fontColor = fontColor;
+            chart.options.legend.fontColor = fontColor;
+            chart.render();    
+        }
+    }
+}
+
+function updatelineChartColor(chart, backgroundColor, theme, fontColor) {
+    chart.options.backgroundColor = backgroundColor;
+    chart.options.theme = theme;
+    chart.options.fontColor = fontColor;
+    chart.options.title.fontColor = fontColor;
+    chart.render();    
 }
 
 function loadDevicesCombo(Type) {//private method
@@ -201,8 +297,20 @@ function loadUserCombo() {
 }
 
 function userChanged() {
-    userID = $('#userCombo option:selected').val();
-    changeUserEnvironment();
+    if(!gridSaved){
+        if (confirm("Proceed without saving changes?") == true) {
+            userID = $('#userCombo option:selected').val();
+            changeUserEnvironment();
+            gridSaved = true;
+        } else {
+            //$('#userCombo option:selected').val() = userID;
+            document.getElementById("userCombo").value = userID;
+        }
+    }else{
+        userID = $('#userCombo option:selected').val();
+        changeUserEnvironment();
+        gridSaved = true;
+    }
 
 }
 
@@ -225,7 +333,7 @@ function logout() {
 
 function generateChartDiv(id) {
     //var loading_div = '<img src="img/loading.gif" style="height: 400px;width: 100%;">';
-    var loading_div = '<div style="height:100%; background-color: #272727"><div class="loader"></div></div>';    
+    var loading_div = '<div class="widget-background-color" style="height:100%"><div class="loader"></div></div>';    
     return '<div id="' + id + '" style="height: 100%; width: 100%;" class="widget-color" ondblclick="graphdbclick(this,id,parent)">'+loading_div+'</div>'
 }
 
@@ -256,7 +364,7 @@ function graphFilterDay() {
     var graphID = tempId;
     var data = graphs[graphID]["chartData"];
     var endDate = data.endDate;
-    var startDate = getStartDate(endDate, "day");
+    var startDate = getIntDate(endDate, "day", "start");
     data.startDate = startDate;
     data.endDate = endDate;
     loadChartData(graphs[graphID].type, graphID, data,"day");
@@ -268,7 +376,7 @@ function graphFilterWeek() {
     var graphID = tempId;
     var data = graphs[graphID]["chartData"];
     var endDate = data.endDate;
-    var startDate = getStartDate(endDate, "week");
+    var startDate = getIntDate(endDate, "week", "start");
     data.startDate = startDate;
     data.endDate = endDate;
     loadChartData(graphs[graphID].type, graphID, data,"week");
@@ -280,7 +388,7 @@ function graphFilterMonth() {
     var graphID = tempId;
     var data = graphs[graphID]["chartData"];
     var endDate = data.endDate;
-    var startDate = getStartDate(endDate, "month");
+    var startDate = getIntDate(endDate, "month", "start");
     data.startDate = startDate;
     data.endDate = endDate;
     loadChartData(graphs[graphID].type, graphID, data,"month");
@@ -292,7 +400,7 @@ function graphFilterYear() {
     var graphID = tempId;
     var data = graphs[graphID]["chartData"];
     var endDate = data.endDate;
-    var startDate = getStartDate(endDate, "year");
+    var startDate = getIntDate(endDate, "year", "start");
     data.startDate = startDate;
     data.endDate = endDate;
     loadChartData(graphs[graphID].type, graphID, data,"year");
@@ -306,7 +414,7 @@ function graphPrevInterval() {
     var data = graphs[graphID]["chartData"];
     var endDate = data.startDate;
     var interval = data.interval;
-    var startDate = getStartDate(endDate, interval);
+    var startDate = getIntDate(endDate, interval, "start");
     data.startDate = startDate;
     data.endDate = endDate;
     loadChartData(graphs[graphID].type, graphID, data,interval);
@@ -319,7 +427,7 @@ function graphNextInterval() {
     var data = graphs[graphID]["chartData"];
     var startDate = data.endDate;
     var interval = data.interval;
-    var endDate = getEndDate(startDate, interval);
+    var endDate = getIntDate(startDate, interval, "end");
     data.startDate = startDate;
     data.endDate = endDate;
     loadChartData(graphs[graphID].type, graphID, data,interval);
@@ -329,16 +437,6 @@ function loadChartData(type, chartID, data, period) {
     if (type == "lineChart") {
         loadlineChartData(chartID, data.title, data.equationList, data.xAxis, data.startDate, data.endDate, period, data.type);
     } else if (type == "colChart") {
-        //var accInt = getAccInt(period);
-        // if(period == "day"){
-        //     accInt = "HOUR";
-        // }else if(period == "week"){
-        //     accInt = "DAY";
-        // }else if(period == "month"){
-        //     accInt = "DAY";
-        // }else if(period == "year"){
-        //     accInt = "MONTH";
-        // }
         loadBarChartData(chartID, data.title, data.equationList, data.xAxis, data.startDate, data.endDate, period, data.tarrifs, data.type)
     } else if (type == "pieChart") {
         loadPieChartData(chartID, data.title, data.equationList, data.total, data.startDate, data.endDate, data.dataType, data.type);
@@ -467,24 +565,39 @@ function loadTheme() {
         dataType: "json",
         success: function(data, status) {
             console.log("Load theme: " + status);
-            changeTheme(data);
+            document.getElementById("themeCombo").value = data;
+            globalTheme = data;
+            if (!data) {
+                data = "light";
+            }
+            if (data == "dark") {
+                document.getElementById("weatherWidget").src="https://www.meteoblue.com/en/weather/widget/three/colombo_sri-lanka_1248991?geoloc=detect&nocurrent=1&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=dark";
+                loadCSS("css/color-dark.jl.css");
+            } else if (data == "light") {
+                document.getElementById("weatherWidget").src="https://www.meteoblue.com/en/weather/widget/three/colombo_sri-lanka_1248991?geoloc=detect&nocurrent=1&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=bright";
+                loadCSS("css/color-light.jl.css");
+            }
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
             console.log("Load theme: error");
             console.log(XMLHttpRequest);
         }
     });
+
 }
+
 
 function loadGridWidgets(user_grid) {
     $(".grid-stack").empty();
     graphy = 0;
+    //graphs = [];
     var _len = user_grid.length;
+    //console.log(user_grid);
     for (var i = 0; i < _len; i++) {
         var grid_node = user_grid[i];
         loadGraph(grid_node.widgetID, grid_node.graphID, grid_node.chartData, grid_node.w, grid_node.h, grid_node.x, grid_node.y);
         if (graphy <= grid_node.y) {
-            graphy = parseInt(grid_node.y) + 6;
+            graphy = parseInt(grid_node.y) + parseInt(grid_node.h);
         }
     }
     // Set line col pie chart indexes substring final index
@@ -492,9 +605,10 @@ function loadGridWidgets(user_grid) {
 
 function loadGraph(widgetID, graphID, data, w, h, x, y) {
     var endDate = todayTime();
+    var startDate = getIntDate(endDate, data.interval, "start");
     var type = data.type;
     if (type == "line") {
-        loadlineChartData(graphID, data.title,data.equationList, data.xAxis, data.startDate, endDate, data.interval, data.type);
+        loadlineChartData(graphID, data.title,data.equationList, data.xAxis, startDate, endDate, data.interval, data.type);
         var div = generateChartDiv(graphID);
         addDivtoWidget(div, w, h, x, y, widgetID);
         var l_i = parseInt(graphID.substring(9));
@@ -502,7 +616,7 @@ function loadGraph(widgetID, graphID, data, w, h, x, y) {
             lineChartIndex = l_i + 1;
         }
     } else if (type == "column") {
-        loadBarChartData(graphID, data.title, data.equationList,data.xAxis, data.startDate, endDate, data.interval, data.tarrifs, data.type);
+        loadBarChartData(graphID, data.title, data.equationList,data.xAxis, startDate, endDate, data.interval, data.tarrifs, data.type);
         var div = generateChartDiv(graphID);
         addDivtoWidget(div, w, h, x, y, widgetID);
         var c_i = parseInt(graphID.substring(8));
@@ -510,7 +624,7 @@ function loadGraph(widgetID, graphID, data, w, h, x, y) {
             colChartIndex = c_i + 1;
         }
     } else if (type == "pie") {
-        loadPieChartData(graphID, data.title, data.equationList, data.total, data.startDate, endDate, data.dataType, type);
+        loadPieChartData(graphID, data.title, data.equationList, data.total, startDate, endDate, data.dataType, type);
         var div = generateChartDiv(graphID);
         addDivtoWidget(div, w, h, x, y, widgetID);
         var p_i = parseInt(graphID.substring(8));
@@ -552,7 +666,7 @@ function setGaugeLive(gaugeID) {
     }
     gaugeLiveTimer[gaugeID] = setTimeout(function() {
         $('#livewidget_'+gaugeID).hide();
-    }, 20000);
+    }, 2000);
 }
 function setIndicatorLive(indicatorID,interval) {
     if(indicatorID in indicatorLiveTimer){
@@ -592,7 +706,7 @@ function addGraph() {
         var xAxis = 'date_time';
         var interval = $("#intervalCombo").val();
         var endDate = $("#endDatePicker").val();
-        var startDate = getStartDate(endDate, interval);
+        var startDate = getIntDate(endDate, interval, "start");
         var type = 'line';
         var data = loadlineChartData(chartID, title, equationList, xAxis, startDate, endDate, interval, type);
 
@@ -617,7 +731,7 @@ function addGraph() {
         var xAxis = 'date_time';
         var endDate = $("#endDatePicker").val();
         var interval = $("#intervalCombo").val();
-        var startDate = getStartDate(endDate, interval);
+        var startDate = getIntDate(endDate, interval, "start");
         //var accInt = $("#intervalCombo").val();
         var type = 'column';
         var tarrifs = [
@@ -707,7 +821,7 @@ function addIndicator(widgetID, graphID, data, w, h, x, y){
     addDivtoWidget(div, w, h, x, y, widgetID);
     
     var client = initMQQTClientIndicator(graphID,data.ip,data.title,data.interval);
-    var i_i = parseInt(graphID.substring(5));
+    var i_i = parseInt(graphID.substring(9));
     if (i_i >= indicatorIndex) {
         indicatorIndex = i_i + 1;
     }
@@ -736,8 +850,8 @@ function addGauge(widgetID, graphID, data, w, h, x, y){
 
 function changeUserEnvironment() {
     loadEquations();
-    loadGrid();
     loadTheme();
+    loadGrid();
 }
 
 function addNote(content) {
@@ -800,70 +914,6 @@ function refreshGraph(chartID,data){
     }
     gridSaved = false;
 }
-
-// onload
-$(function() {
-    var options = {
-        float: true,
-        resizable: {
-            handles: 'e,w' // To enable only east resizing
-        }
-    };
-    $('.grid-stack').gridstack(options);
-    $("#startDatePicker").datepicker();
-    $("#endDatePicker").datepicker();
-    $("#startDatePickerWS").datepicker();
-    $("#endDatePickerWS").datepicker();
-
-    
-    
-    $("#startDatePicker").datepicker("option", "dateFormat", "yy-mm-dd");
-    $("#endDatePicker").datepicker("option", "dateFormat", "yy-mm-dd");
-    $("#startDatePicker").datepicker("setDate", getStartDate(new Date(), "month"));
-    $("#endDatePicker").datepicker("setDate", todayDate());
-
-    $("#startDatePickerWS").datepicker("option", "dateFormat", "yy-mm-dd");
-    $("#endDatePickerWS").datepicker("option", "dateFormat", "yy-mm-dd");
-    $("#startDatePickerWS").datepicker("setDate", getStartDate(new Date(), "month"));
-    $("#endDatePickerWS").datepicker("setDate", todayDate());
-
-
-    $('#settingsCloseBtn').click(function(id) {            
-        $("#settingsModal").hide();
-    });
-
-    $('#addLogoModalCloseBtn').click(function(id) {            
-        $("#addLogoModal").hide();
-    });
-    
-
-        
-    $(":file").change(function () {
-        if (this.files && this.files[0]) {
-            var reader = new FileReader();
-            reader.onload = imageIsLoaded;
-            reader.readAsDataURL(this.files[0]);
-        }
-        $("#addLogoModal").hide();
-        $("#loaderModal").hide();
-    });
-
-    $("#addLogoBtn").click(function(){
-        console.log("Add Logo Btn");
-        $("#addLogoModal").show();
-    });
-    
-    window.onbeforeunload = function() {
-        console.log("Grid Saved : "+gridSaved);
-        if(gridSaved){
-            
-        }else{
-            window.scrollTo(0,document.body.scrollHeight);
-            return "Data will be lost if you leave the page, Please press the save button to save your configuration.";
-        }
-    };
-
-});
 
 function addDivtoWidget(div, w, h, x, y, widgetID) {
     var options = {
@@ -932,35 +982,88 @@ function initGauge(id,min,max,unit){
 
 function initMQQTClient(id,ip,title,gauge){
     //var client  = mqtt.connect('mqtt://karunasinghe.com')
-    var client = mqtt.connect(ip); // you add a ws:// url here
-    client.subscribe(title);
-    client.on("message", function(topic, payload) {
-        //var msg_ = [payload].join("");
-        console.log(payload);
-        var value_ = parseFloat(payload);        // Messege is given by [packetID,value];
-        gauge.update(value_);
-        setGaugeLive(id);
-    });
-
-    return client;
-}
-
-function initMQQTClientIndicator(id,ip,title,interval){
-    var client = mqtt.connect(ip); // you add a ws:// url here
+    options={
+        clientId: title,
+        keepalive: 1000,
+        clean: false
+    };
+    var client = mqtt.connect(ip,options); // you add a ws:// url here
     client.subscribe(title);
     client.on("message", function(topic, payload) {
         var msg_ = [payload].join("");
-        var value_ = parseFloat(msg_.split(",")[1]);        // Messege is given by [packetID,value];
-        if(value_ == 0){
-            $('#'+id+'_ON').hide();
-            $('#'+id+'_DISCONNECT').hide();
-            $('#'+id+'_OFF').show();
-        }else{
-            $('#'+id+'_ON').show();
-            $('#'+id+'_DISCONNECT').hide();
-            $('#'+id+'_OFF').hide();
+        var value_ = parseFloat(msg_);        // Messege is given by [packetID,value];
+        console.log(value_);
+        if(!isNaN(value_)){
+            gauge.update(value_);
+            setGaugeLive(id);
         }
-        setIndicatorLive(id,interval);
+    });
+
+    
+    return client;
+}
+
+function test(){
+    // Create a client instance
+    client = new Paho.MQTT.Client("development.enetlk.com", 1885, "clientId");
+
+    // set callback handlers
+    client.onConnectionLost = onConnectionLost;
+    client.onMessageArrived = onMessageArrived;
+
+    // connect the client
+    client.connect({onSuccess:onConnect});
+
+
+    // called when the client connects
+    function onConnect() {
+    // Once a connection has been made, make a subscription and send a message.
+    console.log("onConnect");
+    client.subscribe("World");
+    message = new Paho.MQTT.Message("Hello");
+    message.destinationName = "World";
+    client.send(message);
+    }
+
+    // called when the client loses its connection
+    function onConnectionLost(responseObject) {
+    if (responseObject.errorCode !== 0) {
+        console.log("onConnectionLost:"+responseObject.errorMessage);
+    }
+    }
+
+    // called when a message arrives
+    function onMessageArrived(message) {
+    console.log("onMessageArrived:"+message.payloadString);
+    }
+    return 0;
+}
+
+function initMQQTClientIndicator(id,ip,title,interval){
+     options={
+        clientId: title,
+        keepalive: 1000,
+        clean: false};
+    var client = mqtt.connect(ip,options); // you add a ws:// url here
+    client.subscribe(title);
+    client.on("message", function(topic, payload) {
+        var msg_ = [payload].join("");
+        var value_ = parseFloat(msg_);        // Messege is given by [packetID,value];
+        console.log(value_);
+        if(!isNaN(value_)){
+            if(value_ == 1){
+                
+                $('#'+id+'_ON').show();
+                $('#'+id+'_DISCONNECT').hide();
+                $('#'+id+'_OFF').hide();
+            }else{
+                $('#'+id+'_ON').hide();
+                $('#'+id+'_DISCONNECT').hide();
+                $('#'+id+'_OFF').show();
+            }
+            
+            setIndicatorLive(id,interval);
+        }
     });
     return client;
 }
@@ -988,44 +1091,30 @@ function imageIsLoaded(e) {
     $('#customerLogo').attr('src', e.target.result);
 }
 
-function alertSaveGrid() {
-    var theme_combo = document.getElementById("themeCombo");
-    var themeId = theme_combo.value;
-    if (!gridSaved) {
-        if (confirm("Proceed without saving your changes?") == true) {
-            changeTheme(themeId);
-            gridSaved = true;
-        } else {
-            theme_combo.value = "THEME";
-            return;
-        }
-    }
-    else {
-        changeTheme(themeId);
-    }
-}
-
 function changeTheme(themeId) {
-    if (themeId == defaultTheme) return;
-    else {
-        if (themeId=="dark") {
-            document.getElementById("weatherWidget").src="https://www.meteoblue.com/en/weather/widget/three/colombo_sri-lanka_1248991?geoloc=detect&nocurrent=1&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=dark";
-            loadCSS("css/color-dark.jl.css");
-            loadJS("js/linechart-dark.jl.js");
-            loadJS("js/columnchart-dark.jl.js");
-            loadJS("js/piechart-dark.jl.js");
-            defaultTheme = "dark";
-            loadGrid();
-        } else {
-            document.getElementById("weatherWidget").src="https://www.meteoblue.com/en/weather/widget/three/colombo_sri-lanka_1248991?geoloc=detect&nocurrent=1&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=bright";
-            loadCSS("css/color-light.jl.css");
-            loadJS("js/linechart-light.jl.js");
-            loadJS("js/columnchart-light.jl.js");
-            loadJS("js/piechart-light.jl.js");
-            defaultTheme = "light";
-            loadGrid();
-        }
+    //window.alert(themeId);
+    //window.alert(defaultTheme);
+    // document.getElementById("themeCombo").value = themeId;
+    if (!themeId) {
+        themeId = "light";
     }
+    var backgroundColor, fontColor, theme;
+    if (themeId == "dark") {
+        backgroundColor = "#2A2A2A";
+        theme = "theme2";
+        fontColor = "lightgray";
+        document.getElementById("weatherWidget").src="https://www.meteoblue.com/en/weather/widget/three/colombo_sri-lanka_1248991?geoloc=detect&nocurrent=1&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=dark";
+        loadCSS("css/color-dark.jl.css");
+        globalTheme = "dark";
+    } else if (themeId == "light") {
+        backgroundColor = "white";
+        theme = "theme1";
+        fontColor = "#0d1a26";
+        document.getElementById("weatherWidget").src="https://www.meteoblue.com/en/weather/widget/three/colombo_sri-lanka_1248991?geoloc=detect&nocurrent=1&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=bright";
+        loadCSS("css/color-light.jl.css");
+        globalTheme = "light";
+    }
+    updateGraphColor(backgroundColor, fontColor, theme);
 }
 
 /** Function to dynamically load JavaScript files */
@@ -1080,6 +1169,33 @@ function toggleFullscreen() {
       document.webkitExitFullscreen();
     }
   }
+}
+
+// Gets the start or end date for a chart
+function getIntDate(endDate, interval, type){
+    if (type == "start") diff = 1;
+    else if (type == "end") diff = -1;
+    var start =new Date(endDate);
+    
+    if (interval == "day") {
+        start.setDate(start.getDate() - diff);
+    } else if (interval == "week") {
+        start.setDate(start.getDate() - diff*7);
+    } else if (interval == "month") {
+        start.setMonth(start.getMonth() - diff);
+    } else if (interval == "year") {
+        start.setYear(start.getFullYear() - diff);
+    }
+    var day = start.getDate();
+    if (day < 10) {
+        day = '0' + day
+    }
+    var month=start.getMonth() + 1;
+    if (month < 10) {
+        month = '0' + month
+    }
+    var year=start.getFullYear();
+    return year + '-' + month + '-' + day;
 }
 
 /**

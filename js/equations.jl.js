@@ -197,6 +197,8 @@ function loadEquations(){
             loadEquationList();
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) { 
+            globalEqList = [];
+            loadEquationList();
             console.log("Load equations error");
             console.log(XMLHttpRequest);
         }    

@@ -70,13 +70,24 @@ function loadPieChartData(chartID,title,equationList,total,startDate,endDate,dat
 }
 
 function initPieChart(chartID,title,chartData,unit){
+    //var themeId = document.getElementById("themeCombo");
+    var backgroundColor, fontColor, theme;
+    if (globalTheme == "dark") {        
+        backgroundColor = "#2A2A2A";
+        theme = "theme2";
+        fontColor = "lightgray";
+    } else if (globalTheme == "light") {        
+        backgroundColor = "white";
+        theme = "theme1";
+        fontColor = "#0d1a26";
+    }
     var pieChart = new CanvasJS.Chart(chartID, {
-        theme: "theme1",
+        theme: theme,
         animationEnabled: false,
-        backgroundColor: "white",
+        backgroundColor: backgroundColor,
         title: {
             text: title,
-            fontColor: "#0d1a26",
+            fontColor: fontColor,
             fontStyle: "normal",
             fontWeight: "lighter",
             fontFamily: "calibri",
@@ -85,7 +96,7 @@ function initPieChart(chartID,title,chartData,unit){
         legend: {
             verticalAlign: "bottom",
             horizontalAlign: "center",
-            fontColor: "#0d1a26"
+            fontColor: fontColor
         },
         data: [{
             type: "pie",

@@ -15,9 +15,9 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv=”Pragma” content=”no-cache”>
+<!--<meta http-equiv=”Pragma” content=”no-cache”>
 <meta http-equiv=”Expires” content=”-1″>
-<meta http-equiv=”CACHE-CONTROL” content=”NO-CACHE”>
+<meta http-equiv=”CACHE-CONTROL” content=”NO-CACHE”>-->
 
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
@@ -27,7 +27,7 @@
 <link rel="stylesheet" href="css/epoch.css">
 <link rel="stylesheet" href="css/w3.css">
 <link rel="stylesheet" href="css/common.jl.css">
-<link rel="stylesheet" href="css/color-light.jl.css">
+<!--<link rel="stylesheet" href="css/color-light.jl.css">-->
 
 <link href="css/datepicker.css" rel="stylesheet" type="text/css"/>
 
@@ -39,9 +39,9 @@
 <script src="js/gridstack.js"></script>
 <script src="js/canvasjs.min.js"></script>
 <script src="js/gridstack.jQueryUI.js"></script>
-<script src="js/linechart-light.jl.js"></script>
-<script src="js/columnchart-light.jl.js"></script>
-<script src="js/piechart-light.jl.js"></script>
+<script src="js/linechart.jl.js"></script>
+<script src="js/columnchart.jl.js"></script>
+<script src="js/piechart.jl.js"></script>
 <script src="js/equations.jl.js"></script>
 <script src="js/common.jl.js"></script>
 <script src="js/epoch.js"></script>
@@ -92,7 +92,8 @@
                    <input type="text" size="6" id="equationUnitText" placeholder="Unit" style="width:100%">
                 </div>
                 <div class="w3-col w3-container" style="width:10%">
-                   <p><button class="portal-pane-button" onclick="addExpression()">Add Expression</button></p>
+                   <p><button class="portal-pane-button" onclick="addExpression()" data-toggle="tooltip" data-placement="top" title="Add Expression"><i class="fa fa-plus-square-o fa-2x" aria-hidden="true"></i>
+</button></p>
                 </div>
 
             </div>
@@ -102,7 +103,7 @@
                     <p id="equationText"></p>
                 </div>
                 <div class="w3-col w3-container w3-right" style="width:10%">
-                    <p><button class="portal-pane-button" onclick="clearExpressions()">Clear Expressions</button></p>
+                    <p><button class="portal-pane-button" onclick="clearExpressions()" data-toggle="tooltip" data-placement="top" title="Clear Expressions"><i class="fa fa-trash-o fa-2x" aria-hidden="true"></i></button></p>
                 </div>                
             </div>
 
@@ -112,11 +113,11 @@
                 </div>            
                 <div class="w3-col w3-container" style="width:20%">
                    <input type="text" size="6" id="equationNameText" style="width:100%">
-                </div>
-                <div class="w3-col w3-container" style="width:20%">
-                    <p><button class="portal-pane-button" onclick="addEquation()" style="width:80%; height:35px; font-size:18px">Add Equation</button></p>
-                </div>                
-            </div>
+                </div>      
+                <div class="w3-col w3-container" style="width:10%; float:right">
+                    <p><button class="portal-pane-button" onclick="addEquation()" data-toggle="tooltip" data-placement="top" title="Add Equation"><i class="fa fa-check fa-2x" aria-hidden="true"></i></button></p>
+                </div>          
+            </div>           
                     
             <div class="w3-container">
               <ul class="w3-ul w3-card-4" id="equationList">
@@ -376,8 +377,8 @@
             <button id="addWidgetButton" class="portal-button" onclick="addWidget()">ADD PANE</button>
             <button id="settingsButton" class="portal-button" onclick="w3_open()">ADMIN CONSOLE</button>
             <button id="logoutButton" class="portal-button" onclick="logout()">LOGOUT</button>
-            <select id="themeCombo" class="portal-button" onchange="alertSaveGrid();">
-                <option selected hidden>THEME</option>
+            <select id="themeCombo" class="portal-button" onchange="changeTheme(this.value);">
+                <!--<option value = "none" selected hidden>THEME</option>-->
                 <option value="light" class="option-background">Light</option>
                 <option value="dark" class="option-background">Dark</option>
             </select>
@@ -490,7 +491,7 @@
         var indicatorLiveTimer = {};
         var tempWidget;
         var gridSaved = true;
-        var defaultTheme = "light";
+        var globalTheme;
         
 
         window.onload = function(){
@@ -513,8 +514,8 @@
             userID = id;
 
             loadEquations();
-            loadGrid();
             loadTheme();
+            loadGrid();
             loadUserCombo();
         }
     </script>

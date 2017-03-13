@@ -15,11 +15,6 @@
         $userID = $_POST["userID"];
         echo json_encode(getEquations($userID));
     }
-    // else if($type == 'get_equation_names'){
-        
-    //     $userID = $_POST["userID"];
-    //     echo json_encode(getEquationNames($userID));
-    // }
     else if($type == 'save_grid'){
         
         $grid = $_POST["grid"];

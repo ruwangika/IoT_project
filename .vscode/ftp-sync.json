@@ -6,7 +6,7 @@
     "port": 22,
     "secure": false,
     "protocol": "sftp",
-    "uploadOnSave": false,
+    "uploadOnSave": true,
     "passive": false,
     "debug": false,
     "privateKeyPath": null,
@@ -14,6 +14,7 @@
     "ignore": [
         "\\.vscode",
         "\\.git",
-        "\\.DS_Store"
+        "\\.DS_Store",
+        "\\data"
     ]
 }

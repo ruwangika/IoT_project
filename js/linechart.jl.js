@@ -34,92 +34,42 @@ function todayTime() {
     return today;
 }
 
-/*
-function getStartDate(days){
-    var date = new Date();
-    var last = new Date(date.getTime() - (days * 24 * 60 * 60 * 1000));
-    var day =last.getDate();
-    if (day < 10) {
-        day = '0' + day
-    }
-    var month=last.getMonth()+1;
-    if (month < 10) {
-        month = '0' + month
-    }
-    var year=last.getFullYear();
-    return year + '-' + month + '-' + day;
-}
-*/
-
-// Gets the start date for a chart
-function getStartDate(endDate, interval){
-    var days = 1;
-    var current;
-    var end;
-    var diff = 0;
-    if (interval == "day") {
-        var last = new Date((new Date(endDate)).getTime() - (days * 24 * 60 * 60 * 1000));
-        var day = last.getDate();
-        if (day < 10) {
-            day = '0' + day
-        }
-        var month=last.getMonth()+1;
-        if (month < 10) {
-            month = '0' + month
-        }
-        var year=last.getFullYear();
-        return year + '-' + month + '-' + day;
-    } else if (interval == "week") {
-        days = 7;
-        current = new Date().getWeek();
-        end = (new Date(endDate)).getWeek();
-        diff = current - end;
-        if (diff < 0) diff += 52;
-    } else if (interval == "month") {
-        days = 30;
-        current = new Date().getMonth();
-        end = (new Date(endDate)).getMonth();
-        diff = current - end;
-        if (diff < 0) diff += 12;
-    } else if (interval == "year") {
-        days = 365;
-        current = new Date().getFullYear();
-        end = (new Date(endDate)).getFullYear();
-        diff = current - end;
-    }
-
-    days *= (1 + diff);
-    var date = new Date();
-    var last = new Date(date.getTime() - (days * 24 * 60 * 60 * 1000));
-    var day = last.getDate();
-    if (day < 10) {
-        day = '0' + day
-    }
-    var month=last.getMonth() + 1;
-    if (month < 10) {
-        month = '0' + month
-    }
-    var year=last.getFullYear();
-    return year + '-' + month + '-' + day;
-}
-
 // This function renders a line chart:something vs date
 function initLineChart(chartID,title, chartData) {
+    //var themeId = document.getElementById("themeCombo");
+    var backgroundColor, fontColor, theme;
+    if (globalTheme == "dark") {        
+        backgroundColor = "#2A2A2A";
+        theme = "theme2";
+        fontColor = "lightgray";
+    } else if (globalTheme == "light") {        
+        backgroundColor = "white";
+        theme = "theme1";
+        fontColor = "#0d1a26";
+    }
     lineChart = new CanvasJS.Chart(chartID, {
         zoomEnabled: true,
-        backgroundColor: "#2A2A2A",
-        theme: "theme2",
+        backgroundColor: backgroundColor,
+        theme: theme,
         title: {
             text: title,
-            fontColor: "lightgray",
+            fontColor: fontColor,
             fontStyle: "normal",
             fontWeight: "lighter",
             fontFamily: "calibri",
             fontSize: 24
         },
+        subtitles:[
+		{
+			//text: "This is a Subtitle"
+			//Uncomment properties below to see how they behave
+			//fontColor: "red",
+			//fontSize: 30
+		}
+		],
         legend: {
             cursor: "pointer",
-            fontColor: "lightgray",
+            fontColor: fontColor,
             itemclick: function(e) {
                 if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
                     e.dataSeries.visible = false;
@@ -143,7 +93,7 @@ function initLineChart(chartID,title, chartData) {
 }
 
 // This function updates the chart according to the provided data
-function updatelineChartData(chart,chartData) {
+function updatelineChartData(chart, chartData) {
     chart.options.data = chartData;
     chart.render();
 }
@@ -156,14 +106,14 @@ function getMinLength(equation, data, xAxis) {
         if (data[device][xAxis]) {
             if (data[device][xAxis].length < len)
             len = data[device][xAxis].length;
-        }    
-        else continue;     
+        }
+        else continue;       
     }
     return len;
 }
 
 // This function will return the data array when parameters are provided
-function loadlineChartData(chartID,title,equationList, xAxis, startDate, endDate, interval, type) {
+function loadlineChartData(chartID, title, equationList, xAxis, startDate, endDate, interval, type) {
     graphs[chartID] = {};
     var cData = {
         title: title,

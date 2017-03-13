@@ -2,15 +2,25 @@ var colChart;
 
 // This function renders a line chart:something vs date
 function initBarChart(chartID,title, chartData,axisX) {
-
+    //var themeId = document.getElementById("themeCombo");
+    var backgroundColor, fontColor, theme;
+    if (globalTheme == "dark") {        
+        backgroundColor = "#2A2A2A";
+        theme = "theme2";
+        fontColor = "lightgray";
+    } else if (globalTheme == "light") {        
+        backgroundColor = "white";
+        theme = "theme1";
+        fontColor = "#0d1a26";
+    }
     var colChart = new CanvasJS.Chart(chartID,
         {
-            theme: "theme1",
-            backgroundColor: "white",
+            theme: theme,
+            backgroundColor: backgroundColor,
             animationEnabled: true,
             title:{
                 text: title,
-                fontColor: "#0d1a26",
+                fontColor: fontColor,
                 fontStyle: "normal",
                 fontWeight: "lighter",
                 fontFamily: "calibri",
@@ -25,7 +35,7 @@ function initBarChart(chartID,title, chartData,axisX) {
             data: chartData,
           legend:{
             cursor:"pointer",
-            fontColor: "#0d1a26",
+            fontColor: fontColor,
             itemclick: function(e){
               if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
                 e.dataSeries.visible = false;
@@ -153,9 +163,9 @@ function loadBarChartData(chartID,title,equationList, xAxis, startDate, endDate,
                         }
                         equationData[k] += data[device][channel][k];                        
                     }
-                    
-
                 }
+                // window.alert(device);
+                // if (!data[device]) window.alert("null");
                 
                 var column={
                     name: parseEquation(equation),
