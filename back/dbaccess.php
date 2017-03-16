@@ -239,23 +239,51 @@ function getMaxSampInterval($deviceIds) {
 
 
 
-    function getEproDeviceList(){
-        $con = getConnection();
-        $sql = "SELECT DeviceId,DeviceName FROM device";
-        $results = mysqli_query($con,$sql);
+    function getEproDeviceList($user_id){
+        if($user_id==='1'){
+            $con = getConnection();
+            $sql = "SELECT DeviceId,DeviceName FROM device";
+            $results = mysqli_query($con,$sql);
 
-        $nor = mysqli_num_rows($results);
-        $counter = 0;
-        if($nor != 0){
-            while ($row=mysqli_fetch_assoc($results)) {
-                $data["DeviceName"][$counter] = $row["DeviceName"]; 
-                $data["DeviceId"][$counter++] = $row["DeviceId"]; 
+            $nor = mysqli_num_rows($results);
+            $counter = 0;
+            if($nor != 0){
+                while ($row=mysqli_fetch_assoc($results)) {
+                    $data["DeviceName"][$counter] = $row["DeviceName"]; 
+                    $data["DeviceId"][$counter++] = $row["DeviceId"]; 
+                }
+                closeConnection($con);
+                return $data;
+            }else{
+                closeConnection($con);
+                return "Null Data";
             }
-            closeConnection($con);
-            return $data;
-        }else{
-            closeConnection($con);
-            return "Null Data";
+        }
+        else{
+            $con_iot=getIoTDeviceDataConnection();
+            $iot_querry= "SELECT epro_userid FROM user where id=".$user_id;
+            $iot_results = mysqli_query($con_iot,$iot_querry);
+            $row=mysqli_fetch_assoc($iot_results);
+            closeConnection($con_iot);
+            if($row["epro_userid"]===NULL)
+                return "Null Data";
+            
+            $con = getConnection();
+            $sql = "SELECT device.DeviceId,device.DeviceName FROM userdata_device RIGHT JOIN device ON userdata_device.device_id=device.pid where userdata_device.userdata_id=".$row["epro_userid"];
+            $results = mysqli_query($con,$sql);
+            $nor = mysqli_num_rows($results);
+            $counter = 0;
+            if($nor != 0){
+                while ($row=mysqli_fetch_assoc($results)) {
+                    $data["DeviceName"][$counter] = $row["DeviceName"]; 
+                    $data["DeviceId"][$counter++] = $row["DeviceId"]; 
+                }
+                closeConnection($con);
+                return $data;
+            }else{
+                closeConnection($con);
+                return "Null Data";
+            }
         }
         
     }
@@ -299,17 +327,80 @@ function getMaxSampInterval($deviceIds) {
 
 
 
-    function getCustomDeviceList(){
-        $con=getIoTDeviceDataConnection();
-        $query="select ID,Name from device";
-        $results=mysqli_query($con,$query);//To execute query
+    function getCustomDeviceList($user_id){
+        if($user_id==='1'){
+            $con=getIoTDeviceDataConnection();
+            $query="select ID,Name from device";
+            $results=mysqli_query($con,$query);//To execute query
 
+            $nor = mysqli_num_rows($results);
+            $counter = 0;
+            if($nor > 0){
+                while ($row=mysqli_fetch_assoc($results)) {
+                    $data["DeviceName"][$counter] = $row["Name"]; 
+                    $data["DeviceId"][$counter++] = $row["ID"]; 
+                }
+                closeConnection($con);
+                return $data;
+            }else{
+                closeConnection($con);
+                return "Null Data";
+            }
+        }
+        else{
+            $con=getIoTDeviceDataConnection();
+            $query="select user_defined_device_id,device_id from user_device where user_id=".$user_id;
+            $results=mysqli_query($con,$query);//To execute query
+            $nor = mysqli_num_rows($results);
+            $counter = 0;
+            if($nor > 0){
+                while ($row=mysqli_fetch_assoc($results)) {
+                    $data["DeviceName"][$counter] = $row["user_defined_device_id"]; 
+                    $data["DeviceId"][$counter++] = $row["device_id"]; 
+                }
+                closeConnection($con);
+                return $data;
+            }else{
+                closeConnection($con);
+                return "Null Data";
+            }
+        }
+    }
+    function registerDevice($user_id,$user_device_id,$device_id){
+
+        $con=getIoTDeviceDataConnection();
+        $query="INSERT INTO device(Name,Host,Port,Location,ID) VALUES ('$user_device_id','localhost',27017,'Sri Lanka','$device_id')";
+        $results=mysqli_query($con,$query);//To execute query
+        //$row=mysqli_fetch_assoc($results);
+        $query="INSERT INTO user_device(user_id,user_defined_device_id,device_id) VALUES ('$user_id','$user_device_id','$device_id')";
+        $results=mysqli_query($con,$query);//To execute query
+        closeConnection($con);
+        return "Done";
+    }
+
+    function removeDevice($device_id){
+
+        $con=getIoTDeviceDataConnection();
+        $query="DELETE FROM device WHERE ID='$device_id'";
+        $results=mysqli_query($con,$query);//To execute query
+       // $row=mysqli_fetch_assoc($results);
+        $query="DELETE FROM user_device WHERE device_id='$device_id'";
+        $results=mysqli_query($con,$query);//To execute query
+        closeConnection($con);
+        return "Done";
+
+    }
+    
+    function getCustomUserDeviceList($user_id){
+        $con=getIoTDeviceDataConnection();
+        $query="select user_defined_device_id,device_id from user_device where user_id=".$user_id;
+        $results=mysqli_query($con,$query);//To execute query
         $nor = mysqli_num_rows($results);
         $counter = 0;
         if($nor > 0){
             while ($row=mysqli_fetch_assoc($results)) {
-                $data["DeviceName"][$counter] = $row["Name"]; 
-                $data["DeviceId"][$counter++] = $row["ID"]; 
+                $data["DeviceName"][$counter] = $row["user_defined_device_id"]; 
+                $data["DeviceId"][$counter++] = substr($row["device_id"], 1);
             }
             closeConnection($con);
             return $data;

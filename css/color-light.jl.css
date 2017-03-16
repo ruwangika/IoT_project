@@ -43,4 +43,22 @@
     background-color: #cccccc;
 }
 
+.nav-button {
+    background-color: #a6a6a6; 
+    color: #333333;
+    cursor: pointer;
+    -webkit-transition-duration: 0.4s;
+    transition-duration: 0.4s;
+}
+.nav-button:hover{
+    background-color: #999999;   /** #cccccc **/
+}
+
+.nav-button-selected {
+    background-color: #999999; 
+    color: #333333;
+    cursor: pointer;
+    -webkit-transition-duration: 0.4s;
+    transition-duration: 0.4s;
+}
 

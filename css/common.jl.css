@@ -1,6 +1,6 @@
 
 html, body{min-height:100%;}
-body{font-family: "Calibri"; font-size:11px;}
+body{font-family: 'Source Sans Pro', sans-serif; font-size:11px;}
 
 li {
     cursor: pointer;
@@ -201,6 +201,7 @@ img {
     width: 160px;   
     text-align: left;
 }
+
 #logoutButton{
     position: absolute;
     right: 0px;
@@ -293,14 +294,14 @@ img {
 }
 
 .chart-title-font{
-    font-family: "Calibri";
+    font-family: 'Source Sans Pro', sans-serif;
     font-size: large;
     font-weight: normal;
     text-align: center;
 }
 
 .widget-font{
-    font-family: "Calibri";
+    font-family: 'Source Sans Pro', sans-serif;
     font-size: large;
 }
 
@@ -339,8 +340,18 @@ img {
     background-color: inherit;
 }
 
+/*.nav-button {
+    background-color: #a6a6a6; 
+    cursor: pointer;
+    -webkit-transition-duration: 0.4s;
+    transition-duration: 0.4s;
+}
+.nav-button:hover{
+    background-color: #999999; 
+}*/
+
 .sidebar-widget{
-    font-family: "Calibri";
+    font-family: 'Source Sans Pro', sans-serif;
     font-weight: normal;
     font-size: 14px;
     width: 100%;
@@ -350,7 +361,7 @@ img {
 }
 
 .sidebar-widget-header{
-    font-family: "Calibri";
+    font-family: 'Source Sans Pro', sans-serif;
     font-weight: bold;
     font-size: 16px;
     padding: 3px 20px 3px 20px; 
@@ -530,7 +541,7 @@ select option{
     text-align:center;
     font-style: "normal";
     font-weight: "lighter";
-    font-family: "calibri";
+    font-family: 'Source Sans Pro', sans-serif;
 }
 
 #settings-modal-button{

@@ -21,6 +21,7 @@
 
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
 <link rel="stylesheet" href="css/gridstack.css"/>
@@ -50,13 +51,21 @@
 <body class="dashboard-background-color">
 
     <!-- Sidenav -->
-    <nav class="w3-sidenav w3-card-2 w3-animate-zoom widget-font widget-background-color" style="display:none;padding-top:20px" id="equationNav">
+    <nav class="w3-sidenav w3-card-2 w3-animate-zoom widget-font widget-background-color" style="display:none;padding-top:20px" id="sideNav">
         <a href="javascript:void(0)" onclick="w3_close()" class="w3-closenav w3-xlarge w3-right w3-display-topright" style="padding:12px;" onmouseover="this.style.backgroundColor='inherit'">
             <i class="fa fa-remove"></i>
         </a>
-        
-        <div class="w3-panel w3-padding-jumbo widget-background-color w3-large">
-            <div class="w3-row w3-padding-8 widget-color">
+        <!--Equation Nav-->
+        <div id="equationNav" class="w3-panel w3-padding-jumbo widget-background-color w3-large">
+            <div class="w3-row w3-padding-4">
+                <div class="nav-button-selected w3-col w3-container" style="width:50%">
+                    <p><div style="text-align: center;" onclick="">Manage Equations</div></p>
+                </div>
+                <div class="nav-button w3-col w3-container" style="width:50%">
+                    <p><div style="text-align: center;" onclick="equationNav_close(); deviceNav_open()">Manage Devices</div></p>
+                </div>
+            </div>        
+            <div id="changeUserDiv" class="w3-row w3-padding-8 widget-color">
                 <div class="w3-col w3-container" style="width:30%">
                     <p class="label-1">Select a User Environment to Edit
                     </p>
@@ -91,9 +100,8 @@
                 <div class="w3-col w3-container" style="width:9%">
                    <input type="text" size="6" id="equationUnitText" placeholder="Unit" style="width:100%">
                 </div>
-                <div class="w3-col w3-container" style="width:10%">
-                   <p><button class="portal-pane-button" onclick="addExpression()" data-toggle="tooltip" data-placement="top" title="Add Expression"><i class="fa fa-plus-square-o fa-2x" aria-hidden="true"></i>
-</button></p>
+                <div class="w3-col w3-container" style="width:8%; float:right">
+                   <p><button class="portal-pane-button" onclick="addExpression()" data-toggle="tooltip" data-placement="top" title="Add Expression"><i class="fa fa-plus-square-o fa-2x" aria-hidden="true"></i></button></p>
                 </div>
 
             </div>
@@ -102,7 +110,7 @@
                 <div class="w3-col w3-container" style="width:80%">
                     <p id="equationText"></p>
                 </div>
-                <div class="w3-col w3-container w3-right" style="width:10%">
+                <div class="w3-col w3-container w3-right" style="width:8%">
                     <p><button class="portal-pane-button" onclick="clearExpressions()" data-toggle="tooltip" data-placement="top" title="Clear Expressions"><i class="fa fa-trash-o fa-2x" aria-hidden="true"></i></button></p>
                 </div>                
             </div>
@@ -114,13 +122,61 @@
                 <div class="w3-col w3-container" style="width:20%">
                    <input type="text" size="6" id="equationNameText" style="width:100%">
                 </div>      
-                <div class="w3-col w3-container" style="width:10%; float:right">
+                <div class="w3-col w3-container" style="width:8%; float:right">
                     <p><button class="portal-pane-button" onclick="addEquation()" data-toggle="tooltip" data-placement="top" title="Add Equation"><i class="fa fa-check fa-2x" aria-hidden="true"></i></button></p>
                 </div>          
             </div>           
                     
             <div class="w3-container">
               <ul class="w3-ul w3-card-4" id="equationList">
+                
+              </ul>
+            </div>
+        </div>
+
+        <!--Device Nav-->
+        <div id="deviceNav" class="w3-panel w3-padding-jumbo widget-background-color w3-large" style="display:none">
+            <div class="w3-row w3-padding-4">
+                <div class="nav-button w3-col w3-container" style="width:50%;">
+                    <p><div style="text-align: center;" onclick="deviceNav_close(); equationNav_open()">Manage Equations</div></p>
+                </div>
+                <div class="nav-button-selected w3-col w3-container" style="width:50%">
+                    <p><div style="text-align: center;" onclick="">Manage Devices</div></p>
+                </div>
+            </div>  
+            <div class="w3-row w3-padding-8 widget-color">  
+                <div class="w3-col w3-container" style="width:12%">
+                    <p class="label-2">Device type</p>
+                </div>
+                <div class="w3-col w3-container" style="width:12%">
+                    <select id="deviceNavTypeCombo" class="combo-1" onchange="">
+                        <option value="custom">Custom</option>
+                        <!--<option>Other</option>-->
+                    </select>
+                </div>                    
+                <div class="w3-col w3-container" style="width:12%">
+                    <p class="label-2">Device ID</p>
+                </div>
+                <div class="w3-col w3-container" style="width:12%">
+                   <input type="text" size="6" id="deviceIdText" style="width:100%">
+                </div>
+                <div class="w3-col w3-container" style="width:12%">
+                    <p class="label-2">PSK</p>
+                </div>
+                <div class="w3-col w3-container" style="width:15%">
+                   <input type="text" size="6" id="PSKText" placeholder="PSK" style="width:100%" readonly>
+                </div>
+                <div class="w3-col w3-container" style="width:8%; float:right">
+                   <p><button class="portal-pane-button" onclick="addDevice()" data-toggle="tooltip" data-placement="top" title="Add Device"><i class="fa fa-plus-square-o fa-2x" aria-hidden="true"></i></button></p>
+                </div>
+
+            </div>
+
+            <div class="w3-row w3-padding-8 widget-color">              
+            </div>         
+                    
+            <div class="w3-container">
+              <ul class="w3-ul w3-card-4" id="deviceList">
                 
               </ul>
             </div>
@@ -379,8 +435,8 @@
             <button id="logoutButton" class="portal-button" onclick="logout()">LOGOUT</button>
             <select id="themeCombo" class="portal-button" onchange="changeTheme(this.value);">
                 <!--<option value = "none" selected hidden>THEME</option>-->
-                <option value="light" class="option-background">Light</option>
-                <option value="dark" class="option-background">Dark</option>
+                <option value="light" class="option-background">LIGHT</option>
+                <option value="dark" class="option-background">DARK</option>
             </select>
         </header>
         
@@ -389,8 +445,8 @@
         <div class="w3-row" style="margin-bottom:64px; background-color : transparent;">
             <!-- Grid -->
             <div class="w3-col" id="myGrid" style="width:80%" >
-                <div style="background-color : transparent;">
-                    <div class="grid-stack" style="background-color : transparent;"></div>
+                <div id = "gridDiv" style="background-color : transparent;">
+                    <div class="grid-stack" style="background-color : transparent"></div>
                 </div>     
             </div>
             <!-- Sidebar -->
@@ -505,15 +561,18 @@
         }
         function decComponents() {
             var id = <?php echo '"'.$id.'"'?>;
-            if (id == 5) {
+            if (id == 1) {
                 admin = true;
+                //$("#addDeviceButton").hide();
             }else{
-                $("#addWidgetButton").hide();
-                $("#settingsButton").hide();
+                //$("#addWidgetButton").hide();
+                //$("#settingsButton").hide();
+                $("#changeUserDiv").hide();
             }
             userID = id;
 
             loadEquations();
+            loadDevices();
             loadTheme();
             loadGrid();
             loadUserCombo();

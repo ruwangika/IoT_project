@@ -185,11 +185,16 @@ function saveEquations(){
 }
 
 function loadEquations(){
+    var tempUserID = 1;
+    if (userID == 1) {
+        if ($('#userCombo option:selected').val())  
+            tempUserID = $('#userCombo option:selected').val();
+    }
     
     $.ajax({
         url: "back/user_data.php",
         method: "POST",
-        data: {r_type: 'get_equations', userID: userID},
+        data: {r_type: 'get_equations', userID: tempUserID},
         dataType: "json",
         success: function(data, status) {
             console.log("Load Equations: " + status);

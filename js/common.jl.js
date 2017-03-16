@@ -103,7 +103,7 @@ function updatelineChartColor(chart, backgroundColor, theme, fontColor) {
     chart.options.title.fontColor = fontColor;
     chart.render();    
 }
-
+////////////////////TODO get to user ID here////////////////////////////////////////////////
 function loadDevicesCombo(Type) {//private method
     var deviceCombo = $("#deviceCombo");
     deviceCombo.empty();
@@ -111,7 +111,8 @@ function loadDevicesCombo(Type) {//private method
         url: "back/load_misc_data.php",
         method: "POST",
         data: {
-            field: 'devices_'+Type
+            field: 'devices_' + Type,
+            user_id: userID
         },
         dataType: "json",
         success: function(data, status) {
@@ -259,9 +260,10 @@ function loadPieChartTotalCombo() {
 
         if ((parseEquation(globalEqList[j].equation)).includes("energy")) {
             var eq = globalEqList[j].equation;
-            var eqStr = parseEquation(eq);
+            var eqName = globalEqList[j].eqName;
+            //var eqStr = parseEquation(eq);
             totalCombo.append($('<option/>', {
-                text: eqStr,
+                text: eqName,
                 val: eq.device
             }));
         }
@@ -299,7 +301,7 @@ function loadUserCombo() {
 function userChanged() {
     if(!gridSaved){
         if (confirm("Proceed without saving changes?") == true) {
-            userID = $('#userCombo option:selected').val();
+            // userID = $('#userCombo option:selected').val();
             changeUserEnvironment();
             gridSaved = true;
         } else {
@@ -307,7 +309,7 @@ function userChanged() {
             document.getElementById("userCombo").value = userID;
         }
     }else{
-        userID = $('#userCombo option:selected').val();
+        //userID = $('#userCombo option:selected').val();
         changeUserEnvironment();
         gridSaved = true;
     }
@@ -446,24 +448,46 @@ function loadChartData(type, chartID, data, period) {
 
 // Open and close sidenav
 function w3_open() {
-    if (!admin) {
+    /*if (!admin) {
         alert("Sorry. You don't have access to this feature.");
         return;
     }
+    */
+    document.getElementById("sideNav").style.width = "100%";
+    document.getElementById("sideNav").style.display = "block";
+}
+
+function w3_close() {
+    document.getElementById("sideNav").style.display = "none";
+    saveEquations();
+}
+
+// Open and close device nav
+function deviceNav_open() {
+    document.getElementById("deviceNav").style.width = "100%";
+    document.getElementById("deviceNav").style.display = "block";
+}
+
+function deviceNav_close() {
+    document.getElementById("deviceNav").style.display = "none";
+}
+
+// Open and close equation nav
+function equationNav_open() {
     document.getElementById("equationNav").style.width = "100%";
     document.getElementById("equationNav").style.display = "block";
 }
 
-function w3_close() {
+function equationNav_close() {
     document.getElementById("equationNav").style.display = "none";
-    saveEquations();
 }
 
 function widgetnav_open() {
-    if (!admin) {
+    /*if (!admin) {
         alert("Sorry. You don't have access to this feature.");
         return;
     }
+    */
     document.getElementById("widgetNav").style.width = "100%";
     document.getElementById("widgetNav").style.display = "block";
 }
@@ -535,12 +559,29 @@ function saveGrid() {
 }
 
 function loadGrid() {
+    // Reloading the div for grid-stack
+    $("#gridDiv").html('<div class="grid-stack" style="background-color:transparent;"></div>');
+    var options = {
+        float: true,
+        resizable: {
+            handles: 'e,w' // To enable only east resizing
+        }
+    };
+    $('.grid-stack').gridstack(options);
+    //
+    
+    var tempUserID = 1;
+    if (userID == 1) {
+        if ($('#userCombo option:selected').val())
+            tempUserID = $('#userCombo option:selected').val();
+    }
+
     $.ajax({
         url: "back/user_data.php",
         method: "POST",
         data: {
             r_type: 'load_grid',
-            userID: userID
+            userID: tempUserID
         },
         dataType: "json",
         success: function(data, status) {
@@ -597,7 +638,8 @@ function loadGridWidgets(user_grid) {
         var grid_node = user_grid[i];
         loadGraph(grid_node.widgetID, grid_node.graphID, grid_node.chartData, grid_node.w, grid_node.h, grid_node.x, grid_node.y);
         if (graphy <= grid_node.y) {
-            graphy = parseInt(grid_node.y) + parseInt(grid_node.h);
+            graphy = graphy + parseInt(grid_node.h);
+           // graphy = parseInt(grid_node.y) + parseInt(grid_node.h);
         }
     }
     // Set line col pie chart indexes substring final index
@@ -850,7 +892,7 @@ function addGauge(widgetID, graphID, data, w, h, x, y){
 
 function changeUserEnvironment() {
     loadEquations();
-    loadTheme();
+    //loadDevices();
     loadGrid();
 }
 
@@ -1198,37 +1240,75 @@ function getIntDate(endDate, interval, type){
     return year + '-' + month + '-' + day;
 }
 
-/**
- * Returns the week number for this date.  dowOffset is the day of week the week
- * "starts" on for your locale - it can be from 0 to 6. If dowOffset is 1 (Monday),
- * the week returned is the ISO 8601 week number.
- * @param int dowOffset
- * @return int
- */
-Date.prototype.getWeek = function (dowOffset) {
-/*getWeek() was developed by Nick Baicoianu at MeanFreePath: http://www.meanfreepath.com */
+// Added 2017-03-16 by Ruwangika
+function addDevice() {
+    deviceName = $('#deviceIdText').val();
+    $.ajax({
+        url: "back/load_misc_data.php",
+        method: "POST",
+        data: {
+            field: 'device_Register',
+            user_id: userID,
+            user_device_id: deviceName
+        },
+        dataType: "text",
+        success: function(data, status) {
+            console.log("Add Device: " + status);
+            var psk = data.substr(data.length - 10);
+            $('#PSKText').val(psk);
 
-    dowOffset = typeof(dowOffset) == 'int' ? dowOffset : 0; //default dowOffset to zero
-    var newYear = new Date(this.getFullYear(),0,1);
-    var day = newYear.getDay() - dowOffset; //the day of week the year begins on
-    day = (day >= 0 ? day : day + 7);
-    var daynum = Math.floor((this.getTime() - newYear.getTime() - 
-    (this.getTimezoneOffset()-newYear.getTimezoneOffset())*60000)/86400000) + 1;
-    var weeknum;
-    //if the year starts before the middle of a week
-    if(day < 4) {
-        weeknum = Math.floor((daynum+day-1)/7) + 1;
-        if(weeknum > 52) {
-            nYear = new Date(this.getFullYear() + 1,0,1);
-            nday = nYear.getDay() - dowOffset;
-            nday = nday >= 0 ? nday : nday + 7;
-            /*if the next year starts before the middle of
-              the week, it is week #1 of that year*/
-            weeknum = nday < 4 ? 1 : 53;
+            $("#deviceList").append("<li id=\"li"+psk+"\" value=\""+psk+"\" style=\"cursor:default\">"+deviceName+"<span onclick=\"removeDevice('"+psk+"')\" class=\"w3-closebtn w3-margin-right w3-medium\">&times;</span></li>");
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            console.log("Add Device error.");
+            console.log(XMLHttpRequest);
         }
-    }
-    else {
-        weeknum = Math.floor((daynum+day-1)/7);
-    }
-    return weeknum;
-};
+    })
+}
+
+function removeDevice(deviceId) {
+    $.ajax({
+        url: "back/load_misc_data.php",
+        method: "POST",
+        data: {
+            field: 'device_Remove',
+            psk: deviceId
+        },
+        dataType: "text",
+        success: function(data, status) {
+            console.log("Remove Device: " + status);
+            var li = document.getElementById("li"+deviceId);
+            li.remove();
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            console.log("Remove Device error.");
+            console.log(XMLHttpRequest);
+        }
+    }) 
+}
+
+function loadDevices() {
+    var deviceList = [];
+    $.ajax({
+        url: "back/load_misc_data.php",
+        method: "POST",
+        data: {
+            field: 'device_CustomList',
+            user_id: userID
+        },
+        dataType: "json",
+        success: function(data, status) {
+            console.log("Load Devices: " + status);
+            var _len = data["DeviceId"].length;
+            for (j = 0; j < _len; j++) {
+                var deviceName = data["DeviceName"][j];
+                var deviceId = data["DeviceId"][j];
+                $("#deviceList").append("<li id=\"li"+deviceId+"\" value=\""+deviceId+"\" style=\"cursor:default\">"+deviceName+"<span onclick=\"removeDevice('"+deviceId+"')\" class=\"w3-closebtn w3-margin-right w3-medium\">&times;</span></li>");
+            }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            console.log("Load Devices error");
+            console.log(XMLHttpRequest);
+        }
+    });
+}
