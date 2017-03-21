@@ -104,11 +104,19 @@ function showEquations(){
     }else if(graphType == "guage"){
         $("#gaugeConfigPanel").show();
         $("#dateRangeChooser").hide();
+        $("#eqListHeader").hide();
     }else if(graphType == "led"){
         
     }else if(graphType == "ind"){
         $("#indicatorConfigPanel").show();
         $("#dateRangeChooser").hide();
+        $("#timeIntDiv").show();
+        $("#eqListHeader").hide();
+    }else if(graphType == "switch" || graphType == "colorpicker"){
+        $("#indicatorConfigPanel").show();
+        $("#dateRangeChooser").hide();
+        $("#timeIntDiv").hide();
+        $("#eqListHeader").hide();
     }
 }
 
@@ -167,11 +175,10 @@ function parseEquation(expressionList){
 
 
 function saveEquations(){
-    
     $.ajax({
         url: "back/user_data.php",
         method: "POST",
-        data: {r_type: 'save_equations', userID: userID, eqList: globalEqList},
+        data: {r_type: 'save_equations', userID: tempUserID, eqList: globalEqList},
         dataType: "text",
         success: function(data, status) {
             console.log("Save Equations: " + status);
@@ -185,11 +192,6 @@ function saveEquations(){
 }
 
 function loadEquations(){
-    var tempUserID = 1;
-    if (userID == 1) {
-        if ($('#userCombo option:selected').val())  
-            tempUserID = $('#userCombo option:selected').val();
-    }
     
     $.ajax({
         url: "back/user_data.php",

@@ -13,6 +13,13 @@ function initBarChart(chartID,title, chartData,axisX) {
         theme = "theme1";
         fontColor = "#0d1a26";
     }
+    var subtitle = "";
+    var dp = chartData[0].dataPoints;
+    var start = formatDate(dp[0].x);
+    var end = formatDate(dp[dp.length - 1].x);
+    if (end==start) subtitle = end;
+    else subtitle = start + ' to ' + end;
+
     var colChart = new CanvasJS.Chart(chartID,
         {
             theme: theme,
@@ -26,6 +33,16 @@ function initBarChart(chartID,title, chartData,axisX) {
                 fontFamily: "calibri",
                 fontSize: 24
             },
+            subtitles:[
+                {
+                    text: subtitle,
+                    fontColor: fontColor,
+                    fontStyle: "normal",
+                    fontWeight: "lighter",
+                    fontFamily: "calibri",
+                    fontSize: 14
+                }
+            ],
             toolTip: {
                 shared: true
             },          

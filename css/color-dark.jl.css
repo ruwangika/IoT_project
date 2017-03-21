@@ -51,7 +51,7 @@
     transition-duration: 0.4s;
 }
 .nav-button:hover{
-    background-color: #4B4B4B;   /** #cccccc **/
+    background-color: #4B4B4B; 
 }
 
 .nav-button-selected {
@@ -60,6 +60,24 @@
     cursor: pointer;
     -webkit-transition-duration: 0.4s;
     transition-duration: 0.4s;
+}
+
+.nav-label {
+     background-color: #333333;
+     color: #B88F51;
+}
+
+.nav-combo {
+    text-align: left;
+    color: #787878;
+    width: 100%; 
+    height: 45px;
+    background-color: #333333; 
+    
+}
+
+.nav-combo:focus{
+  box-shadow: 0 0 5px #B88F51;
 }
 
 

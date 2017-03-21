@@ -47,6 +47,13 @@ function initLineChart(chartID,title, chartData) {
         theme = "theme1";
         fontColor = "#0d1a26";
     }
+    var subtitle = "";
+    var dp = chartData[0].dataPoints;
+    var start = formatDate(dp[0].x);
+    var end = formatDate(dp[dp.length - 1].x);
+    if (end==start) subtitle = end;
+    else subtitle = start + ' to ' + end;
+
     lineChart = new CanvasJS.Chart(chartID, {
         zoomEnabled: true,
         backgroundColor: backgroundColor,
@@ -60,12 +67,14 @@ function initLineChart(chartID,title, chartData) {
             fontSize: 24
         },
         subtitles:[
-		{
-			//text: "This is a Subtitle"
-			//Uncomment properties below to see how they behave
-			//fontColor: "red",
-			//fontSize: 30
-		}
+            {
+                text: subtitle,
+                fontColor: fontColor,
+                fontStyle: "normal",
+                fontWeight: "lighter",
+                fontFamily: "calibri",
+                fontSize: 14
+            }
 		],
         legend: {
             cursor: "pointer",

@@ -194,6 +194,15 @@ img {
     top: 45px;
 }
 
+.container-1 {
+    padding: 0.01em 10px
+}
+.container-1:after{
+    content: "";
+    display: table;
+    clear: both
+}
+
 #settingsButton{
     position: absolute;
     right: 110px;
@@ -241,6 +250,17 @@ img {
     width: 170px;  
     text-align: left;
 }
+
+#toggleButton{
+    position: absolute;
+    background-color: inherit;
+    border: none;
+    /*right: 110px;
+    top: 10px;
+    width: 160px;   
+    text-align: left;*/
+}
+
 
 .portal-header{
     display: block;
@@ -340,16 +360,6 @@ img {
     background-color: inherit;
 }
 
-/*.nav-button {
-    background-color: #a6a6a6; 
-    cursor: pointer;
-    -webkit-transition-duration: 0.4s;
-    transition-duration: 0.4s;
-}
-.nav-button:hover{
-    background-color: #999999; 
-}*/
-
 .sidebar-widget{
     font-family: 'Source Sans Pro', sans-serif;
     font-weight: normal;
@@ -427,6 +437,7 @@ select option{
 .label-2{
     margin-top: 8px;
     margin-left: 10px;
+    margin-right: 10px;
     text-align: right;
 }
 
@@ -650,4 +661,9 @@ select option{
     background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
     -webkit-animation: sk-rotateplane 1.2s infinite ease-in-out;
     animation: sk-rotateplane 1.2s infinite ease-in-out;
+}
+
+/*********/
+.inl-bl {
+    display: inline-block;
 }

@@ -28,6 +28,7 @@
 <link rel="stylesheet" href="css/epoch.css">
 <link rel="stylesheet" href="css/w3.css">
 <link rel="stylesheet" href="css/common.jl.css">
+<link href="css/bootstrap-colorpicker.min.css" rel="stylesheet">
 <!--<link rel="stylesheet" href="css/color-light.jl.css">-->
 
 <link href="css/datepicker.css" rel="stylesheet" type="text/css"/>
@@ -47,6 +48,8 @@
 <script src="js/common.jl.js"></script>
 <script src="js/epoch.js"></script>
 <script src="js/browserMqtt.js"></script>
+<!--<script src="js/colorpicker_new.js"></script>-->
+<script src="js/bootstrap-colorpicker.js"></script>
 
 <body class="dashboard-background-color">
 
@@ -55,52 +58,62 @@
         <a href="javascript:void(0)" onclick="w3_close()" class="w3-closenav w3-xlarge w3-right w3-display-topright" style="padding:12px;" onmouseover="this.style.backgroundColor='inherit'">
             <i class="fa fa-remove"></i>
         </a>
-        <!--Equation Nav-->
-        <div id="equationNav" class="w3-panel w3-padding-jumbo widget-background-color w3-large">
-            <div class="w3-row w3-padding-4">
-                <div class="nav-button-selected w3-col w3-container" style="width:50%">
-                    <p><div style="text-align: center;" onclick="">Manage Equations</div></p>
-                </div>
-                <div class="nav-button w3-col w3-container" style="width:50%">
-                    <p><div style="text-align: center;" onclick="equationNav_close(); deviceNav_open()">Manage Devices</div></p>
-                </div>
-            </div>        
-            <div id="changeUserDiv" class="w3-row w3-padding-8 widget-color">
+
+        <div class="w3-panel widget-background-color w3-large" style="padding: 32px 64px 0px 64px">
+            <div id="changeUserDiv" class="nav-label w3-row">
                 <div class="w3-col w3-container" style="width:30%">
                     <p class="label-1">Select a User Environment to Edit
                     </p>
                 </div>
-                <div class="w3-col w3-container" style="width:30%">
-                    <select id="userCombo" onchange="userChanged()" class="combo-1"></select>
+                <div class="w3-col" style="width:70%">
+                    <select id="userCombo" onchange="userChanged()" class="nav-combo"></select>
                 </div>
-            </div>
+            </div> 
+        </div>
+        <!--Equation Nav-->
+        <div id="equationNav" class="w3-panel w3-padding-jumbo widget-background-color w3-large">
+            <div class="w3-row w3-padding-4">
+                <div class="nav-button-selected w3-col container-1" style="width:50%">
+                    <p><div style="text-align: center;" onclick="">Manage Equations</div></p>
+                </div>
+                <div class="nav-button w3-col container-1" style="width:50%">
+                    <p><div style="text-align: center;" onclick="equationNav_close(); deviceNav_open()">Manage Devices</div></p>
+                </div>
+            </div> 
             <div class="w3-row w3-padding-8 widget-color">
-                <div class="w3-col w3-container" style="width:14%">
-                    <input type="text" id="prefixEquationText" placeholder="Expression prefix" style="width:100%" >
+                <div class="w3-col container-1" style="width:2%">
+                </div>
+                <div class="w3-col container-1" style="width:8%">
+                    <input type="text" id="prefixEquationText" data-toggle="tooltip" data-placement="top" title="Expression prefix" placeholder="prefix" style="width:100%" >
                 </div>   
-                <div class="w3-col w3-container" style="width:11%">
+                <div class="w3-col container-1" style="width:11%">
                     <p class="label-2">Device type</p>
                 </div>
-                <div class="w3-col w3-container" style="width:12%">
+                <div class="w3-col container-1" style="width:12%">
                     <select id="deviceTypeCombo" class="combo-1" onchange="updateDevicesCombo(); updateDeviceChannels()">
                     </select>
                 </div>                    
-                <div class="w3-col w3-container" style="width:8%">
+                <div class="w3-col container-1" style="width:8%">
                     <p class="label-2">Device</p>
                 </div>
-                <div class="w3-col w3-container" style="width:8%">
+                <div class="w3-col container-1" style="width:15%">
                     <select id="deviceCombo" class="combo-1" onchange="updateDeviceChannels()"></select>
                 </div>
-                <div class="w3-col w3-container" style="width:10%">
+                <div class="w3-col container-1" style="width:2%">
+                    <button id="toggleButton" value="0"; onclick="toggleDeviceDisplay()" data-toggle="tooltip" data-placement="top" title="Display device IDs/Names" style="padding:6px 0px"><i class="fa fa-toggle-off" aria-hidden="true"></i></button>
+                </div>
+                <div class="w3-col container-1" style="width:2%">
+                </div>
+                <div class="w3-col container-1" style="width:8%">
                     <p class="label-2">Channel</p>
                 </div>
-                <div class="w3-col w3-container" style="width:18%">
+                <div class="w3-col container-1" style="width:18%">
                     <select id="channelCombo" class="combo-1"></select>
                 </div>
-                <div class="w3-col w3-container" style="width:9%">
-                   <input type="text" size="6" id="equationUnitText" placeholder="Unit" style="width:100%">
+                <div class="w3-col container-1" style="width:6%">
+                   <input type="text" size="6" id="equationUnitText" placeholder="unit" style="width:100%">
                 </div>
-                <div class="w3-col w3-container" style="width:8%; float:right">
+                <div class="w3-col container-1" style="width:8%; float:right">
                    <p><button class="portal-pane-button" onclick="addExpression()" data-toggle="tooltip" data-placement="top" title="Add Expression"><i class="fa fa-plus-square-o fa-2x" aria-hidden="true"></i></button></p>
                 </div>
 
@@ -203,6 +216,8 @@
                         <option value="guage">Gauge</option>
                         <option value="led">LED</option>
                         <option value="ind">Indicator</option>
+                        <option value="switch">Switch</option>
+                        <option value="colorpicker">Color picker</option>
                     </select>
                 </div>
                 <div class="w3-col w3-container" style="width:10%">
@@ -277,13 +292,13 @@
                         <input id="indicatorIPAddress" type="text" value="ws://192.168.1.50:8080">
                     </div>
                     <div class="w3-col w3-container" style="width:10%">
-                        <p class="label-1">MQQT Title</p>
+                        <p class="label-1">MQTT Title</p>
                     </div>
                     <div class="w3-col w3-container" style="width:20%">
                         <input id="indicatorTitle" type="text" value="0001/temperature">
                     </div>
                 </div>
-                <div class="w3-row w3-padding-8">
+                <div id="timeIntDiv" class="w3-row w3-padding-8">
                     <div class="w3-col w3-container" style="width:10%">
                         <p class="label-1">Time Interval</p>
                     </div>
@@ -341,7 +356,7 @@
 
                 </ul>
             </div>      
-            <div class="w3-row w3-padding-8">
+            <div id="eqListHeader" class="w3-row w3-padding-8">
                 <center><p class="w3-large">Select Equations From Here</p></center>
             </div>  
             <div class="w3-container">
@@ -493,7 +508,6 @@
                 </div>
                 <!-- End of Environmental Factors widget -->
                 
-                
 
             </div>
 
@@ -525,12 +539,16 @@
             location.href = 'login.php';
         }   // Login Check
         var userID = "tdk";
+        var tempUserID = userID;
         var widgetCount=0;
         var lineChartIndex = 0;
         var colChartIndex = 0;
         var pieChartIndex = 0;
         var gaugeIndex = 0;
         var indicatorIndex = 0; 
+        var colorPickerIndex = 0;
+        var switchIndex = 0;
+
         var globalEqList = [];
         //new:
         //var globalEqNameList = [];
@@ -548,6 +566,7 @@
         var tempWidget;
         var gridSaved = true;
         var globalTheme;
+        var rgb_string = "";
         
 
         window.onload = function(){
@@ -563,13 +582,13 @@
             var id = <?php echo '"'.$id.'"'?>;
             if (id == 1) {
                 admin = true;
-                //$("#addDeviceButton").hide();
             }else{
                 //$("#addWidgetButton").hide();
                 //$("#settingsButton").hide();
                 $("#changeUserDiv").hide();
             }
             userID = id;
+            tempUserID = userID;
 
             loadEquations();
             loadDevices();

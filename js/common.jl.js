@@ -116,6 +116,37 @@ function loadDevicesCombo(Type) {//private method
         },
         dataType: "json",
         success: function(data, status) {
+            if (data == "Null Data") return;
+            var _len = data.DeviceId.length;
+            for (j = 0; j < _len; j++) {
+
+                $('#deviceCombo').append($('<option/>', {
+                    value: data.DeviceId[j],
+                    text: data.DeviceName[j]
+                }));
+            }
+            //updateEquationText();
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            console.log(XMLHttpRequest);
+
+        }
+    });
+}
+
+function loadDevicesIdCombo(Type) {//private method
+    var deviceCombo = $("#deviceCombo");
+    deviceCombo.empty();
+    $.ajax({
+        url: "back/load_misc_data.php",
+        method: "POST",
+        data: {
+            field: 'devices_' + Type,
+            user_id: userID
+        },
+        dataType: "json",
+        success: function(data, status) {
+            if (data == "Null Data") return;
             var _len = data.DeviceId.length;
             for (j = 0; j < _len; j++) {
 
@@ -132,6 +163,7 @@ function loadDevicesCombo(Type) {//private method
         }
     });
 }
+
 ///////////////Edited by Dileep(15-02-2017)
 function loadDeviceTypes(){//load supported device types
     var deviceTypeCombo = $("#deviceTypeCombo");
@@ -284,12 +316,12 @@ function loadUserCombo() {
         success: function(data, status) {
             var _len = data.id.length;
             for (j = 0; j < _len; j++) {
-
                 userCombo.append($('<option/>', {
                     val: data.id[j],
                     text: data.username[j]
                 }));
             }
+            $("#userCombo").val('1');
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
             console.log(XMLHttpRequest);
@@ -300,19 +332,15 @@ function loadUserCombo() {
 
 function userChanged() {
     if(!gridSaved){
-        if (confirm("Proceed without saving changes?") == true) {
-            // userID = $('#userCombo option:selected').val();
-            changeUserEnvironment();
-            gridSaved = true;
-        } else {
-            //$('#userCombo option:selected').val() = userID;
-            document.getElementById("userCombo").value = userID;
+        if (confirm("Proceed without saving changes?") == false) {
+            document.getElementById("userCombo").value = tempUserID;
+            return;
         }
-    }else{
-        //userID = $('#userCombo option:selected').val();
-        changeUserEnvironment();
-        gridSaved = true;
     }
+    saveEquations();
+    tempUserID = $('#userCombo option:selected').val();
+    changeUserEnvironment();
+    gridSaved = true;
 
 }
 
@@ -516,6 +544,7 @@ function addWidget() {
 }
 
 function saveGrid() {
+
     var nodes = $('.grid-stack > .grid-stack-item:visible');
     var _len = nodes.length;
     var user_grid = [];
@@ -542,7 +571,7 @@ function saveGrid() {
         method: "POST",
         data: {
             r_type: 'save_grid',
-            userID: userID,
+            userID: tempUserID,
             grid: user_grid,
             theme: theme
         },
@@ -569,12 +598,6 @@ function loadGrid() {
     };
     $('.grid-stack').gridstack(options);
     //
-    
-    var tempUserID = 1;
-    if (userID == 1) {
-        if ($('#userCombo option:selected').val())
-            tempUserID = $('#userCombo option:selected').val();
-    }
 
     $.ajax({
         url: "back/user_data.php",
@@ -677,6 +700,10 @@ function loadGraph(widgetID, graphID, data, w, h, x, y) {
         addGauge(widgetID, graphID, data, w, h, x, y);
     }else if (type == "indicator") {
         addIndicator(widgetID, graphID, data, w, h, x, y);
+    } else if (type == "switch") {
+        addSwitch(widgetID, graphID, data, w, h, x, y);
+    } else if (type == "colorpicker") {
+        addColorPicker(widgetID, graphID, data, w, h, x, y);
     }
 
 
@@ -836,7 +863,7 @@ function addGraph() {
         
     } else if (graphType == "led") {
 
-    }else if (graphType == "ind") {
+    } else if (graphType == "ind") {
         var ip = $("#indicatorIPAddress").val();
         var title = $("#indicatorTitle").val();
         var chartTitle = $("#chartTitleText").val();
@@ -852,6 +879,35 @@ function addGraph() {
         };
         addIndicator(widgetID, chartID, cData, 2, 2, 0, graphy);
         graphy += 2;
+    } else if (graphType == "switch") {
+        var ip = $("#indicatorIPAddress").val();
+        var title = $("#indicatorTitle").val();
+        var chartTitle = $("#chartTitleText").val();
+        var widgetID = "widget_switch"+switchIndex;
+        var chartID = "switch"+switchIndex;
+        var cData = {
+            ip: ip,
+            title: title,
+            interval: interval,
+            type: "switch",
+            chartTitle: chartTitle
+        };
+        addSwitch(widgetID, chartID, cData, 2, 2, 0, graphy);
+        graphy += 2;
+    } else if (graphType == "colorpicker") {
+        var ip = $("#indicatorIPAddress").val();
+        var title = $("#indicatorTitle").val();
+        var chartTitle = $("#chartTitleText").val();
+        var widgetID = "widget_colorpicker"+colorPickerIndex;
+        var chartID = "colorpicker"+colorPickerIndex;
+        var cData = {
+            ip: ip,
+            title: title,
+            interval: interval,
+            type: "colorpicker",
+            chartTitle: chartTitle
+        };
+        addColorPicker(widgetID, chartID, cData, 2, 3, 0, graphy);
     }
     $("#selectedEquationList").empty();
     widgetnav_close();
@@ -859,7 +915,7 @@ function addGraph() {
 
 
 function addIndicator(widgetID, graphID, data, w, h, x, y){
-    var div = '<div class="widget-color"><p class="chart-title-font">'+data.chartTitle+'</p><div id="'+graphID+'" class="widget-color" style="display: block;margin: 0 auto;"><div id="'+graphID+'_ON" style="display: none"><div class="led-green"></div><h4>On</h4></div> <div id="'+graphID+'_OFF" style="display: none"><div class="led-blue"></div><h4>Off</h4></div><div id="'+graphID+'_DISCONNECT"><div class="led-red"></div><h6>Disconnected!</h6></div></div></div>';
+    var div = '<div class="widget-color"><p class="chart-title-font">'+data.chartTitle+'</p><div id="'+graphID+'" class="widget-color" style="display: block;margin: 0 auto;"><div id="'+graphID+'_ON" style="display: none"><div class="led-green"></div><h4>On</h4></div> <div id="'+graphID+'_OFF" style="display: none"><div class="led-blue"></div><h4>Off</h4></div><div id="'+graphID+'_DISCONNECT"><div class="led-red"></div><h4>Disconnected!</h4></div></div></div>';
     addDivtoWidget(div, w, h, x, y, widgetID);
     
     var client = initMQQTClientIndicator(graphID,data.ip,data.title,data.interval);
@@ -874,7 +930,7 @@ function addIndicator(widgetID, graphID, data, w, h, x, y){
 }
 
 function addGauge(widgetID, graphID, data, w, h, x, y){
-    var div = '<div class="widget-color"><p id="title_'+graphID+'" class="chart-title-font">'+data.chartTitle+'</p><div id="gauge'+gaugeIndex+'" class="epoch gauge-small widget-color" style="display: block;margin: 0 auto;"></div></div>';
+    var div = '<div class="widget-color"><p id="title_'+graphID+'" class="chart-title-font">'+data.chartTitle+'</p><div id="gauge'+graphID.substring(5)+'" class="epoch gauge-small widget-color" style="display: block;margin: 0 auto;"></div></div>';
     addDivtoWidget(div, w, h, x, y, widgetID);
     var gauge = initGauge(graphID,data.min,data.max,data.unit);
     var client = initMQQTClient(graphID,data.ip,data.title,gauge);
@@ -888,11 +944,58 @@ function addGauge(widgetID, graphID, data, w, h, x, y){
     graphs[graphID]["chartData"] = data;
 }
 
+// Added 2017-03-20
+function addColorPicker(widgetID, graphID, data, w, h, x, y) {
+    var divStr = '<div id="cpDiv" class="inl-bl"></div>';
+    var port = parseInt(data.ip.substr(data.ip.length - 4));
 
+    var div = '<div class="widget-color colorpicker" style="  -webkit-border-radius: 0px;-moz-border-radius: 0px;border-radius: 0px;"><p id="title_'+graphID+'" class="chart-title-font">'+data.chartTitle+'</p><div id="colorpicker'+graphID.substring(11)+'" class="" style="display: block;margin: 0 auto;">'+divStr+'<div><button id="setColorBtn" class="" style="" onclick="setColor(\''+graphID+'\')">Set Color</button></div></div>';
+    addDivtoWidget(div, w, h, x, y, widgetID);
+     $('#cpDiv').colorpicker({
+        color: '#ffaa00',
+        container: true,
+        inline: true,
+    });
+
+    $('.colorpicker').colorpicker().on('changeColor', function(ev){
+        var rgb = ev.color.toRGB();
+        rgb_string = rgb.r+','+rgb.g+','+rgb.b;
+    });
+
+    var c_i = parseInt(graphID.substring(11));
+    if (c_i >= colorPickerIndex) {
+        colorPickerIndex = c_i + 1;
+    }
+    graphs[graphID] = {};
+    graphs[graphID]["type"] = "colorpicker";
+    graphs[graphID]["chartData"] = data;
+}
+
+function setColor(graphID) {
+    var colorPickerData = graphs[graphID]["chartData"];
+    var port = parseInt(colorPickerData.ip.substr(colorPickerData.ip.length - 4));
+    mqttPub(rgb_string, colorPickerData.ip, port, colorPickerData.title)
+}
+
+function addSwitch(widgetID, graphID, data, w, h, x, y){
+    var div = '<div class="widget-color"><p class="chart-title-font">'+data.chartTitle+'</p><div id="'+graphID+'" class="widget-color" style="display: block;margin: 0 auto;"><div id="'+graphID+'_ON" style="display: none; cursor:pointer" onclick="switchOff(\''+graphID+'\')"><div class="led-green"></div><h4>On</h4></div><div id="'+graphID+'_OFF" style="display: none; cursor:pointer" onclick="switchOn(\''+graphID+'\')"><div class="led-blue"></div><h4>Off</h4></div><div id="'+graphID+'_UNIDENTIFIED" style="pointer-events:none"><div class="led-red"></div><h4>Unidentified</h4></div></div></div>';
+    addDivtoWidget(div, w, h, x, y, widgetID);
+    var port = parseInt(data.ip.substr(data.ip.length - 4));
+    var client = initMQQTClientSwitch(graphID, data.ip, port, data.title);
+    var s_i = parseInt(graphID.substring(6));
+    if (s_i >= switchIndex) {
+        switchIndex = s_i + 1;
+    }
+    graphs[graphID] = {};
+    graphs[graphID]["type"] = "switch";
+    graphs[graphID]["chartData"] = data;
+
+}
+///////////
 
 function changeUserEnvironment() {
     loadEquations();
-    //loadDevices();
+    loadDevices();
     loadGrid();
 }
 
@@ -1026,7 +1129,7 @@ function initMQQTClient(id,ip,title,gauge){
     //var client  = mqtt.connect('mqtt://karunasinghe.com')
     options={
         clientId: title,
-        keepalive: 1000,
+        keepalive: 1,
         clean: false
     };
     var client = mqtt.connect(ip,options); // you add a ws:// url here
@@ -1084,7 +1187,7 @@ function test(){
 function initMQQTClientIndicator(id,ip,title,interval){
      options={
         clientId: title,
-        keepalive: 1000,
+        keepalive: 1,
         clean: false};
     var client = mqtt.connect(ip,options); // you add a ws:// url here
     client.subscribe(title);
@@ -1110,6 +1213,53 @@ function initMQQTClientIndicator(id,ip,title,interval){
     return client;
 }
 
+///TODO///
+function initMQQTClientSwitch(id, ip, port, title) {
+    var payload = -1;
+    var state = mqttPub(payload, ip, port, title);
+    if (state == 1) {
+        $('#'+id+'_ON').show();
+        $('#'+id+'_UNIDENTIFIED').hide();
+    } else if (state == 0) {
+        $('#'+id+'_OFF').show();
+        $('#'+id+'_UNIDENTIFIED').hide();
+    }    
+}
+
+function switchOff(graphID) {
+    var switchData = graphs[graphID]["chartData"];
+    var port = parseInt(switchData.ip.substr(switchData.ip.length - 4));
+    var state = mqttPub(0, switchData.ip, port, switchData.title)
+    if (state == 1) {
+        $('#'+graphID+'_OFF').show();
+        $('#'+graphID+'_ON').hide();
+    } else if (state == -1) {
+        $('#'+graphID+'_UNIDENTIFIED').show();
+    }    
+}
+
+function switchOn(graphID) {
+    var switchData = graphs[graphID]["chartData"];
+    var port = parseInt(switchData.ip.substr(switchData.ip.length - 4));
+    var state = mqttPub(1, switchData.ip, port, switchData.title)
+    if (state == 1) {
+        $('#'+graphID+'_ON').show();
+        $('#'+graphID+'_OFF').hide();
+    } else if (state == -1) {
+        $('#'+graphID+'_UNIDENTIFIED').show();
+    }    
+}
+///
+function mqttPub(payload, ip, port, topic){
+    // payload:
+    // -1 -> Get current state
+    // 1 -> turn the switch on
+    // 0 -> turn the switch off
+
+    //color_pic: "1,2,3
+    //switch: 1/0/-1:getTheexsiting state
+    return 1 //state 1,0,-1
+}
 function showLed(value) {
     if (value > 30 && value < 36) {
         $('.led-green').hide();
@@ -1134,9 +1284,6 @@ function imageIsLoaded(e) {
 }
 
 function changeTheme(themeId) {
-    //window.alert(themeId);
-    //window.alert(defaultTheme);
-    // document.getElementById("themeCombo").value = themeId;
     if (!themeId) {
         themeId = "light";
     }
@@ -1240,6 +1387,35 @@ function getIntDate(endDate, interval, type){
     return year + '-' + month + '-' + day;
 }
 
+//Format Date variable to yyyy-mm-dd
+function formatDate(date){
+    var day = date.getDate();
+    if (day < 10) {
+        day = '0' + day
+    }
+    var month=date.getMonth() + 1;
+    if (month < 10) {
+        month = '0' + month
+    }
+    var year=date.getFullYear();
+    return year + '-' + month + '-' + day;
+}
+
+function toggleDeviceDisplay() {
+    var val = document.getElementById("toggleButton").value;
+    var deviceType = "ePro1000";
+    deviceType = document.getElementById("deviceTypeCombo").value;
+    if (val==0) {
+        loadDevicesIdCombo(deviceType);
+        document.getElementById("toggleButton").innerHTML = '<i class="fa fa-toggle-on" aria-hidden="true"></i>';
+        document.getElementById("toggleButton").setAttribute("value", "1");
+    } else if (val==1) {
+        loadDevicesCombo(deviceType);
+        document.getElementById("toggleButton").innerHTML = '<i class="fa fa-toggle-off" aria-hidden="true"></i>';
+        document.getElementById("toggleButton").setAttribute("value", "0");
+    }
+}
+
 // Added 2017-03-16 by Ruwangika
 function addDevice() {
     deviceName = $('#deviceIdText').val();
@@ -1294,11 +1470,12 @@ function loadDevices() {
         method: "POST",
         data: {
             field: 'device_CustomList',
-            user_id: userID
+            user_id: tempUserID
         },
         dataType: "json",
         success: function(data, status) {
             console.log("Load Devices: " + status);
+            $("#deviceList").empty();
             var _len = data["DeviceId"].length;
             for (j = 0; j < _len; j++) {
                 var deviceName = data["DeviceName"][j];
@@ -1312,3 +1489,4 @@ function loadDevices() {
         }
     });
 }
+
