@@ -28,7 +28,8 @@
 <link rel="stylesheet" href="css/epoch.css">
 <link rel="stylesheet" href="css/w3.css">
 <link rel="stylesheet" href="css/common.jl.css">
-<link href="css/bootstrap-colorpicker.min.css" rel="stylesheet">
+<link rel="stylesheet" href="css/bootstrap-colorpicker.min.css">
+<link rel="stylesheet" href="css/rangeslider.css">
 <!--<link rel="stylesheet" href="css/color-light.jl.css">-->
 
 <link href="css/datepicker.css" rel="stylesheet" type="text/css"/>
@@ -48,8 +49,10 @@
 <script src="js/common.jl.js"></script>
 <script src="js/epoch.js"></script>
 <script src="js/browserMqtt.js"></script>
-<!--<script src="js/colorpicker_new.js"></script>-->
+<script src="js/colorpicker.js"></script>
 <script src="js/bootstrap-colorpicker.js"></script>
+<script src="js/rangeslider.js"></script>
+<script src="js/rangeslider.min.js"></script>
 
 <body class="dashboard-background-color">
 
@@ -218,9 +221,11 @@
                         <option value="ind">Indicator</option>
                         <option value="switch">Switch</option>
                         <option value="colorpicker">Color picker</option>
+                        <option value="statecontroller">State Controller</option>
+                        <option value="slider">Slider</option>
                     </select>
                 </div>
-                <div class="w3-col w3-container" style="width:10%">
+                <div id="graphWidthLabel" class="w3-col w3-container" style="width:10%">
                     <p class="label-1">Widget Size</p>  
                 </div>
                 <div class="w3-col w3-container" style="width:20%">
@@ -292,10 +297,10 @@
                         <input id="indicatorIPAddress" type="text" value="ws://192.168.1.50:8080">
                     </div>
                     <div class="w3-col w3-container" style="width:10%">
-                        <p class="label-1">MQTT Title</p>
+                        <p class="label-1">MQTT Topic</p>
                     </div>
                     <div class="w3-col w3-container" style="width:20%">
-                        <input id="indicatorTitle" type="text" value="0001/temperature">
+                        <input id="indicatorTopic" type="text" value="0001/temperature">
                     </div>
                 </div>
                 <div id="timeIntDiv" class="w3-row w3-padding-8">
@@ -347,13 +352,46 @@
                     </div>
                 </div>
             </div>
+            <div class="w3-row w3-padding-8 widget-color widget-font" id="stateControllerConfigPanel">
+                <div class="w3-row w3-padding-8">
+                    <div class="w3-col w3-container" style="width:10%">
+                        <p class="label-1">IP Address</p>
+                    </div>
+                    <div class="w3-col w3-container" style="width:20%">
+                        <input id="controllerIPAddress" type="text" value="ws://192.168.1.50:8080">
+                    </div>
+                    <div class="w3-col w3-container" style="width:10%">
+                        <p class="label-1">MQTT Topic</p>
+                    </div>
+                    <div class="w3-col w3-container" style="width:20%">
+                        <input id="controllerTopic" type="text" value="0001/temperature">
+                    </div>
+                </div>
+                <div id="" class="w3-row w3-padding-8">
+                    <div class="w3-col w3-container" style="width:10%">
+                        <p class="label-1">Option</p>
+                    </div>
+                    <div class="w3-col w3-container" style="width:20%">
+                        <input id="optionNameText" placeholder="name" type="text">
+                    </div>
+                    <div class="w3-col w3-container" style="width:20%">
+                        <input id="optionValueText" placeholder="value" type="text">
+                    </div>
+                    <div class="w3-col w3-container" style="width:8%; float:right">
+                        <p><button class="portal-pane-button" onclick="addOption()" data-toggle="tooltip" data-placement="top" title="Add Option"><i class="fa fa-plus-square-o fa-2x" aria-hidden="true"></i></button></p>
+                    </div>
+                </div>
+            </div>
             <div class="w3-row w3-padding-8 widget-color w3-center">
                 <button class="portal-pane-button" style="font-size:22px; width:auto" onclick="addGraph()">Done</button>
             </div>
 
             <div class="w3-container">
                 <ul class="w3-ul w3-card-4" id="selectedEquationList">
-
+                </ul>
+            </div>   
+            <div class="w3-container">
+                <ul class="w3-ul w3-card-4" id="optionList">
                 </ul>
             </div>      
             <div id="eqListHeader" class="w3-row w3-padding-8">
@@ -507,7 +545,6 @@
                     </div>
                 </div>
                 <!-- End of Environmental Factors widget -->
-                
 
             </div>
 
@@ -548,10 +585,11 @@
         var indicatorIndex = 0; 
         var colorPickerIndex = 0;
         var switchIndex = 0;
+        var stateControllerIndex = 0;
+        var sliderIndex = 0;
+        var tempOptionList = [];
 
         var globalEqList = [];
-        //new:
-        //var globalEqNameList = [];
         var tempExpressionsList=[];
         var gauges = [];
         var tempGraph;
@@ -596,6 +634,7 @@
             loadGrid();
             loadUserCombo();
         }
+        $(".draggable").draggable({cancel: "div"});
     </script>
 
 </body>

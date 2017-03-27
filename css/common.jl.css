@@ -147,6 +147,30 @@ li {
   border-radius: 50%;
   box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #006 0 -1px 9px, #3F8CFF 0 2px 14px;
 }
+
+.switch-on {
+  margin: 0 auto;
+  width: 24px;
+  height: 24px;
+  background-image: url('../img/switch-on.png');
+  background-color: inherit;
+}
+.switch-off {
+  margin: 0 auto;
+  width: 24px;
+  height: 24px;
+  background-image: url('../img/switch-off.png');
+  background-color: inherit;
+}
+.switch {
+  margin: 0 auto;
+  width: 24px;
+  height: 24px;
+  background-image: url('../img/switch.png');
+  background-color: inherit;
+  background-repeat: no-repeat;
+}
+
 #ui-datepicker-div {display: none;}
 
 .grid-stack {

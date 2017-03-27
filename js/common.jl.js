@@ -5,6 +5,9 @@ $(function() {
         float: true,
         resizable: {
             handles: 'e,w' // To enable only east resizing
+        },
+        draggable: {
+            
         }
     };
     $('.grid-stack').gridstack(options);
@@ -91,6 +94,7 @@ function updateGraphColor(backgroundColor, fontColor, theme) {
             chart.options.theme = theme;
             chart.options.title.fontColor = fontColor;
             chart.options.legend.fontColor = fontColor;
+            chart.options.subtitles.fontColor = fontColor;
             chart.render();    
         }
     }
@@ -704,6 +708,10 @@ function loadGraph(widgetID, graphID, data, w, h, x, y) {
         addSwitch(widgetID, graphID, data, w, h, x, y);
     } else if (type == "colorpicker") {
         addColorPicker(widgetID, graphID, data, w, h, x, y);
+    } else if (type == "statecontroller") {
+        addStateController(widgetID, graphID, data, w, h, x, y);
+    } else if (type == "slider") {
+        addSlider(widgetID, graphID, data, w, h, x, y);
     }
 
 
@@ -754,8 +762,13 @@ function addGraph() {
     $('#selectedEquationList li').each(function() {
         selEqs.push(parseInt($(this).attr('index')));
     });
+
     var _len = selEqs.length;
 
+    // var optionList = []; // get the options
+    // $('#optionList li').each(function() {
+    //     optionList.push($(this).attr('id'));
+    // });
     var width = parseInt($("#graphWidthCombo").val());
 
     var graphType = document.getElementById("graphTypeCombo").value;
@@ -865,7 +878,7 @@ function addGraph() {
 
     } else if (graphType == "ind") {
         var ip = $("#indicatorIPAddress").val();
-        var title = $("#indicatorTitle").val();
+        var title = $("#indicatorTopic").val();
         var chartTitle = $("#chartTitleText").val();
         var widgetID = "widget_indicator"+indicatorIndex;
         var chartID = "indicator"+indicatorIndex;
@@ -881,14 +894,13 @@ function addGraph() {
         graphy += 2;
     } else if (graphType == "switch") {
         var ip = $("#indicatorIPAddress").val();
-        var title = $("#indicatorTitle").val();
+        var title = $("#indicatorTopic").val();
         var chartTitle = $("#chartTitleText").val();
         var widgetID = "widget_switch"+switchIndex;
         var chartID = "switch"+switchIndex;
         var cData = {
             ip: ip,
             title: title,
-            interval: interval,
             type: "switch",
             chartTitle: chartTitle
         };
@@ -896,26 +908,68 @@ function addGraph() {
         graphy += 2;
     } else if (graphType == "colorpicker") {
         var ip = $("#indicatorIPAddress").val();
-        var title = $("#indicatorTitle").val();
+        var title = $("#indicatorTopic").val();
         var chartTitle = $("#chartTitleText").val();
         var widgetID = "widget_colorpicker"+colorPickerIndex;
         var chartID = "colorpicker"+colorPickerIndex;
         var cData = {
             ip: ip,
             title: title,
-            interval: interval,
             type: "colorpicker",
             chartTitle: chartTitle
         };
+        colorPickerIndex++;
         addColorPicker(widgetID, chartID, cData, 2, 3, 0, graphy);
+        graphy += 3;
+    } else if (graphType == "statecontroller") {
+        var ip = $("#controllerIPAddress").val();
+        var title = $("#controllerTopic").val();
+        var chartTitle = $("#chartTitleText").val();
+        var widgetID = "widget_statecontroller"+stateControllerIndex;
+        var chartID = "statecontroller"+stateControllerIndex;
+        var cData = {
+            ip: ip,
+            title: title,
+            type: "statecontroller",
+            chartTitle: chartTitle,
+            optionList: tempOptionList
+        };
+        var _h = 3;
+        if (tempOptionList.length <= 2) _h = 2;
+        else if (tempOptionList.length <= 4) _h = 3;
+        else _h = 4;
+        addStateController(widgetID, chartID, cData, 3, _h, 0, graphy);
+        tempOptionList = [];     
+        graphy += _h;
+    } else if (graphType == "slider") {
+        var ip = $("#gaugeIPAddress").val();
+        var title = $("#gaugeTitle").val();
+        var chartTitle = $("#chartTitleText").val();
+        var unit = $("#gaugeUnit").val();
+        var widgetID = "widget_slider"+sliderIndex;
+        var chartID = "slider"+sliderIndex;
+        var min = parseInt($("#gaugeMin").val());
+        var max = parseInt($("#gaugeMax").val());
+        var cData = {
+            min: min,
+            max: max,
+            unit: unit,
+            ip: ip,
+            title: title,
+            type: "slider",
+            chartTitle: chartTitle
+        };
+        addSlider(widgetID, chartID, cData, 3, 4, 0, graphy);  
+        graphy += 4;
     }
     $("#selectedEquationList").empty();
+    $("#optionList").empty();
     widgetnav_close();
 }
 
 
 function addIndicator(widgetID, graphID, data, w, h, x, y){
-    var div = '<div class="widget-color"><p class="chart-title-font">'+data.chartTitle+'</p><div id="'+graphID+'" class="widget-color" style="display: block;margin: 0 auto;"><div id="'+graphID+'_ON" style="display: none"><div class="led-green"></div><h4>On</h4></div> <div id="'+graphID+'_OFF" style="display: none"><div class="led-blue"></div><h4>Off</h4></div><div id="'+graphID+'_DISCONNECT"><div class="led-red"></div><h4>Disconnected!</h4></div></div></div>';
+    var div = '<div class="widget-color"><p id="title_'+graphID+'" class="chart-title-font">'+data.chartTitle+'</p><div id="'+graphID+'" class="widget-color" style="display: block;margin: 0 auto;"><div id="'+graphID+'_ON" style="display: none"><div class="led-green"></div><h4>On</h4></div> <div id="'+graphID+'_OFF" style="display: none"><div class="led-blue"></div><h4>Off</h4></div><div id="'+graphID+'_DISCONNECT"><div class="led-red"></div><h4>Disconnected!</h4></div></div></div>';
     addDivtoWidget(div, w, h, x, y, widgetID);
     
     var client = initMQQTClientIndicator(graphID,data.ip,data.title,data.interval);
@@ -946,12 +1000,12 @@ function addGauge(widgetID, graphID, data, w, h, x, y){
 
 // Added 2017-03-20
 function addColorPicker(widgetID, graphID, data, w, h, x, y) {
-    var divStr = '<div id="cpDiv" class="inl-bl"></div>';
+    var divStr = '<div id="'+graphID+'_cpDiv" class="inl-bl"></div>';
     var port = parseInt(data.ip.substr(data.ip.length - 4));
 
-    var div = '<div class="widget-color colorpicker" style="  -webkit-border-radius: 0px;-moz-border-radius: 0px;border-radius: 0px;"><p id="title_'+graphID+'" class="chart-title-font">'+data.chartTitle+'</p><div id="colorpicker'+graphID.substring(11)+'" class="" style="display: block;margin: 0 auto;">'+divStr+'<div><button id="setColorBtn" class="" style="" onclick="setColor(\''+graphID+'\')">Set Color</button></div></div>';
+    var div = '<div class="widget-color colorpicker" style="  -webkit-border-radius: 0px;-moz-border-radius: 0px;border-radius: 0px;"><p id="title_'+graphID+'" class="chart-title-font">'+data.chartTitle+'</p><div id="colorpicker'+graphID.substring(11)+'" class="" style="display: block;margin: 0 auto;">'+divStr+'<div><button id="setColorBtn" class="" style="" onclick="setColor(\''+graphID+'\')">Set Color</button></div></div></div>';
     addDivtoWidget(div, w, h, x, y, widgetID);
-     $('#cpDiv').colorpicker({
+     $('#'+graphID+'_cpDiv').colorpicker({
         color: '#ffaa00',
         container: true,
         inline: true,
@@ -972,13 +1026,14 @@ function addColorPicker(widgetID, graphID, data, w, h, x, y) {
 }
 
 function setColor(graphID) {
+    console.log(rgb_string);
     var colorPickerData = graphs[graphID]["chartData"];
     var port = parseInt(colorPickerData.ip.substr(colorPickerData.ip.length - 4));
     mqttPub(rgb_string, colorPickerData.ip, port, colorPickerData.title)
 }
 
 function addSwitch(widgetID, graphID, data, w, h, x, y){
-    var div = '<div class="widget-color"><p class="chart-title-font">'+data.chartTitle+'</p><div id="'+graphID+'" class="widget-color" style="display: block;margin: 0 auto;"><div id="'+graphID+'_ON" style="display: none; cursor:pointer" onclick="switchOff(\''+graphID+'\')"><div class="led-green"></div><h4>On</h4></div><div id="'+graphID+'_OFF" style="display: none; cursor:pointer" onclick="switchOn(\''+graphID+'\')"><div class="led-blue"></div><h4>Off</h4></div><div id="'+graphID+'_UNIDENTIFIED" style="pointer-events:none"><div class="led-red"></div><h4>Unidentified</h4></div></div></div>';
+    var div = '<div class="widget-color"><p id="title_'+graphID+'" class="chart-title-font">'+data.chartTitle+'</p><div id="'+graphID+'" class="widget-color" style="display: block;margin: 0 auto;background-color: inherit;"><div id="'+graphID+'_ON" style="display: none"><div class="switch-off" onclick="switchOff(\''+graphID+'\')" style="cursor:pointer"></div><h4>On</h4></div><div id="'+graphID+'_OFF" style="display: none"><div class="switch-on" onclick="switchOn(\''+graphID+'\')" style="cursor:pointer"></div><h4>Off</h4></div><div id="'+graphID+'_UNIDENTIFIED"><div class="switch" style="cursor:pointer" onclick="setSwitch(\''+graphID+'\')"></div><h4>Pending</h4></div></div></div>';
     addDivtoWidget(div, w, h, x, y, widgetID);
     var port = parseInt(data.ip.substr(data.ip.length - 4));
     var client = initMQQTClientSwitch(graphID, data.ip, port, data.title);
@@ -991,8 +1046,93 @@ function addSwitch(widgetID, graphID, data, w, h, x, y){
     graphs[graphID]["chartData"] = data;
 
 }
-///////////
 
+function setSwitch(graphID) {
+    var switchData = graphs[graphID]["chartData"];
+    var port = parseInt(switchData.ip.substr(switchData.ip.length - 4));
+    mqttPub(-1, switchData.ip, port, switchData.title)
+}
+
+
+function addOption() {
+    var optionName = $("#optionNameText").val();
+    var optionValue = $("#optionValueText").val();
+
+    $("#optionList").append("<li onclick=\"\" id=\"li"+optionValue+"\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+optionValue+"\">"+optionName+"<span class=\"w3-closebtn w3-margin-right w3-medium\" onclick=\"removeOption('"+optionName+"','"+optionValue+"',this)\">-</span></li>");
+    tempOptionList.push([optionName, optionValue]);
+}
+
+var removeOption = function(optionName, optionValue, object){
+    var li = document.getElementById("li"+optionValue);
+    li.remove();
+    var option = [optionName, optionValue];
+    var index = tempOptionList.map(function(el){return el[1];}).indexOf(optionValue);
+    if (index > -1) {
+        tempOptionList.splice(index, 1);
+    }   
+}
+
+function addStateController(widgetID, graphID, data, w, h, x, y){
+
+    var div = '<div class="widget-color"><p id="title_'+graphID+'" class="chart-title-font">'+data.chartTitle+'</p><div id="'+graphID+'" class="widget-color" style="display: block;margin: 0 auto;background-color: inherit;"></div><div><ul class="w3-ul w3-card-4" id="optionListDisp'+graphID+'"></ul></div></div>';
+    addDivtoWidget(div, w, h, x, y, widgetID);
+    var port = parseInt(data.ip.substr(data.ip.length - 4));
+
+    var _len = data.optionList.length;
+    for (i = 0; i < _len; i++) {
+        optionName = data.optionList[i][0];
+        optionValue = data.optionList[i][1];
+        $("#optionListDisp"+graphID).append("<li style=\"text-align:left;cursor:default\"><label for=\""+graphID+"_"+optionValue+"\" style=\"width:90%\">"+optionName+"</label><input type=\"radio\" id=\""+graphID+"_"+optionValue+"\" name=\""+graphID+"stateOption\" style=\"float:right; width:10%\"></li>");
+    }
+    var client = initMQTTClientStateController(graphID, data.ip, port, data.title);
+
+    $(document).ready(function() {
+        $("input[name='"+graphID+"stateOption']").on("change", function() {
+            $("input:checked").each(function(key, val) {
+                var index = val.id.indexOf("_");
+                var optionVal = val.id.substr(index + 1);
+                mqttPub(optionVal, data.ip, port, data.title); 
+                $('#'+graphID+'_'+optionVal).prop("checked", false);
+            });
+        });
+    });
+
+    var sc_i = parseInt(graphID.substring(15));
+    if (sc_i >= stateControllerIndex) {
+        stateControllerIndex = sc_i + 1;
+    }
+    graphs[graphID] = {};
+    graphs[graphID]["type"] = "statecontroller";
+    graphs[graphID]["chartData"] = data;
+
+}
+
+function addSlider(widgetID, graphID, data, w, h, x, y){
+
+    var sliderStr = '<div id="'+graphID+'_command" style="padding-left:15px"><input type="range" min="0" max="5" data-rangeslider="" data-orientation="vertical" style="position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0;"><div class="rangeslider rangeslider--vertical" id="js-rangeslider-6"><div class="rangeslider__fill" style="height: 86px;"></div><div class="rangeslider__handle" style="bottom: 66px;"></div></div> <output style="display:inline-block; margin-bottom: 0;">3</output></div>';
+
+    var div = '<div class="widget-color"><p id="title_'+graphID+'" class="chart-title-font">'+data.chartTitle+'</p><div id="'+graphID+'" class="widget-color" style="display: block;margin: 0 auto;background-color: inherit;"></div>'+sliderStr+'</div>';
+    addDivtoWidget(div, w, h, x, y, widgetID);
+
+    var port = parseInt(data.ip.substr(data.ip.length - 4));
+
+    //var client = initMQTTClientSlider(graphID, data.ip, port, data.title);
+
+    $(document).ready(function() {
+        $('input[type="range"]').rangeslider();
+    });
+
+    var sl_i = parseInt(graphID.substring(6));
+    if (sl_i >= sliderIndex) {
+        sliderIndex = sl_i + 1;
+    }
+    graphs[graphID] = {};
+    graphs[graphID]["type"] = "slider";
+    graphs[graphID]["chartData"] = data;
+
+}
+
+////
 function changeUserEnvironment() {
     loadEquations();
     loadDevices();
@@ -1011,7 +1151,7 @@ function openSettingsModal(widgetID){
     var graphID = widgetID.substring(7);
     var chartData = graphs[graphID]["chartData"];
     
-    if(chartData["type"] == "gauge" || chartData["type"] == "indicator"){
+    if(chartData["type"] == "gauge" || chartData["type"] == "indicator" || chartData["type"] == "switch" || chartData["type"] == "colorpicker" || chartData["type"] == "statecontroller" || chartData["type"] == "slider"){
         $("#settingsModelDateDiv").hide();
         $("#chartTitleTextWS").val(chartData["chartTitle"]);
     }else{
@@ -1028,7 +1168,7 @@ function changeWidgetSettings(){
     var title = $("#chartTitleTextWS").val();
     var graphID = tempwidget.substring(7);
     var chartData = graphs[graphID]["chartData"];
-    if(chartData["type"] == "gauge"){
+    if(chartData["type"] == "gauge" || chartData["type"] == "indicator" || chartData["type"] == "switch" || chartData["type"] == "colorpicker" || chartData["type"] == "statecontroller" || chartData["type"] == "slider"){
         chartData["chartTitle"] = title;
     }else{
         var startDate = $("#startDatePickerWS").val();
@@ -1044,7 +1184,7 @@ function changeWidgetSettings(){
 }
 
 function refreshGraph(chartID,data){
-    if(data.type == "gauge" || data.type == "indicator"){
+    if(data.type == "gauge" || data.type == "indicator" || data.type == "switch" || data.type == "colorpicker" || data.type == "statecontroller" || data.type == "slider"){
         
         $("#title_"+chartID).text(data.chartTitle);
 
@@ -1124,11 +1264,20 @@ function initGauge(id,min,max,unit){
     });
     return chart;
 }
+function randomString(length) {
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for(var i = 0; i < length; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
+}
 
 function initMQQTClient(id,ip,title,gauge){
     //var client  = mqtt.connect('mqtt://karunasinghe.com')
+    var randomstr=randomString(10);
     options={
-        clientId: title,
+        clientId: randomstr,
         keepalive: 1,
         clean: false
     };
@@ -1145,7 +1294,7 @@ function initMQQTClient(id,ip,title,gauge){
     });
 
     
-    return client;
+    return 1;
 }
 
 function test(){
@@ -1185,8 +1334,10 @@ function test(){
 }
 
 function initMQQTClientIndicator(id,ip,title,interval){
-     options={
-        clientId: title,
+
+    var randomstr=randomString(10);
+    options={
+        clientId: randomstr,
         keepalive: 1,
         clean: false};
     var client = mqtt.connect(ip,options); // you add a ws:// url here
@@ -1213,52 +1364,93 @@ function initMQQTClientIndicator(id,ip,title,interval){
     return client;
 }
 
-///TODO///
 function initMQQTClientSwitch(id, ip, port, title) {
     var payload = -1;
-    var state = mqttPub(payload, ip, port, title);
-    if (state == 1) {
-        $('#'+id+'_ON').show();
-        $('#'+id+'_UNIDENTIFIED').hide();
-    } else if (state == 0) {
-        $('#'+id+'_OFF').show();
-        $('#'+id+'_UNIDENTIFIED').hide();
-    }    
+    $('#'+id+'_UNIDENTIFIED').show();
+    mqttPub(payload, ip, port, title);
+
+
+    var randomstr=randomString(10);
+    options={
+        clientId: randomstr,
+        keepalive: 1,
+        clean: false};
+    var client = mqtt.connect(ip,options); // you add a ws:// url here
+    client.subscribe(title+"_ack");
+    client.on("message", function(topic, payload) {
+        var msg_ = [payload].join("");
+        var value_ = parseFloat(msg_);        // Messege is given by [packetID,value];
+        console.log(value_);
+        if(!isNaN(value_)){
+            if(value_ == 1){
+                
+                $('#'+id+'_ON').show();
+                $('#'+id+'_UNIDENTIFIED').hide();
+                $('#'+id+'_OFF').hide();
+            }else{
+                $('#'+id+'_ON').hide();
+                $('#'+id+'_UNIDENTIFIED').hide();
+                $('#'+id+'_OFF').show();
+            }
+        }
+    });
+    return client;
 }
 
 function switchOff(graphID) {
     var switchData = graphs[graphID]["chartData"];
     var port = parseInt(switchData.ip.substr(switchData.ip.length - 4));
-    var state = mqttPub(0, switchData.ip, port, switchData.title)
-    if (state == 1) {
-        $('#'+graphID+'_OFF').show();
-        $('#'+graphID+'_ON').hide();
-    } else if (state == -1) {
-        $('#'+graphID+'_UNIDENTIFIED').show();
-    }    
+    $('#'+graphID+'_ON').hide();
+    $('#'+graphID+'_OFF').hide();
+    $('#'+graphID+'_UNIDENTIFIED').show();
+    mqttPub(0, switchData.ip, port, switchData.title);
 }
 
 function switchOn(graphID) {
     var switchData = graphs[graphID]["chartData"];
     var port = parseInt(switchData.ip.substr(switchData.ip.length - 4));
-    var state = mqttPub(1, switchData.ip, port, switchData.title)
-    if (state == 1) {
-        $('#'+graphID+'_ON').show();
-        $('#'+graphID+'_OFF').hide();
-    } else if (state == -1) {
-        $('#'+graphID+'_UNIDENTIFIED').show();
-    }    
+    $('#'+graphID+'_ON').hide();
+    $('#'+graphID+'_OFF').hide();
+    $('#'+graphID+'_UNIDENTIFIED').show();
+    mqttPub(1, switchData.ip, port, switchData.title);
 }
-///
-function mqttPub(payload, ip, port, topic){
-    // payload:
-    // -1 -> Get current state
-    // 1 -> turn the switch on
-    // 0 -> turn the switch off
 
-    //color_pic: "1,2,3
-    //switch: 1/0/-1:getTheexsiting state
-    return 1 //state 1,0,-1
+function initMQTTClientStateController(id, ip, port, title) {
+    var payload = -1;
+    mqttPub(payload, ip, port, title);
+
+    var randomstr=randomString(10);
+    options={
+        clientId: randomstr,
+        keepalive: 1,
+        clean: false};
+    var client = mqtt.connect(ip,options); // you add a ws:// url here
+    client.subscribe(title+"_ack");
+    client.on("message", function(topic, payload) {
+        var msg_ = [payload].join("");
+        var value_ = parseFloat(msg_);        // Messege is given by [packetID,value];
+        console.log(value_);
+        if(!isNaN(value_)){
+            if ($('#'+id+'_'+value_))
+                $('#'+id+'_'+value_).prop("checked", true);
+        }
+    });
+    return client;
+}
+
+function mqttPub(payload, ip, port, topic){
+    var randomstr=randomString(10);
+    options={
+        clientId: randomstr,
+        keepalive: 1,
+        clean: false
+    };
+    var client = mqtt.connect(ip,options); // you add a ws:// url here
+    //window.alert(payload);
+    client.publish(topic, ''+payload,1);
+
+    client.end();
+    return 1;
 }
 function showLed(value) {
     if (value > 30 && value < 36) {

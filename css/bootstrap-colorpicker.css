@@ -8,8 +8,9 @@
  *
  */
 .colorpicker-saturation {
-  width: 100px;
-  height: 100px;
+  width: 200px;
+  height: 200px;
+  display: inline-block;
   background-image: url("../img/bootstrap-colorpicker/saturation.png");
   cursor: crosshair;
   float: left;

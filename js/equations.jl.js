@@ -71,10 +71,12 @@ function showEquations(){
     $("#pieChartConfigPanel").hide();
     $("#gaugeConfigPanel").hide();
     $("#indicatorConfigPanel").hide();
+    $("#stateControllerConfigPanel").hide();
     $("#dateRangeChooser").show();
     if(graphType == "line"){
         for (var i = 0; i < _len; i++) {
         $("#barChartConfigPanel").show();
+        $("#eqListHeader").show();
             var eq = globalEqList[i].equation;
             var eqStr = parseEquation(eq);
             var eqName = globalEqList[i].eqName;
@@ -82,6 +84,7 @@ function showEquations(){
         }
     }else if(graphType == "bar"){
         $("#barChartConfigPanel").show();
+        $("#eqListHeader").show();
         for (var i = 0; i < _len; i++) {
             if((parseEquation(globalEqList[i].equation)).includes("")){
                 var eq = globalEqList[i].equation;
@@ -92,6 +95,7 @@ function showEquations(){
         }   
     }else if(graphType == "pie"){
         $("#pieChartConfigPanel").show();
+        $("#eqListHeader").show();
         loadPieChartTotalCombo();
         for (var i = 0; i < _len; i++) {
             if((parseEquation(globalEqList[i].equation)).includes("energy")){
@@ -104,18 +108,36 @@ function showEquations(){
     }else if(graphType == "guage"){
         $("#gaugeConfigPanel").show();
         $("#dateRangeChooser").hide();
+        $("#graphWidthCombo").hide();
+        $("#graphWidthLabel").hide();
         $("#eqListHeader").hide();
     }else if(graphType == "led"){
         
     }else if(graphType == "ind"){
         $("#indicatorConfigPanel").show();
         $("#dateRangeChooser").hide();
+        $("#graphWidthCombo").hide();
+        $("#graphWidthLabel").hide();
         $("#timeIntDiv").show();
         $("#eqListHeader").hide();
     }else if(graphType == "switch" || graphType == "colorpicker"){
         $("#indicatorConfigPanel").show();
         $("#dateRangeChooser").hide();
+        $("#graphWidthCombo").hide();
+        $("#graphWidthLabel").hide();
         $("#timeIntDiv").hide();
+        $("#eqListHeader").hide();
+    }else if (graphType == "statecontroller") {
+        $("#stateControllerConfigPanel").show();
+        $("#dateRangeChooser").hide();
+        $("#graphWidthCombo").hide();
+        $("#graphWidthLabel").hide();
+        $("#eqListHeader").hide();
+    }else if (graphType == "slider") {
+        $("#gaugeConfigPanel").show();
+        $("#dateRangeChooser").hide();
+        $("#graphWidthCombo").hide();
+        $("#graphWidthLabel").hide();
         $("#eqListHeader").hide();
     }
 }

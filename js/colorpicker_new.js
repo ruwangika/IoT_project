@@ -204,7 +204,7 @@ var setColor = function(a, j, c) {
     colorHSB = a;
     
     var rgb_string = r_val + "," + g_val + "," + b_val;
-    window.alert(r_val + ", " + g_val + ", " + b_val);
+    //window.alert(r_val + ", " + g_val + ", " + b_val);
 };
 
 var numeralHEX = function(a) {

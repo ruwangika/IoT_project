@@ -131,7 +131,7 @@ function loadBarChartData(chartID,title,equationList, xAxis, startDate, endDate,
             var dateTimeFormat = "hh:mmTT D\’th\’ MMM YY";
             var intervalType = "minute";
             if(accInt == "HOUR"){
-                dateTimeFormat = "hhTT D\’th\’";
+                dateTimeFormat = "hhTT";
                 intervalType = "hour";
             }else if(accInt == "DAY"){
                 dateTimeFormat = "DDD D";
