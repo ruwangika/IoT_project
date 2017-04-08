@@ -113,3 +113,7 @@
 .button-background:hover {
     background-color: #BFBFBF;
 }
+
+.widget-li {
+    border-color: #CCCCCC;
+}

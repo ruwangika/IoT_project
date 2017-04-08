@@ -620,7 +620,7 @@
                     <p class="label-3">Password</p>
                 </div>
                 <div class="w3-col w3-container" style="width:30%">
-                    <input id="passwordTextLink" type="text" style="padding:0px 0px">
+                    <input id="passwordTextLink" type="password" style="padding:0px 0px">
                 </div>
             </div>
             <button id="linkSubmitBtn" class="portal-button settings-modal-button" onclick="eproConnect('link')">Link</button>

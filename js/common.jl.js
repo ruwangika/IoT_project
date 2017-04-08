@@ -70,7 +70,7 @@ function loadGraphTypes(){
         ["Gauge", "guage"],
         ["Indicator", "ind"],
         ["Switch", "switch"],
-        ["Color Picker", "colorpicker"],
+        //["Color Picker", "colorpicker"],
         ["State Controller", "statecontroller"],
         ["Slider", "slider"],
         ["Bot", "bot"]
@@ -860,7 +860,7 @@ function addGraph() {
         }
         var equationList = [];
         for (var i = 0; i < _len; i++) {
-            equationList.push(globalEqList[selEqs[i]].equation);
+            equationList.push(globalEqList[selEqs[i]]);
         }
 
         var chartID = "linechart" + lineChartIndex;
@@ -886,7 +886,7 @@ function addGraph() {
         }
         var equationList = [];
         for (var i = 0; i < _len; i++) {
-            equationList.push(globalEqList[selEqs[i]].equation);
+            equationList.push(globalEqList[selEqs[i]]);
         }
         var chartID = "colchart" + colChartIndex;
         var title = $("#chartTitleText").val();
@@ -917,7 +917,7 @@ function addGraph() {
         var title = $("#chartTitleText").val();
         var equationList = [];
         for (var i = 0; i < _len; i++) {
-            equationList.push(globalEqList[selEqs[i]].equation);
+            equationList.push(globalEqList[selEqs[i]]);
         }
         var totalIndex = -1;
         if ($('#pieChartTotalCombo option:selected').length != 0) {
@@ -1168,7 +1168,7 @@ function setColor(graphID) {
 }
 
 function addSwitch(widgetID, graphID, data, w, h, x, y){
-    var div = '<div class="widget-color"><p id="title_'+graphID+'" class="chart-title-font">'+data.chartTitle+'</p><div id="'+graphID+'" class="widget-color" style="display: block;margin: 0 auto;background-color: inherit;"><div id="'+graphID+'_ON" style="display: none"><div class="switch-off" onclick="switchOff(\''+graphID+'\')" style="cursor:pointer"></div><h4>On</h4></div><div id="'+graphID+'_OFF" style="display: none"><div class="switch-on" onclick="switchOn(\''+graphID+'\')" style="cursor:pointer"></div><h4>Off</h4></div><div id="'+graphID+'_UNIDENTIFIED"><div class="switch" style="cursor:pointer" onclick="setSwitch(\''+graphID+'\')"></div><h4>Pending</h4></div></div></div>';
+    var div = '<div class="widget-color"><p id="title_'+graphID+'" class="chart-title-font">'+data.chartTitle+'</p><div id="'+graphID+'" class="widget-color" style="display: block;margin: 0 auto;background-color: inherit;"><div id="'+graphID+'_ON" style="display: none"><div class="switch-off" onclick="switchOff(\''+graphID+'\')" style="cursor:pointer"></div><h6 style="padding-bottom:7px">On</h6></div><div id="'+graphID+'_OFF" style="display: none"><div class="switch-on" onclick="switchOn(\''+graphID+'\')" style="cursor:pointer"></div><h6 style="padding-bottom:7px">Off</h6></div><div id="'+graphID+'_UNIDENTIFIED"><div class="switch" style="cursor:pointer" onclick="setSwitch(\''+graphID+'\')"></div><h6 style="padding-bottom:7px">Pending</h6></div></div></div>';
     addDivtoWidget(div, w, h, x, y, widgetID);
     var port = parseInt(data.ip.substr(data.ip.length - 4));
     var client = initMQQTClientSwitch(graphID, data.ip, port, data.title);
@@ -1209,7 +1209,7 @@ var removeOption = function(optionName, optionValue, object){
 
 function addStateController(widgetID, graphID, data, w, h, x, y){
 
-    var div = '<div class="widget-color"><p id="title_'+graphID+'" class="chart-title-font">'+data.chartTitle+'</p><div id="'+graphID+'" class="widget-color" style="display: block;margin: 0 auto;background-color: inherit;"></div><div><ul class="w3-ul w3-card-4" id="optionListDisp'+graphID+'"></ul></div></div>';
+    var div = '<div class="widget-color"><p id="title_'+graphID+'" class="chart-title-font" style="margin-bottom:5px">'+data.chartTitle+'</p><div id="'+graphID+'" class="widget-color" style="display: block;margin: 0 auto;background-color: inherit;"></div><div><ul class="w3-ul" id="optionListDisp'+graphID+'"></ul></div></div>';
     addDivtoWidget(div, w, h, x, y, widgetID);
     var port = parseInt(data.ip.substr(data.ip.length - 4));
 
@@ -1217,7 +1217,7 @@ function addStateController(widgetID, graphID, data, w, h, x, y){
     for (i = 0; i < _len; i++) {
         optionName = data.optionList[i][0];
         optionValue = data.optionList[i][1];
-        $("#optionListDisp"+graphID).append("<li style=\"text-align:left;cursor:default\"><label for=\""+graphID+"_"+optionValue+"\" style=\"width:90%\">"+optionName+"</label><input type=\"radio\" id=\""+graphID+"_"+optionValue+"\" name=\""+graphID+"stateOption\" style=\"float:right; width:10%\"></li>");
+        $("#optionListDisp"+graphID).append("<li class=\"widget-li\"><label for=\""+graphID+"_"+optionValue+"\" style=\"width:90%\">"+optionName+"</label><input type=\"radio\" id=\""+graphID+"_"+optionValue+"\" name=\""+graphID+"stateOption\" style=\"float:right; width:10%\"></li>");
     }
     var client = initMQTTClientStateController(graphID, data.ip, port, data.title);
 
@@ -1277,7 +1277,7 @@ function changeUserEnvironment() {
 function addNote(content) {
 
     $("#notification").fadeIn("slow").html(content);
-    $("#notification").fadeOut("slow");
+    setTimeout(function(){ $("#notification").fadeOut("slow") }, 1500);
 }
 
 function openLinkModal() {
@@ -1334,12 +1334,14 @@ function eproConnect(optionStr) {
 
             if (!data) return;
             else if (data=="Invalid login!") {
-
+                addNote(data);
             } else if (data=="success!") {
                 document.getElementById("linkBtnDiv").innerHTML = '<button id="linkAccBtn" class="portal-button button-background" onclick="openLinkModal()" data-toggle="tooltip" data-placement="left" title="Link ePro account">ePro<br><i class="fa fa-link" aria-hidden="true"></i></button>';
+                addNote("ePro account disconnected")
             } else {
                 document.getElementById("linkBtnDiv").innerHTML = '<button id="linkAccBtn" class="portal-button button-background" onclick="openUnlinkModal()" data-toggle="tooltip" data-placement="left" title="Disconnect ePro account">ePro<br><i class="fa fa-trash-o" aria-hidden="true"></i></button>';
                 document.getElementById("unlinkPrompt").innerHTML = 'Are you sure you want to disconnect ' + data + '?';
+                addNote("Linked with ePro account " + data);
             }
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -1450,7 +1452,7 @@ function refreshGraph(chartID,data){
         } else if (data.type == "column") {
             loadBarChartData(chartID, data.title, data.equationList, data.xAxis, data.startDate, data.endDate, data.interval, data.tarrifs, data.type)
         } else if (data.type == "pie") {
-            loadPieChartData(chartID, data.title, data.equationList, data.totalIndex, data.startDate, data.endDate, data.dataType, data.type);
+            loadPieChartData(chartID, data.title, data.equationList, data.total_index, data.startDate, data.endDate, data.dataType, data.type);
         }
     }
     gridSaved = false;
@@ -1555,6 +1557,9 @@ function initMQQTClient(id,ip,title,gauge){
             setGaugeLive(id);
         }
     });
+    client.on("reconnect", function() {
+        client.subscribe(title);
+    });
 
     
     return 1;
@@ -1624,6 +1629,9 @@ function initMQQTClientIndicator(id,ip,title,interval){
             setIndicatorLive(id,interval);
         }
     });
+    client.on("reconnect", function() {
+        client.subscribe(title);
+    });
     return client;
 }
 
@@ -1656,6 +1664,9 @@ function initMQQTClientSwitch(id, ip, port, title) {
                 $('#'+id+'_OFF').show();
             }
         }
+    });
+    client.on("reconnect", function() {
+        client.subscribe(title+"_ack");
     });
     return client;
 }
@@ -1697,6 +1708,9 @@ function initMQTTClientStateController(id, ip, port, title) {
             if ($('#'+id+'_'+value_))
                 $('#'+id+'_'+value_).prop("checked", true);
         }
+    });
+    client.on("reconnect", function() {
+        client.subscribe(title+"_ack");
     });
     return client;
 }

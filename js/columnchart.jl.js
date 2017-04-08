@@ -110,8 +110,8 @@ function loadBarChartData(chartID,title,equationList, xAxis, startDate, endDate,
     var channels = [];
     var units = [];
     for(i = 0; i < equationList.length; i++){
-        for(j = 0; j < equationList[i].length; j++){
-            var expression = equationList[i][j];
+        for(j = 0; j < equationList[i]['equation'].length; j++){
+            var expression = equationList[i]['equation'][j];
             devices.push(expression.device);
             channels.push(expression.number + expression.op + expression.channel);
             units.push(expression.unit);
@@ -161,7 +161,8 @@ function loadBarChartData(chartID,title,equationList, xAxis, startDate, endDate,
             }
 
             for(i = 0; i < equationList.length; i++){
-                var equation = equationList[i];
+                var equation = equationList[i]['equation'];
+                var eqName = equationList[i]['eqName'];
                 var equationData = [];
                 for(j = 0; j < equation.length; j++){
                     var expression = equation[j];
@@ -185,7 +186,7 @@ function loadBarChartData(chartID,title,equationList, xAxis, startDate, endDate,
                 // if (!data[device]) window.alert("null");
                 
                 var column={
-                    name: parseEquation(equation),
+                    name: eqName,
                     type: "column", showInLegend: true,
                     yValueFormatString:"#.## "+equation[equation.length-1].unit,
                 };

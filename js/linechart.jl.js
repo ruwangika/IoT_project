@@ -140,8 +140,8 @@ function loadlineChartData(chartID, title, equationList, xAxis, startDate, endDa
     var channels = [];
     var units = [];
     for(i = 0; i < equationList.length; i++){//ith equation
-        for(j = 0; j < equationList[i].length; j++){
-            var expression = equationList[i][j];//
+        for(j = 0; j < equationList[i]['equation'].length; j++){
+            var expression = equationList[i]['equation'][j];//
             devices.push(expression.device);
             channels.push(expression.number + expression.op + expression.channel);
             units.push(expression.unit);
@@ -158,7 +158,7 @@ function loadlineChartData(chartID, title, equationList, xAxis, startDate, endDa
             var chartData = [];
             var channelCounter = 0;
             for(i = 0; i < equationList.length; i++) {
-                _len = getMinLength(equationList[i], data, xAxis);   
+                _len = getMinLength(equationList[i]['equation'], data, xAxis);   
                 var sum = 0;
                 var min = Number.POSITIVE_INFINITY;
                 var max = Number.NEGATIVE_INFINITY;
@@ -170,8 +170,8 @@ function loadlineChartData(chartID, title, equationList, xAxis, startDate, endDa
                 for(count=0;count<_len;count++){
                    var p_x=0;
                    var p_y=0;
-                   for(j = 0; j < equationList[i].length; j++) {
-                        var expression = equationList[i][j];
+                   for(j = 0; j < equationList[i]['equation'].length; j++) {
+                        var expression = equationList[i]['equation'][j];
                         var device = expression.device;
                         var channel = expression.number + expression.op + expression.channel;
                         if (!data[device][xAxis]) continue;
@@ -194,8 +194,9 @@ function loadlineChartData(chartID, title, equationList, xAxis, startDate, endDa
                 var avg = Math.round(sum/_len * 100) / 100;
                 min = Math.round(min * 10) / 10;
                 max = Math.round(max * 10) / 10;
+                var eqName = equationList[i]['eqName'];
                 var line={
-                    name: parseEquation(equationList[i])+', avg='+avg+', max='+max+', min='+min,
+                    name: eqName+', average:'+avg+', max:'+max+', min:'+min,
                     type: "line",
                     showInLegend: true,
                     yValueFormatString:"#.## "+unit,

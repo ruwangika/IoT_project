@@ -660,6 +660,15 @@ select option{
     max-width: 350px;
 }
 
+.widget-li {
+    text-align:left;
+    cursor:default;
+    border:2px;
+    border-radius:6px;
+    border-style:outset;
+    border-bottom: none !important;
+}
+
 @-webkit-keyframes sk-scaleout {
   0% { -webkit-transform: scale(0) }
   100% {

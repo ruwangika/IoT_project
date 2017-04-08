@@ -124,6 +124,12 @@ function initMQTTClientBot(graphID, data, chart, model){
         xVal = time.getTime();
         updateBotData(chart, xVal, y_output, y_mse);
     });
+    
+    client.on("reconnect", function() {
+        
+        client.subscribe(modelId+"/"+output_field);
+        client.subscribe(modelId+"/mse");
+    });
 
     client.publish("config/addmodel", modelStr, 1); 
 

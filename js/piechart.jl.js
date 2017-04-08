@@ -15,8 +15,8 @@ function loadPieChartData(chartID,title,equationList,total_index,startDate,endDa
     var channels = [];
     var units = [];
     for(i = 0; i < equationList.length; i++){
-        for(j = 0; j < equationList[i].length; j++){
-            var expression = equationList[i][j];
+        for(j = 0; j < equationList[i]['equation'].length; j++){
+            var expression = equationList[i]['equation'][j];
             devices.push(expression.device);
             channels.push(expression.number + expression.op + expression.channel);
             units.push(expression.unit);
@@ -49,7 +49,8 @@ function loadPieChartData(chartID,title,equationList,total_index,startDate,endDa
             }
 
             for(i = 0; i < equationList.length; i++){
-                var equation = equationList[i];
+                var equation = equationList[i]['equation'];
+                var eqName = equationList[i]['eqName']
                 var equationData = [];
                 var device;
                 var xAxis="date_time"
@@ -76,7 +77,7 @@ function loadPieChartData(chartID,title,equationList,total_index,startDate,endDa
 
                 }
                 
-                var dataPoint = { legendText: parseEquation(equation), indexLabel: "#percent%" };
+                var dataPoint = { legendText: eqName, indexLabel: "#percent%" };
                 var g_len = data[device][xAxis].length;
                 for(j = 0; j < g_len ; j++){
                     dataPoint.y=equationData[j];
