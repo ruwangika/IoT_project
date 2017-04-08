@@ -1,11 +1,11 @@
 var pieChart;
 
-function loadPieChartData(chartID,title,equationList,total,startDate,endDate,dataType,type){
+function loadPieChartData(chartID,title,equationList,total_index,startDate,endDate,dataType,type){
     graphs[chartID] = {};
     var cData = {
         title: title,
         equationList: equationList,
-        total: total,
+        total_index: total_index,
         startDate: startDate,
         endDate: endDate,
         dataType: dataType,
@@ -24,22 +24,102 @@ function loadPieChartData(chartID,title,equationList,total,startDate,endDate,dat
     }
 
     graphs[chartID]["chartData"] = cData;
-    if(total != -1){
-        if (devices.indexOf(total) < 0) {
-            devices.push(total);
+   /* if(total_index != -1){
+        if (devices.indexOf(total_index) < 0) {
+            devices.push(total_index);
         }
-    }
+    }*/
     $.ajax({
         url: "back/load_data.php",
         method: "POST",
-        data: {devices: devices, channel: channels[0], startDate: startDate, endDate: endDate, dataType: dataType, type: type},
+        data: {devices: devices, channel: channels, startDate: startDate, endDate: endDate, dataType: dataType, type: type},
         dataType: "json",
         success: function(data, status) {
             console.log("Pie chart load data: " + status);
-            var chartData = [];
+            var 
+            chartData = [];
             var channelCounter = 0;
             var d_len = devices.length;
-            if(total != -1){
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+        
+            if(data == null){
+                $("#"+chartID).html(title+"No data");
+                $(".filter-button").removeAttr("disabled");
+                return "No data";
+            }
+
+            for(i = 0; i < equationList.length; i++){
+                var equation = equationList[i];
+                var equationData = [];
+                var device;
+                var xAxis="date_time"
+                for(j = 0; j < equation.length; j++){
+                    var expression = equation[j];
+                    var channel = expression.number + expression.op + expression.channel;
+                    device = expression.device;
+                    if(data[device] == null){
+                        continue;
+                    }else{
+                        
+                        if (!data[device][xAxis]) continue;
+                        else channelCounter++;
+                    }
+                    var _len = data[device][xAxis].length;
+                    for(k = 0; k < _len ; k++){
+                        if(j == 0){
+                            equationData[k] = 0;
+                        }
+                        equationData[k] += data[device][channel][k];
+                        
+                    }
+                    
+
+                }
+                
+                var dataPoint = { legendText: parseEquation(equation), indexLabel: "#percent%" };
+                var g_len = data[device][xAxis].length;
+                for(j = 0; j < g_len ; j++){
+                    dataPoint.y=equationData[j];
+                }
+                chartData.push(dataPoint);
+            }  
+            var sum=0;
+            for(i=0;i<chartData.length;i++){
+                if(i!=total_index)
+                    sum+=chartData[i].y;
+            }
+            if (total_index!=-1){
+                 var dataPoint = { legendText: "Other", indexLabel: "#percent%" };
+                 y=chartData[total_index].y;
+                 rest=y-sum;
+                 if(y>0){
+                    chartData.splice(total_index, 1);
+                    dataPoint.y=rest;
+                    sum=y;
+                    chartData.push(dataPoint);
+                 }
+                 else{
+                    $("#"+chartID).html(title+"Total is less than sum of others!");
+                    $(".filter-button").removeAttr("disabled");
+                    return -1;
+                 }
+            }
+            for(i=0;i<chartData.length;i++){
+                chartData[i].y=Math.round(chartData[i].y*10000/sum)/100;
+            }
+            time_range={startDate:startDate,endDate:endDate};
+            if(channelCounter != 0){
+                initPieChart(chartID,title,chartData,time_range,units[0]);
+            }else{
+                 $("#"+chartID).html(title+"No data");
+                $(".filter-button").removeAttr("disabled");
+                return "No data";
+            }
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+           /* if(total != -1){
                 var sum = 0;
                 for(i = 0; i < d_len-1; i++){
                     sum += data[devices[i]][channel];
@@ -54,9 +134,8 @@ function loadPieChartData(chartID,title,equationList,total,startDate,endDate,dat
                 var legend = data[devices[i]]["DeviceName"];
                 var dataPoints = { y: value, legendText: legend, indexLabel: legend+": #percent%" };
                 chartData.push(dataPoints);
-            }
+            }*/
             
-            initPieChart(chartID,title,chartData,units[0]);
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) { 
             console.log(XMLHttpRequest);
@@ -69,7 +148,7 @@ function loadPieChartData(chartID,title,equationList,total,startDate,endDate,dat
     });
 }
 
-function initPieChart(chartID,title,chartData,unit){
+function initPieChart(chartID,title,chartData,time_range,unit){
     //var themeId = document.getElementById("themeCombo");
     var backgroundColor, fontColor, theme;
     if (globalTheme == "dark") {        
@@ -82,9 +161,8 @@ function initPieChart(chartID,title,chartData,unit){
         fontColor = "#0d1a26";
     }
     var subtitle = "";
-    var dp = chartData[0].dataPoints;
-    var start = formatDate(dp[0].x);
-    var end = formatDate(dp[dp.length - 1].x);
+    var start = time_range.startDate;
+    var end = time_range.endDate;
     if (end==start) subtitle = end;
     else subtitle = start + ' to ' + end;
 

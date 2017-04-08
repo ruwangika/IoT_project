@@ -36,21 +36,8 @@ $(function() {
     $('#addLogoModalCloseBtn').click(function(id) {            
         $("#addLogoModal").hide();
     });
-    
-
-        
-    $(":file").change(function () {
-        if (this.files && this.files[0]) {
-            var reader = new FileReader();
-            reader.onload = imageIsLoaded;
-            reader.readAsDataURL(this.files[0]);
-        }
-        $("#addLogoModal").hide();
-        $("#loaderModal").hide();
-    });
 
     $("#addLogoBtn").click(function(){
-        console.log("Add Logo Btn");
         $("#addLogoModal").show();
     });
     
@@ -65,10 +52,82 @@ $(function() {
     };
 
     $(window).resize(function(){
-        console.log("resize");
+        //console.log("resize");
     });
 
 });
+
+function loadGraphTypes(){
+    $('#graphTypeCombo').empty();
+
+    var graphTypes = [];
+    var graphTypes_historical = [
+        ["Line Chart", "line"],
+        ["Bar Chart", "bar"],
+        ["Pie Chart", "pie"]
+    ];
+    var graphTypes_realtime = [
+        ["Gauge", "guage"],
+        ["Indicator", "ind"],
+        ["Switch", "switch"],
+        ["Color Picker", "colorpicker"],
+        ["State Controller", "statecontroller"],
+        ["Slider", "slider"],
+        ["Bot", "bot"]
+    ];
+    var graphCategory = $("#graphCategoryCombo").val();
+    if (graphCategory=="historical") 
+        graphTypes = graphTypes_historical;
+    else if (graphCategory=="realtime")
+        graphTypes = graphTypes_realtime;
+     
+     for (var i=0; i<graphTypes.length; i++){
+        $('#graphTypeCombo').append($('<option/>', {
+            text: graphTypes[i][0],
+            value: graphTypes[i][1]
+        }));        
+    }
+}
+
+function uploadLogo() {
+    var file_data = $('#logoInput').prop('files')[0];   
+    var form_data = new FormData();                  
+    form_data.append('file', file_data);
+    form_data.append('user_id', userID);                           
+    $.ajax({
+            url: 'back/upload.php',                       
+            method: 'POST',
+            dataType: 'json',
+            cache: false,
+            contentType: false,
+            processData: false,
+            data: form_data,  
+            success: function(php_script_response){
+                console.log(php_script_response);
+            }
+    });
+    var inputEl = document.getElementById("logoInput");
+    var reader = new FileReader();
+    reader.onload = imageIsLoaded;
+    reader.readAsDataURL(inputEl.files[0]);
+    $("#addLogoModal").hide();
+    $("#loaderModal").hide();
+}
+
+function loadClientLogo() {
+    var logoURL = 'img/clientlogos/'+userID+'.png';
+    $.ajax({
+        url: logoURL,
+        type:'HEAD',
+        error: function() {
+            $('#customerLogo').attr('src', 'img/eprologo.png');
+        },
+        success: function() {
+            $('#customerLogo').attr('src', logoURL);
+        }
+    });
+    
+}
 
 function updateDevicesCombo() {
     var defaultType = "ePro1000";
@@ -87,27 +146,19 @@ function updateGraphColor(backgroundColor, fontColor, theme) {
         var el = $(nodes[i]);
         var node = el.data('_gridstack_node');
         var widgetID = node.el[0].id;
-
-        if (graphs[widgetID.substring(7)]["type"].includes("Chart")) {
+        if (graphs[widgetID.substring(7)]["type"].includes("Chart") || graphs[widgetID.substring(7)]["type"] == "bot") {
             var chart =  graphs[widgetID.substring(7)]["chart"];
             chart.options.backgroundColor = backgroundColor;
             chart.options.theme = theme;
             chart.options.title.fontColor = fontColor;
             chart.options.legend.fontColor = fontColor;
-            chart.options.subtitles.fontColor = fontColor;
+            if (chart.options.subtitles[0])
+                chart.options.subtitles[0].fontColor = fontColor;
             chart.render();    
         }
     }
 }
 
-function updatelineChartColor(chart, backgroundColor, theme, fontColor) {
-    chart.options.backgroundColor = backgroundColor;
-    chart.options.theme = theme;
-    chart.options.fontColor = fontColor;
-    chart.options.title.fontColor = fontColor;
-    chart.render();    
-}
-////////////////////TODO get to user ID here////////////////////////////////////////////////
 function loadDevicesCombo(Type) {//private method
     var deviceCombo = $("#deviceCombo");
     deviceCombo.empty();
@@ -287,24 +338,38 @@ function loadPieChartTotalCombo() {
 
     var totalCombo = $("#pieChartTotalCombo");
     totalCombo.empty();
-    var _len = globalEqList.length;
-    totalCombo.append($('<option/>', {
-        text: "Undefined",
-        val: -1
-    }));
-    for (j = 0; j < _len; j++) {
+    var selEqs = []; 
+    $('#selectedEquationList li').each(function() {
+        selEqs.push(parseInt($(this).attr('index')));
+    });
 
-        if ((parseEquation(globalEqList[j].equation)).includes("energy")) {
-            var eq = globalEqList[j].equation;
-            var eqName = globalEqList[j].eqName;
-            //var eqStr = parseEquation(eq);
+    var _len = selEqs.length;
+    for (j = 0; j < _len; j++) {
+        if ((parseEquation(globalEqList[selEqs[j]].equation)).includes("")) {
+            var eq = globalEqList[selEqs[j]].equation;
+            var eqName = globalEqList[selEqs[j]].eqName;
+            var eqStr = parseEquation(eq);
             totalCombo.append($('<option/>', {
                 text: eqName,
-                val: eq.device
+                val: j
             }));
         }
     }
+}
 
+function showTotalCombo() {
+    var val = document.getElementById("toggleTotalComboBtn").value;
+    if (val==0) {
+        $("#pieChartTotalComboDiv").show();
+        document.getElementById("toggleTotalComboBtn").innerHTML = '<i class="fa fa-toggle-on" aria-hidden="true"></i>';
+        document.getElementById("toggleTotalComboBtn").setAttribute("value", "1");
+        loadPieChartTotalCombo();
+    } else if (val==1) {
+        $("#pieChartTotalComboDiv").hide();
+        document.getElementById("toggleTotalComboBtn").innerHTML = '<i class="fa fa-toggle-off" aria-hidden="true"></i>';
+        document.getElementById("toggleTotalComboBtn").setAttribute("value", "0");
+        $("#pieChartTotalCombo").empty();
+    }
 }
 
 function loadUserCombo() {
@@ -382,6 +447,9 @@ function graphdbclick(graph, id) {
         tempGraph = graph;
         tempId = id;
         graphnav_open();
+        if (graphs[id].type=="bot") 
+            $("#chartIntDiv").hide();
+        else $("#chartIntDiv").show();
         $("#graphContainer").empty();                                       
         document.getElementById("graphContainer").appendChild(graph);
         graphs[id].chart.render();
@@ -473,7 +541,7 @@ function loadChartData(type, chartID, data, period) {
     } else if (type == "colChart") {
         loadBarChartData(chartID, data.title, data.equationList, data.xAxis, data.startDate, data.endDate, period, data.tarrifs, data.type)
     } else if (type == "pieChart") {
-        loadPieChartData(chartID, data.title, data.equationList, data.total, data.startDate, data.endDate, data.dataType, data.type);
+        loadPieChartData(chartID, data.title, data.equationList, data.total_index, data.startDate, data.endDate, data.dataType, data.type);
     }
     //$("#divLoading").hide();
 }
@@ -520,6 +588,11 @@ function widgetnav_open() {
         return;
     }
     */
+    $("#settingsMain").show();
+    $("#controllersList").empty();
+    $("#targetList").empty();
+    $("#updateBotBtn").hide();
+    $("#addGraphBtn").show();
     document.getElementById("widgetNav").style.width = "100%";
     document.getElementById("widgetNav").style.display = "block";
 }
@@ -660,7 +733,6 @@ function loadGridWidgets(user_grid) {
     graphy = 0;
     //graphs = [];
     var _len = user_grid.length;
-    //console.log(user_grid);
     for (var i = 0; i < _len; i++) {
         var grid_node = user_grid[i];
         loadGraph(grid_node.widgetID, grid_node.graphID, grid_node.chartData, grid_node.w, grid_node.h, grid_node.x, grid_node.y);
@@ -693,7 +765,7 @@ function loadGraph(widgetID, graphID, data, w, h, x, y) {
             colChartIndex = c_i + 1;
         }
     } else if (type == "pie") {
-        loadPieChartData(graphID, data.title, data.equationList, data.total, startDate, endDate, data.dataType, type);
+        loadPieChartData(graphID, data.title, data.equationList, data.total_index, data.startDate, data.endDate, data.dataType, type);
         var div = generateChartDiv(graphID);
         addDivtoWidget(div, w, h, x, y, widgetID);
         var p_i = parseInt(graphID.substring(8));
@@ -712,6 +784,14 @@ function loadGraph(widgetID, graphID, data, w, h, x, y) {
         addStateController(widgetID, graphID, data, w, h, x, y);
     } else if (type == "slider") {
         addSlider(widgetID, graphID, data, w, h, x, y);
+    } else if (type == "bot") {
+        var div = generateChartDiv(graphID);
+        addDivtoWidget(div, w, h, x, y, widgetID);
+        addBot(widgetID, graphID, data);
+        var b_i = parseInt(graphID.substring(3));
+        if (b_i >= botIndex) {
+            botIndex = b_i + 1;
+        }
     }
 
 
@@ -839,13 +919,16 @@ function addGraph() {
         for (var i = 0; i < _len; i++) {
             equationList.push(globalEqList[selEqs[i]].equation);
         }
-        var total = $('#pieChartTotalCombo option:selected').val();
+        var totalIndex = -1;
+        if ($('#pieChartTotalCombo option:selected').length != 0) {
+            totalIndex = parseInt($('#pieChartTotalCombo option:selected').attr('value'));
+        }
         var startDate = $("#startDatePicker").val();
         var endDate = $("#endDatePicker").val();
         var dataType = 'acc';
         var type = 'pie';
 
-        loadPieChartData(chartID, title, equationList, total, startDate, endDate, dataType, type);
+        loadPieChartData(chartID, title, equationList, totalIndex, startDate, endDate, dataType, type);
 
         var div = generateChartDiv("piechart" + pieChartIndex);
         var widgetID = "widget_" + "piechart" + pieChartIndex + "";
@@ -961,7 +1044,59 @@ function addGraph() {
         };
         addSlider(widgetID, chartID, cData, 3, 4, 0, graphy);  
         graphy += 4;
+    } else if (graphType == "bot") {
+        var ip = $("#botIPPort").val();
+        var chartTitle = $("#chartTitleText").val();
+        var learner = $("#learnerCombo").val();
+        var widgetID = "widget_bot"+botIndex;
+        var chartID = "bot"+botIndex;
+        var learner_class = $("#learnerTypeCombo").val();
+
+        var div = generateChartDiv(chartID);
+        botIndex++;
+        addDivtoWidget(div, width, 6, 0, graphy, widgetID);
+        graphy += 6;
+
+        var controllers = [];
+        $("#controllersList li").each(function(idx, li) {
+            controllers.push(li.id.substring(5));
+        });
+        var target = "";
+        $("#targetList li").each(function(idx, li) {
+            target = li.id.substring(5);
+        });
+        var classes = [];
+        $("#classList li").each(function(idx, li) {
+            var _class = [document.getElementById(li.id).innerHTML.split('<span')[0], parseInt(li.id.substring(3))]
+            classes.push(_class);
+        });
+
+        var model = {};
+        model["modelId"] = userID+"_"+chartID;
+        model["input_fields"] = controllers;
+        model["output_field"] = target;
+        model["learner_type"] = learner;
+
+        var classIDs = [];
+        if (learner_class=="classifier") {
+            for (var i = 0; i < classes.length; i++) {
+                classIDs.push(classes[i][1]);
+            }
+            model["output_classes"] = classIDs;
+        }
+
+        var cData = {
+            ip: ip,
+            type: "bot",
+            chartTitle: chartTitle,
+            learner_class: learner_class,
+            classes: classes,
+            model: model
+        };
+        addBot(widgetID, chartID, cData);
     }
+    $("#classList").empty();
+    $("#classListDiv").hide();
     $("#selectedEquationList").empty();
     $("#optionList").empty();
     widgetnav_close();
@@ -1145,16 +1280,137 @@ function addNote(content) {
     $("#notification").fadeOut("slow");
 }
 
+function openLinkModal() {
+    $("#linkModal").show();
+}
+
+function closeLinkModal() {
+    $("#linkModal").hide();
+}
+
+function openUnlinkModal() {
+    $("#unlinkModal").show();
+}
+
+function closeUnlinkModal() {
+    $("#unlinkModal").hide();
+}
+
+function submitDetailsEPro() {
+    closeLinkModal();
+}
+
+function eproConnect(optionStr) {
+    console.log("id:"+userID);
+    var data = {};
+    var username = $("#usernameTextLink").val();
+    var password = $("#passwordTextLink").val();
+    if (optionStr=="stat") {
+        data = {
+            type: optionStr, 
+            id: userID
+        };
+    } else if (optionStr=="link") {
+        data = {
+            type: optionStr,
+            username: username,
+            pwd: password,
+            id:userID
+        }
+    } else if (optionStr=="remove") {
+        data = {
+            type: optionStr,
+            id: userID
+        }
+    }
+    $.ajax({
+        url: "back/ePro_authenticate.php",
+        method: "POST",
+        data: data,
+        dataType: "text",
+        success: function(data, status) {
+            console.log("ePro connect: " + status);
+            //window.alert("Username: "+data);
+
+            if (!data) return;
+            else if (data=="Invalid login!") {
+
+            } else if (data=="success!") {
+                document.getElementById("linkBtnDiv").innerHTML = '<button id="linkAccBtn" class="portal-button button-background" onclick="openLinkModal()" data-toggle="tooltip" data-placement="left" title="Link ePro account">ePro<br><i class="fa fa-link" aria-hidden="true"></i></button>';
+            } else {
+                document.getElementById("linkBtnDiv").innerHTML = '<button id="linkAccBtn" class="portal-button button-background" onclick="openUnlinkModal()" data-toggle="tooltip" data-placement="left" title="Disconnect ePro account">ePro<br><i class="fa fa-trash-o" aria-hidden="true"></i></button>';
+                document.getElementById("unlinkPrompt").innerHTML = 'Are you sure you want to disconnect ' + data + '?';
+            }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            console.log("ePro connect.");
+            console.log(XMLHttpRequest);
+        }
+    });
+    $("#usernameTextLink").empty();
+    $("#passwordTextLink").empty();
+    closeLinkModal();
+    closeUnlinkModal();
+    toggleDeviceDisplay();
+}
+
 function openSettingsModal(widgetID){
-    $("#settingsModal").show();
     tempwidget = widgetID;
     var graphID = widgetID.substring(7);
     var chartData = graphs[graphID]["chartData"];
     
     if(chartData["type"] == "gauge" || chartData["type"] == "indicator" || chartData["type"] == "switch" || chartData["type"] == "colorpicker" || chartData["type"] == "statecontroller" || chartData["type"] == "slider"){
+        $("#settingsModal").show();
         $("#settingsModelDateDiv").hide();
-        $("#chartTitleTextWS").val(chartData["chartTitle"]);
+        $("#chartTitleTextWS").val(chartData["chartTitle"]); 
+
+    }else if (chartData["type"] == "bot") {
+        $("#classList").empty();
+        widgetnav_open();
+        $("#settingsMain").hide();
+        $("#botConfigPanel").show();
+        $("#updateBotBtn").show();
+        $("#addGraphBtn").hide();
+        $("#barChartConfigPanel").hide();
+        $("#pieChartConfigPanel").hide();
+        $("#gaugeConfigPanel").hide();
+        $("#indicatorConfigPanel").hide();
+        $("#stateControllerConfigPanel").hide();
+        $("#dateRangeChooser").hide();
+        $("#eqListHeader").hide();
+        $("#chartTitleText").val(chartData["chartTitle"]);  
+        $("#botIPPort").val(chartData.ip);
+        syncDevices();
+        $("#learnerTypeCombo").val(chartData["learner_class"]);
+        //loadLearners();    
+        setTimeout(function() {
+            $("#learnerCombo").val(chartData.model["learner_type"]);
+        }, 1200);   
+        
+
+        if (chartData.learner_class == "classifier") {
+            var classes = chartData.classes;
+            if (classes.length > 0) {
+                $("#classListDiv").show();
+                var className, classValue;
+                for (var i = 0; i < classes.length; i++) {
+                    className = classes[i][0];
+                    classValue = classes[i][1];
+                    $("#classList").append("<li id=\"li_"+classValue+"\" style=\"cursor:default\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+classValue+"\">"+className+"<span onclick=\"removeClass('"+classValue+"')\" class=\"w3-closebtn w3-margin-right w3-medium\">&times;</span></li>"); 
+                }
+            }
+        }
+
+        var controllers = chartData.model.input_fields;
+        var target = chartData.model.output_field;
+        var str;
+        for (var i = 0; i < controllers.length; i++) {
+            str = controllers[i];
+            $("#controllersList").append("<li id=\"li_c_"+str+"\">"+str+"<span onclick=\"removeController('"+str+"')\" class=\"w3-closebtn w3-margin-right w3-medium\">&times;</span></li>");
+        }
+        $("#targetList").append("<li id=\"li_t_"+target+"\">"+target+"<span onclick=\"removeController('"+target+"')\" class=\"w3-closebtn w3-margin-right w3-medium\">&times;</span></li>");   
     }else{
+        $("#settingsModal").show();
         $("#chartTitleTextWS").val(chartData["title"]);
         $("#settingsModelDateDiv").show();
         $("#startDatePickerWS").datepicker("setDate", chartData["startDate"]);
@@ -1194,7 +1450,7 @@ function refreshGraph(chartID,data){
         } else if (data.type == "column") {
             loadBarChartData(chartID, data.title, data.equationList, data.xAxis, data.startDate, data.endDate, data.interval, data.tarrifs, data.type)
         } else if (data.type == "pie") {
-            loadPieChartData(chartID, data.title, data.equationList, data.total, data.startDate, data.endDate, data.dataType, data.type);
+            loadPieChartData(chartID, data.title, data.equationList, data.totalIndex, data.startDate, data.endDate, data.dataType, data.type);
         }
     }
     gridSaved = false;
@@ -1221,10 +1477,11 @@ function addDivtoWidget(div, w, h, x, y, widgetID) {
                 height: h
             };
 
-            this.grid.addWidget($(['<div id="' + widgetID + '" style="display: flex;" onresize="resizeWidget(id)" ondrag="dragWidget()"><div class="grid-stack-item-content widget-background-color">',
-                    '<span id="close' + widgetID + '" class="closebtn w3-margin-right"><img src="img/delete.png"></span>',
-                    '<span id="settings' + widgetID + '" class="settingsbtn w3-margin-right"><img src="img/settings1.png"></span>',
-                    '<span id="live' + widgetID + '" class="livebtn w3-medium w3-margin-right" style="display:none"><div class="spinner"></div></span>',
+            this.grid.addWidget($(['<div id="' + widgetID + '" style="display: flex;" onresize="resizeWidget(id)" ondrag="dragWidget()"><div class="grid-stack-item-content widget-background-color w3-round">',
+                    '<span id="close' + widgetID + '" class="closebtn margin-right" data-toggle=\"tooltip\" data-placement=\"top\" title="Remove"><img src="img/delete.png"></span>',
+                    '<span id="settings' + widgetID + '" class="settingsbtn margin-right" data-toggle=\"tooltip\" data-placement=\"top\" title="Settings"><img src="img/settings1.png"></span>',
+                    '<span id="live' + widgetID + '" class="livebtn w3-medium margin-right" style="display:none"><div class="spinner"></div></span>', 
+                    '<div id="deploy' + widgetID + '" class="margin-right" style="display:none"><button id="'+widgetID.substring(7)+'_deployBtn" class="deploybtn button-background">Undefined</button></div>',
                     '<div class="w3-widget-content">',
                     div,
                     '</div>',
@@ -1244,6 +1501,12 @@ function addDivtoWidget(div, w, h, x, y, widgetID) {
             $('#settings' + widgetID).click(function(id) {
                 var widgetID = $(this).attr("id").substring(8);
                 openSettingsModal(widgetID);
+            });
+
+            $('#deploy' + widgetID).click(function(id) {
+                var widgetID = $(this).attr("id").substring(6);
+                var command = $("#"+widgetID.substring(7)+"_deployBtn").text();
+                deployBot(userID+"_"+widgetID.substring(7), command);
             });
 
             
@@ -1452,6 +1715,7 @@ function mqttPub(payload, ip, port, topic){
     client.end();
     return 1;
 }
+
 function showLed(value) {
     if (value > 30 && value < 36) {
         $('.led-green').hide();
@@ -1593,24 +1857,26 @@ function formatDate(date){
     return year + '-' + month + '-' + day;
 }
 
+// Device functions
+
 function toggleDeviceDisplay() {
-    var val = document.getElementById("toggleButton").value;
+    var val = document.getElementById("deviceToggleButton").value;
     var deviceType = "ePro1000";
     deviceType = document.getElementById("deviceTypeCombo").value;
     if (val==0) {
         loadDevicesIdCombo(deviceType);
-        document.getElementById("toggleButton").innerHTML = '<i class="fa fa-toggle-on" aria-hidden="true"></i>';
-        document.getElementById("toggleButton").setAttribute("value", "1");
+        document.getElementById("deviceToggleButton").innerHTML = '<i class="fa fa-toggle-on" aria-hidden="true"></i>';
+        document.getElementById("deviceToggleButton").setAttribute("value", "1");
     } else if (val==1) {
         loadDevicesCombo(deviceType);
-        document.getElementById("toggleButton").innerHTML = '<i class="fa fa-toggle-off" aria-hidden="true"></i>';
-        document.getElementById("toggleButton").setAttribute("value", "0");
+        document.getElementById("deviceToggleButton").innerHTML = '<i class="fa fa-toggle-off" aria-hidden="true"></i>';
+        document.getElementById("deviceToggleButton").setAttribute("value", "0");
     }
 }
 
-// Added 2017-03-16 by Ruwangika
 function addDevice() {
     deviceName = $('#deviceIdText').val();
+    if (!deviceName) return;
     $.ajax({
         url: "back/load_misc_data.php",
         method: "POST",
@@ -1625,13 +1891,14 @@ function addDevice() {
             var psk = data.substr(data.length - 10);
             $('#PSKText').val(psk);
 
-            $("#deviceList").append("<li id=\"li"+psk+"\" value=\""+psk+"\" style=\"cursor:default\">"+deviceName+"<span onclick=\"removeDevice('"+psk+"')\" class=\"w3-closebtn w3-margin-right w3-medium\">&times;</span></li>");
+            $("#deviceList").append("<li id=\"li"+psk+"\" value=\""+psk+"\" style=\"cursor:default\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+psk+"\">"+deviceName+"<button class=\"li-button\" onclick=\"copyToClipboard('"+psk+"')\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"Copy key\"><i class=\"fa fa-clipboard\" aria-hidden=\"true\"></i></button><span onclick=\"removeDevice('"+psk+"')\" class=\"w3-closebtn w3-margin-right w3-medium\">&times;</span></li>");
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
             console.log("Add Device error.");
             console.log(XMLHttpRequest);
         }
     })
+
 }
 
 function removeDevice(deviceId) {
@@ -1672,7 +1939,7 @@ function loadDevices() {
             for (j = 0; j < _len; j++) {
                 var deviceName = data["DeviceName"][j];
                 var deviceId = data["DeviceId"][j];
-                $("#deviceList").append("<li id=\"li"+deviceId+"\" value=\""+deviceId+"\" style=\"cursor:default\">"+deviceName+"<span onclick=\"removeDevice('"+deviceId+"')\" class=\"w3-closebtn w3-margin-right w3-medium\">&times;</span></li>");
+                $("#deviceList").append("<li id=\"li"+deviceId+"\" value=\""+deviceId+"\" style=\"cursor:default\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+deviceId+"\">"+deviceName+"<button class=\"li-button\" onclick=\"copyToClipboard('"+deviceId+"')\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"Copy key\"><i class=\"fa fa-clipboard\" aria-hidden=\"true\"></i></button><span onclick=\"removeDevice('"+deviceId+"')\" class=\"w3-closebtn w3-margin-right w3-medium\">&times;</span></li>");
             }
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -1682,3 +1949,24 @@ function loadDevices() {
     });
 }
 
+function copyToClipboard(text) {
+    if (window.clipboardData && window.clipboardData.setData) {
+        // IE specific code path to prevent textarea being shown while dialog is visible.
+        return clipboardData.setData("Text", text); 
+
+    } else if (document.queryCommandSupported && document.queryCommandSupported("copy")) {
+        var textarea = document.createElement("textarea");
+        textarea.textContent = text;
+        textarea.style.position = "fixed";  // Prevent scrolling to bottom of page in MS Edge.
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+            return document.execCommand("copy");  // Security exception may be thrown by some browsers.
+        } catch (ex) {
+            console.warn("Copy to clipboard failed.", ex);
+            return false;
+        } finally {
+            document.body.removeChild(textarea);
+        }
+    }
+}

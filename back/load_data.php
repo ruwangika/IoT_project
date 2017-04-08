@@ -27,7 +27,6 @@
     	echo json_encode($data);
     
     }else if($type == 'pie'){
-
     	$devices = $_POST["devices"];
     	$channel = $_POST["channel"];
         $startDate = $_POST["startDate"];

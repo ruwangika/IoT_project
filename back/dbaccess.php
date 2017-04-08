@@ -35,17 +35,26 @@
     function getDeviceSDCounters($con,$deviceID,$startDate,$endDate,$accInt){
         
         $accInt= strtolower($accInt);
-        if ($accInt==="hour")
+        if ($accInt==="hour"){
             $accInt='year(date_time),month(date_time),day(date_time),hour';
-        elseif ($accInt==="day")
+            $sql =  'SELECT MIN(sdCounter),MAX(sdCounter) FROM powerpro WHERE code=? AND date_time BETWEEN ? AND ?  GROUP BY '.$accInt.'(date_time)';
+        }
+        elseif ($accInt==="day"){
             $accInt='year(date_time),month(date_time),day';
-        elseif ($accInt==="month")
+            $sql =  'SELECT MIN(sdCounter),MAX(sdCounter) FROM powerpro WHERE code=? AND date_time BETWEEN ? AND ?  GROUP BY '.$accInt.'(date_time)';
+        }
+        elseif ($accInt==="month"){
             $accInt='year(date_time),month';
-        elseif ($accInt==="year")
+            $sql =  'SELECT MIN(sdCounter),MAX(sdCounter) FROM powerpro WHERE code=? AND date_time BETWEEN ? AND ?  GROUP BY '.$accInt.'(date_time)';
+        }
+        elseif ($accInt==="year"){
             $accInt='year';
+            $sql =  'SELECT MIN(sdCounter),MAX(sdCounter) FROM powerpro WHERE code=? AND date_time BETWEEN ? AND ?  GROUP BY '.$accInt.'(date_time)';
+        }
+        elseif($accInt==="pie")
+            $sql =  'SELECT MIN(sdCounter),MAX(sdCounter) FROM powerpro WHERE code=? AND date_time BETWEEN ? AND ?';
         else
             return $accInt;
-        $sql =  'SELECT MIN(sdCounter),MAX(sdCounter) FROM powerpro WHERE code=? AND date_time BETWEEN ? AND ?  GROUP BY '.$accInt.'(date_time)';
         if ($stmt = mysqli_prepare($con, $sql)) {
             mysqli_stmt_bind_param($stmt,"iss",$deviceID,$startDate,$endDate);
             mysqli_stmt_execute($stmt);
@@ -165,74 +174,39 @@ function getMaxSampInterval($deviceIds) {
     }
 
     
-    function getPieChartData($devices,$channel,$startDate,$endDate,$dataType){
-        $con = getConnection();
-        $counter = count($devices);
-        $sql =  'SELECT MIN(sdCounter),MAX(sdCounter) FROM powerpro WHERE code=? AND date_time BETWEEN ? AND ?';
-        for($i = 0; $i < $counter ; $i++){
-            $device = $devices[$i];
+    function getPieChartData($deviceIDs,$channelIDs,$startDate,$endDate,$dataType)
+      {
+          
+        $accInt="pie";
+        $xAxis='date_time';
+        $con = getConnection();  
+        $d_len = count($deviceIDs);
+        for ($d_i=0; $d_i <  $d_len; $d_i++) { 
+            $deviceID = $deviceIDs[$d_i];
+            $channelID = $channelIDs[$d_i];
             $needle='M';
-            if (strpos($deviceID,$needle)===0){////toto need to be changed into mongo/////////////////////////////////****************Until fix the multi channel issue********************************
-               $data[$device]["DeviceName"] = getDeviceName($device);
-                if ($stmt = mysqli_prepare($con, $sql)) {
-                    mysqli_stmt_bind_param($stmt,"iss",$device,$startDate,$endDate);
-                    mysqli_stmt_execute($stmt);
-                    mysqli_stmt_bind_result($stmt, $max_sdcounter, $min_sdcounter);
-                    if (mysqli_stmt_fetch($stmt)) {
-                        mysqli_stmt_reset($stmt);
-                        $sql2 = 'SELECT '.$channel.' FROM powerpro WHERE code=? AND sdCounter IN (?,?)';
-                        if($stmt2 = mysqli_prepare($con, $sql2)){
-                            mysqli_stmt_bind_param($stmt2,"iss",$devices[$i],$max_sdcounter,$min_sdcounter);
-                            mysqli_stmt_execute($stmt2);
-                            mysqli_stmt_bind_result($stmt2, $value);
-                            if (mysqli_stmt_fetch($stmt2)) {
-                                
-                                $temp =  $value;
-                                if (mysqli_stmt_fetch($stmt2)) {
-                                    $data[$device][$channel] = $value - $temp;     
-                                }
-                            }
-                            mysqli_stmt_close($stmt2);  
-                        }                    
-                    }
-                    mysqli_stmt_close($stmt);
-                }
+            if (strpos($deviceID,$needle)===0){////toto need to be changed into mongo//////////////////////////////////////////////////////////////////
+                    
+                    $db=getMongoDB($deviceID);
+                    $ar=getBarChartDataOnDevice($db,$deviceID,$channelID,$xAxis,$startDate,$endDate,$accInt); 
+                    $data[$deviceID][$channelID] = $ar[1];
+                    $data[$deviceID][$xAxis] = $ar[0];
             }
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             else{
-                $data[$device]["DeviceName"] = getDeviceName($device);
-
-                if ($stmt = mysqli_prepare($con, $sql)) {
-
-                    mysqli_stmt_bind_param($stmt,"iss",$device,$startDate,$endDate);
-                    mysqli_stmt_execute($stmt);
-                    mysqli_stmt_bind_result($stmt, $max_sdcounter, $min_sdcounter);
-                    if (mysqli_stmt_fetch($stmt)) {
-                        mysqli_stmt_reset($stmt);
-                        $sql2 = 'SELECT '.$channel.' FROM powerpro WHERE code=? AND sdCounter IN (?,?)';
-                        if($stmt2 = mysqli_prepare($con, $sql2)){
-                            mysqli_stmt_bind_param($stmt2,"iss",$devices[$i],$max_sdcounter,$min_sdcounter);
-                            mysqli_stmt_execute($stmt2);
-                            mysqli_stmt_bind_result($stmt2, $value);
-                            if (mysqli_stmt_fetch($stmt2)) {
-                                
-                                $temp =  $value;
-                                if (mysqli_stmt_fetch($stmt2)) {
-                                    $data[$device][$channel] = $value - $temp;     
-                                }
-                            }
-                            mysqli_stmt_close($stmt2);  
-                        }                    
-                    }
-                    mysqli_stmt_close($stmt);
+                $sdCounters = getDeviceSDCounters($con,$deviceID,$startDate,$endDate,$accInt);
+                $_len = count($sdCounters);
+                for ($i=0; $i <  $_len; $i++) { 
+                    //print_r($sdCounters[$i]);
+                    $ar = getDeviceAccData($con,$deviceID,$channelID,$xAxis,$sdCounters[$i][1],$sdCounters[$i][0]);
+                    $data[$deviceID][$channelID][$i] = $ar[1];
+                    $data[$deviceID][$xAxis][$i] = $ar[0];
                 }
             }
         }
         closeConnection($con);
         return $data;
-    }
-
-
+      }
 ///////////////////////////////////////////////////////////////////////////End calling calls graph data//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -375,19 +349,20 @@ function getMaxSampInterval($deviceIds) {
         $query="INSERT INTO user_device(user_id,user_defined_device_id,device_id) VALUES ('$user_id','$user_device_id','$device_id')";
         $results=mysqli_query($con,$query);//To execute query
         closeConnection($con);
-        return "Done";
+        return $results;
     }
 
     function removeDevice($device_id){
 
         $con=getIoTDeviceDataConnection();
-        $query="DELETE FROM device WHERE ID='$device_id'";
-        $results=mysqli_query($con,$query);//To execute query
        // $row=mysqli_fetch_assoc($results);
         $query="DELETE FROM user_device WHERE device_id='$device_id'";
         $results=mysqli_query($con,$query);//To execute query
+        
+        $query="DELETE FROM device WHERE ID='$device_id'";
+        $results=mysqli_query($con,$query);//To execute query
         closeConnection($con);
-        return "Done";
+        return $results;
 
     }
     

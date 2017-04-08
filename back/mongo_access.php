@@ -195,6 +195,65 @@
             }
             return $results;
         }
+        elseif($accInt==="pie"){
+            $init=clone $start;
+            $key_interval='P0Y0M1DT0H0M0S';
+            $docs=[];
+            while($init<$end){
+
+                    $key="0.00000000 ".$init->format('U');
+                    array_push($docs, $data[$key]);
+                    $init->add(new DateInterval($key_interval));
+            }
+            $len=sizeof($docs);
+            if($len===0)return NULL;
+            $first_doc=$docs[0];
+            $last_doc=$doc[$len-1];
+            $point_start=0;
+            $point_end=0;
+
+            for($i=0;$i<24;$i++){//serching from start
+                $hour_data=$first_doc["data"][$i];
+                if($hour_data!==NULL){
+
+                    for($j=0;$j<60;$j++){ ///point at the start......
+                        $temp_point=$hour_data[$j];
+                        if($temp_point!==NULL){
+                            $point_start=$temp_point;
+                            break;
+                        }
+                    }
+
+                }
+                if($point_start!==NULL){
+                    break;
+                }
+            }
+
+            for($i=23;$i>=0;$i--){//serching from start
+                $hour_data=$last_doc["data"][$i];
+                if($hour_data!==NULL){
+
+                    for($j=59;$j>=0;$j--){ ///point at the start......
+                        $temp_point=$hour_data[$j];
+                        if($temp_point!==NULL){
+                            $point_end=$temp_point;
+                            break;
+                        }
+                    }
+
+                }
+                if($point_end!==NULL){
+                    break;
+                }
+            }
+            $data_point=$point_end-$point_start;
+            $day=$start->format('Y-m-d');
+            $results[0][$data_count]=$day;
+            $results[1][$data_count++]=$data_point;
+            return $results;
+
+        }
  
     }
 

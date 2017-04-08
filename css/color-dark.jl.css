@@ -3,6 +3,8 @@
 .widget-color,
 .sidebar-widget,
 .settings-modal-content,
+.link-modal-content,
+.unlink-modal-content,
 .equationBar{
     background-color:#2A2A2A ; /** #2A2A2A **/
 }
@@ -78,6 +80,38 @@
 
 .nav-combo:focus{
   box-shadow: 0 0 5px #B88F51;
+}
+
+.li-button{
+    height: 30px;
+    width: 35px;
+    background-color: inherit;
+    border: none;
+    border-radius: 4px;
+    padding-bottom: 10px;
+    padding-top: 6px;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    text-align: center;
+    position: absolute;
+    right: 135px;
+    -webkit-transition-duration: 0.4s;
+    transition-duration: 0.4s;
+}
+
+.li-button:hover {
+    background-color: #404040;
+    -webkit-transition-duration: 0.4s;
+    transition-duration: 0.4s;
+}
+
+.button-background {
+    background-color: #333333;
+}
+
+.button-background:hover {
+    background-color: #4B4B4B;
 }
 
 

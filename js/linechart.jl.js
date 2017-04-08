@@ -36,7 +36,6 @@ function todayTime() {
 
 // This function renders a line chart:something vs date
 function initLineChart(chartID,title, chartData) {
-    //var themeId = document.getElementById("themeCombo");
     var backgroundColor, fontColor, theme;
     if (globalTheme == "dark") {        
         backgroundColor = "#2A2A2A";
@@ -160,7 +159,6 @@ function loadlineChartData(chartID, title, equationList, xAxis, startDate, endDa
             var channelCounter = 0;
             for(i = 0; i < equationList.length; i++) {
                 _len = getMinLength(equationList[i], data, xAxis);   
-                var data_points = [];
                 var sum = 0;
                 var min = Number.POSITIVE_INFINITY;
                 var max = Number.NEGATIVE_INFINITY;
@@ -198,7 +196,8 @@ function loadlineChartData(chartID, title, equationList, xAxis, startDate, endDa
                 max = Math.round(max * 10) / 10;
                 var line={
                     name: parseEquation(equationList[i])+', avg='+avg+', max='+max+', min='+min,
-                    type: "line", showInLegend: true,
+                    type: "line",
+                    showInLegend: true,
                     yValueFormatString:"#.## "+unit,
                     connectNullData:true,
                     nullDataLineDashType:"dot"

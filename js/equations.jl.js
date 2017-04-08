@@ -2,7 +2,7 @@ function addEquation(){
     
     var equation = parseEquation(tempExpressionsList);
     var eqName = document.getElementById("equationNameText").value;
-    if (!eqName) eqName = equation;
+    if (!eqName) return;
     $("#equationList").append("<li id=\"li"+equation+"\" value=\""+equation+"\" style=\"cursor:default\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+equation+"\">"+eqName+"<span onclick=\"deleteEquation('"+equation+"',this)\" class=\"w3-closebtn w3-margin-right w3-medium\">&times;</span></li>");
 
     var eqn = {
@@ -65,6 +65,7 @@ function showEquations(){
     var eqList = [];
     var _len = globalEqList.length;
     
+    $("#graphWidthCombo").show();
     $("#equationListDisp").empty();
     $("#selectedEquationList").empty();
     $("#barChartConfigPanel").hide();
@@ -72,7 +73,10 @@ function showEquations(){
     $("#gaugeConfigPanel").hide();
     $("#indicatorConfigPanel").hide();
     $("#stateControllerConfigPanel").hide();
+    $("#botConfigPanel").hide();
     $("#dateRangeChooser").show();
+    $("#startDateLbl").hide();
+    $("#startDateText").hide();
     if(graphType == "line"){
         for (var i = 0; i < _len; i++) {
         $("#barChartConfigPanel").show();
@@ -96,9 +100,13 @@ function showEquations(){
     }else if(graphType == "pie"){
         $("#pieChartConfigPanel").show();
         $("#eqListHeader").show();
+        $("#chartTitleText").val("chart");
+        $("#startDateLbl").show();
+        $("#startDateText").show();
+
         loadPieChartTotalCombo();
         for (var i = 0; i < _len; i++) {
-            if((parseEquation(globalEqList[i].equation)).includes("energy")){
+            if((parseEquation(globalEqList[i].equation)).includes("")){
                 var eq = globalEqList[i].equation;
                 var eqStr = parseEquation(eq);
                 var eqName = globalEqList[i].eqName;
@@ -139,6 +147,12 @@ function showEquations(){
         $("#graphWidthCombo").hide();
         $("#graphWidthLabel").hide();
         $("#eqListHeader").hide();
+    }else if (graphType == "bot") {
+        $("#botConfigPanel").show();
+        $("#classListDiv").hide();
+        $("#classList").empty();
+        $("#dateRangeChooser").hide();
+        $("#eqListHeader").hide();
     }
 }
 
@@ -150,6 +164,7 @@ var selectEquation =function(eqStr,index,object){
     li.remove();
     var eqName = globalEqList[index].eqName;
     $("#selectedEquationList").append("<li onclick=\"removeEquation('"+eqStr+"','"+index+"',this)\" id=\""+eqStr+"\" index=\""+index+"\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+eqStr+"\">"+eqName+"<span class=\"w3-closebtn w3-margin-right w3-medium\">-</span></li>");
+    if (document.getElementById("toggleTotalComboBtn").value==1) loadPieChartTotalCombo();
 };  
 
 var removeEquation =function(eqStr,index,object){  
@@ -158,6 +173,7 @@ var removeEquation =function(eqStr,index,object){
     li.remove();
     var eqName = globalEqList[index].eqName;
     $("#equationListDisp").append("<li onclick=\"selectEquation('"+eqStr+"','"+index+"',this)\" id=\""+eqStr+"\" index=\""+index+"\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+eqStr+"\">"+eqName+"<span class=\"w3-closebtn w3-margin-right w3-medium\">+</span></li>");
+    if (document.getElementById("toggleTotalComboBtn").value==1) loadPieChartTotalCombo();
 }; 
 
 var deleteEquation = function(eqStr,object){

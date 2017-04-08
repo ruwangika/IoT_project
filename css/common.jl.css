@@ -164,7 +164,7 @@ li {
 }
 .switch {
   margin: 0 auto;
-  width: 24px;
+  width: 44px;
   height: 24px;
   background-image: url('../img/switch.png');
   background-color: inherit;
@@ -229,10 +229,10 @@ img {
 
 #settingsButton{
     position: absolute;
-    right: 110px;
+    right: 125px;
     top: 10px;
     width: 160px;   
-    text-align: left;
+    text-align: center;
 }
 
 #logoutButton{
@@ -242,14 +242,14 @@ img {
     cursor: pointer;
     margin-right: 15px;
     width: 110px;
-    text-align: left;
+    text-align: center;
 }
 #addWidgetButton{
     position: absolute;
-    right: 110px;
-    top: 48px;   
+    right: 125px;
+    top: 49px;   
     width: 160px;
-    text-align: left;
+    text-align: center;
 }
 #themeCombo{
     position: absolute;
@@ -258,7 +258,7 @@ img {
     margin-right: 15px;
     width: 110px;
     /*height: 39px;*/
-    text-align: left;
+    text-align: center;
 }
 
 #saveGridButton{
@@ -275,7 +275,16 @@ img {
     text-align: left;
 }
 
-#toggleButton{
+#linkAccBtn {
+    float: right;
+    right: 200px;
+    font-size: 15px;
+    border-radius: 6px;
+    -webkit-transition-duration: 0.4s;
+    transition-duration: 0.4s;
+}
+
+.toggle-button{
     position: absolute;
     background-color: inherit;
     border: none;
@@ -346,12 +355,13 @@ img {
 
 .widget-font{
     font-family: 'Source Sans Pro', sans-serif;
-    font-size: large;
+    font-size: medium;
 }
 
 .portal-button{
     background-color: inherit; /* Green */
     border: none;
+    border-radius: 4px;
     padding: 10px 20px;
     text-decoration: none;
     display: inline-block;
@@ -365,6 +375,7 @@ img {
 .portal-pane-button{
     background-color: inherit; /* Green */
     border: none;
+    border-radius: 4px;
     padding: 3px 20px;
     text-decoration: none;
     display: inline-block;
@@ -465,6 +476,12 @@ select option{
     text-align: right;
 }
 
+.label-3 {
+    margin-top: 8px;
+    text-align: center;
+    font-size: 16px;
+}
+
 /* Animation CSS here on*/
 
 .spinner {
@@ -505,6 +522,20 @@ select option{
     vertical-align: center;
 }
 
+.deploybtn {
+    width: 66px;
+    height: 21px;
+    text-decoration: none;
+    border: none;
+    margin-top: 4px;
+    margin-right: 8px;
+    border-radius: 3px;
+    float: right;
+    font-size: 10px;
+    font-weight: lighter;
+    color: inherit;    
+}
+
 .closebtn,
 .settingsbtn,
 .livebtn
@@ -543,12 +574,11 @@ select option{
     position: relative;
     margin: 15% auto; /* 15% from the top and centered */
     border: 1px solid #888;
-    padding: 50px 20px 75px 20px;
-    width: 50%; /* Could be more or less, depending on screen size */
+    padding: 75px 20px 65px 20px;
+    width: 55%; /* Could be more or less, depending on screen size */
     -webkit-animation: animatezoom 0.3s;
     animation: animatezoom 0.3s;
 }
-
 
 
 /* The Close Button */
@@ -572,26 +602,62 @@ select option{
     font-size: 24px;
     position: absolute;
     top: 15px;
-    width:100%;
+    width:95%;
     text-align:center;
-    font-style: "normal";
-    font-weight: "lighter";
+    font-style: normal;
     font-family: 'Source Sans Pro', sans-serif;
 }
 
-#settings-modal-button{
+.settings-modal-button{
     font-size: 16px;
     position: absolute;
     right: 25px;
     bottom: 15px; 
-    width: 70px;  
-    text-align: left;
+    width: 80px;  
+    text-align: center;
+}
+
+.link-modal-content {
+    position: relative;
+    margin: 15% auto; /* 15% from the top and centered */
+    border: 1px solid #888;
+    padding: 60px 20px 40px 20px;
+    width: 40%; /* Could be more or less, depending on screen size */
+    -webkit-animation: animatezoom 0.2s;
+    animation: animatezoom 0.2s;
+}
+
+.link-modal-title{
+    font-size: 19px;
+    position: absolute;
+    top: 15px;
+    /*width: 95%;*/
+    right: 5px;
+    left: 5px;
+    text-align:center;
+    /*font-style: "normal";
+    font-weight: "lighter";*/
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+.unlink-modal-content {
+    position: relative;
+    margin: 15% auto;
+    border: 1px solid #888;
+    padding: 30px 20px 15px 20px;
+    width: 30%;
+    -webkit-animation: animatezoom 0.2s;
+    animation: animatezoom 0.2s;
 }
 
 .div-pane {
     width: 10%;
     height: inherit;
     float: left;
+}
+
+.tooltip-inner {
+    max-width: 350px;
 }
 
 @-webkit-keyframes sk-scaleout {
@@ -690,4 +756,8 @@ select option{
 /*********/
 .inl-bl {
     display: inline-block;
+}
+
+.margin-right {
+    margin-right: 4px !important;
 }
