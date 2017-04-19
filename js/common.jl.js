@@ -72,7 +72,7 @@ function loadGraphTypes(){
         ["Switch", "switch"],
         //["Color Picker", "colorpicker"],
         ["State Controller", "statecontroller"],
-        ["Slider", "slider"],
+        //["Slider", "slider"],
         ["Bot", "bot"]
     ];
     var graphCategory = $("#graphCategoryCombo").val();
@@ -131,12 +131,16 @@ function loadClientLogo() {
 
 function updateDevicesCombo() {
     var defaultType = "ePro1000";
+    var val = document.getElementById("deviceToggleButton").value;
+    
     var deviceType = document.getElementById("deviceTypeCombo").value;
-    if (deviceType) {
+    if (!deviceType) deviceType = defaultType;
+    
+    if (val==1) {
+        loadDevicesIdCombo(deviceType);
+    } else if (val==0) {
         loadDevicesCombo(deviceType);
-    } else {
-        loadDevicesCombo(defaultType);
-    }
+    }   
 }
 
 function updateGraphColor(backgroundColor, fontColor, theme) {
@@ -432,7 +436,7 @@ function logout() {
 
 function generateChartDiv(id) {
     //var loading_div = '<img src="img/loading.gif" style="height: 400px;width: 100%;">';
-    var loading_div = '<div class="widget-background-color" style="height:100%"><div class="loader"></div></div>';    
+    var loading_div = '<div class="widget-background-color" style="height:100%"><div class="loader">  <div class="rect1"></div><div class="rect2"></div><div class="rect3"></div><div class="rect4"></div><div class="rect5"></div></div></div>';    
     return '<div id="' + id + '" style="height: 100%; width: 100%;" class="widget-color" ondblclick="graphdbclick(this,id,parent)">'+loading_div+'</div>'
 }
 
@@ -1371,6 +1375,7 @@ function openSettingsModal(widgetID){
         widgetnav_open();
         $("#settingsMain").hide();
         $("#botConfigPanel").show();
+        $("#equationListDisp").empty();
         $("#updateBotBtn").show();
         $("#addGraphBtn").hide();
         $("#barChartConfigPanel").hide();
@@ -1410,7 +1415,7 @@ function openSettingsModal(widgetID){
             str = controllers[i];
             $("#controllersList").append("<li id=\"li_c_"+str+"\">"+str+"<span onclick=\"removeController('"+str+"')\" class=\"w3-closebtn w3-margin-right w3-medium\">&times;</span></li>");
         }
-        $("#targetList").append("<li id=\"li_t_"+target+"\">"+target+"<span onclick=\"removeController('"+target+"')\" class=\"w3-closebtn w3-margin-right w3-medium\">&times;</span></li>");   
+        $("#targetList").append("<li id=\"li_t_"+target+"\">"+target+"<span onclick=\"removeTarget('"+target+"')\" class=\"w3-closebtn w3-margin-right w3-medium\">&times;</span></li>");   
     }else{
         $("#settingsModal").show();
         $("#chartTitleTextWS").val(chartData["title"]);
@@ -1875,8 +1880,8 @@ function formatDate(date){
 
 function toggleDeviceDisplay() {
     var val = document.getElementById("deviceToggleButton").value;
-    var deviceType = "ePro1000";
-    deviceType = document.getElementById("deviceTypeCombo").value;
+    var deviceType = document.getElementById("deviceTypeCombo").value;
+    if (!deviceType) deviceType = "ePro1000";
     if (val==0) {
         loadDevicesIdCombo(deviceType);
         document.getElementById("deviceToggleButton").innerHTML = '<i class="fa fa-toggle-on" aria-hidden="true"></i>';
@@ -1947,6 +1952,7 @@ function loadDevices() {
         },
         dataType: "json",
         success: function(data, status) {
+            if (data=="Null Data") return;
             console.log("Load Devices: " + status);
             $("#deviceList").empty();
             var _len = data["DeviceId"].length;

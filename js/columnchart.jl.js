@@ -1,6 +1,14 @@
 var colChart;
 
 // This function renders a line chart:something vs date
+function getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++ ) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
 function initBarChart(chartID,title, chartData,axisX) {
     //var themeId = document.getElementById("themeCombo");
     var backgroundColor, fontColor, theme;
@@ -19,6 +27,10 @@ function initBarChart(chartID,title, chartData,axisX) {
     var end = formatDate(dp[dp.length - 1].x);
     if (end==start) subtitle = end;
     else subtitle = start + ' to ' + end;
+
+    if(chartData.length==1){
+        chartData[0].color="#07c687";
+    }
 
     var colChart = new CanvasJS.Chart(chartID,
         {
@@ -50,6 +62,7 @@ function initBarChart(chartID,title, chartData,axisX) {
                 //title: "Energy"
             }, axisX:axisX,
             data: chartData,
+
           legend:{
             cursor:"pointer",
             fontColor: fontColor,

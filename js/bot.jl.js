@@ -27,7 +27,7 @@ function initBotGraph(graphID, data) {
     }
     var data_output= [];
     var data_mse = [];
-
+    var data_real= [];
     var chart = new CanvasJS.Chart(graphID,{
         zoomEnabled: true,
         backgroundColor: backgroundColor,
@@ -78,6 +78,15 @@ function initBotGraph(graphID, data) {
             connectNullData:true,
             nullDataLineDashType:"dot",
             dataPoints: data_mse
+        },
+         {				
+            type: "line",
+            xValueType: "dateTime",
+            showInLegend: true,
+            name: "Real" ,
+            connectNullData:true,
+            nullDataLineDashType:"dot",
+            dataPoints: data_real
         }]
     });
     chart.render();
@@ -111,10 +120,13 @@ function initMQTTClientBot(graphID, data, chart, model){
 
         var y_output;
         var y_mse;
+        var y_real;
         var time = new Date();
         
         if (topic==modelId+"/"+output_field) {
-            y_output = parseFloat(msg_);
+            var tokens=msg_.split(",");
+            y_output = parseFloat(tokens[0]);
+            y_real = parseFloat(tokens[1]);
             document.getElementById(graphID+"_deployBtn").innerHTML = "Train";
         } else if (topic==modelId+"/mse") {
             var arr = msg_.split(',');
@@ -122,7 +134,7 @@ function initMQTTClientBot(graphID, data, chart, model){
             document.getElementById(graphID+"_deployBtn").innerHTML = "Deploy";
         }
         xVal = time.getTime();
-        updateBotData(chart, xVal, y_output, y_mse);
+        updateBotData(chart, xVal, y_output, y_mse,y_real);
     });
     
     client.on("reconnect", function() {
@@ -135,9 +147,10 @@ function initMQTTClientBot(graphID, data, chart, model){
 
 }
 
-function updateBotData(chart, xVal, yVal1, yVal2) {
+function updateBotData(chart, xVal, yVal1, yVal2,yReal) {
     var data_output = chart.options.data[0].dataPoints;
     var data_mse = chart.options.data[1].dataPoints;
+    var data_real = chart.options.data[2].dataPoints;
     
     data_output.push({
         x: xVal,
@@ -147,7 +160,10 @@ function updateBotData(chart, xVal, yVal1, yVal2) {
         x: xVal,
         y: yVal2
     });
-
+    data_real.push({
+        x: xVal,
+        y: yReal
+    });
     chart.render();
 
 };
@@ -396,7 +412,7 @@ function removeTarget(str) {
 }
 function deployBot(modelId, command){
     var graphID=modelId.split("_")[1];
-    console.log(graphID);
+    //console.log(graphID);
     var ip = graphs[graphID]["chartData"].ip;
 
     if(command=="Train")
