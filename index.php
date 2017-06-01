@@ -654,7 +654,7 @@
         <header class="portal-header widget-color w3-padding-48">
             <img id="logo" src="img/logo.png" class="jllogo">
             <div class="w3-clear"></div>
-            <p class="page-title">Visualize, Compare, Control</p>
+            <p id="pagetitle" class="page-title">Visualize, Compare, Control</p>
             <button id="addWidgetButton" class="portal-button" onclick="addWidget()">ADD PANE</button>
             <button id="settingsButton" class="portal-button" onclick="w3_open()">ADMIN CONSOLE</button>
             <button id="logoutButton" class="portal-button" onclick="logout()">LOGOUT</button>
@@ -674,7 +674,7 @@
                 </div>     
             </div>
             <!-- Sidebar -->
-            <div  class="w3-col" style="width:20%; float: right;">
+            <div  id="sidebar" class="w3-col" style="width:20%; float: right;">
                 <!-- Weather widget -->
                 <div class="sidebar-widget" style="pointer-events:none">
                     <div class="sidebar-widget-header"><span class="w3-margin-right">Weather</span></div>

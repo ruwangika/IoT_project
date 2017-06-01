@@ -7,13 +7,11 @@
 	$uname=$_REQUEST['username'];
 	$email=$_REQUEST['email'];
 
-	$sql="select max(id) as cnt from user";
+	/*$sql="select max(id) as cnt from user";
 	$results=mysqli_query($con,$sql);   //To execute query
-	$row=mysqli_fetch_assoc($results);
-
-	$id=$row['cnt']+1;
+	$row=mysqli_fetch_assoc($results);*/
 	
-	$sql='INSERT INTO user VALUES ('.$id.',"'.$uname.'","'.$pwd.'","'.$email.'")';
+	$sql='INSERT INTO user(username,password,email) VALUES ("'.$uname.'","'.$pwd.'","'.$email.'")';
 	$results=mysqli_query($con,$sql);   //To execute query
 	
 	if($results==true){

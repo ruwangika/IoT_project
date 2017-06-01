@@ -57,7 +57,7 @@
     else if($type==='remove'){
         
         $iot_con=getIoTDeviceDataConnection();
-        $iot_query="UPDATE user SET epro_userid = NULL where id = $id";
+        $iot_query="UPDATE user SET epro_userid = NULL, epro_username= NULL where id = $id";
         $results = mysqli_query($iot_con,$iot_query);
         closeConnection($iot_con);
         echo "success!";

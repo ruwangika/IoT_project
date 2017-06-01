@@ -51,7 +51,11 @@
 		global $json_directory;
 		$userdataFile=$json_directory."".$userID.".json";
 		$default = "light";
-		$userdata = json_decode(file_get_contents($userdataFile),TRUE);
+		try {
+			$userdata = json_decode(file_get_contents($userdataFile),TRUE);
+		}catch (Exception $e) {
+			echo $e;
+		}
 		if(isset($userdata)){
 			if(isset($userdata["Theme"])){
 				return $userdata["Theme"];

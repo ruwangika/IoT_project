@@ -150,14 +150,14 @@ li {
 
 .switch-on {
   margin: 0 auto;
-  width: 24px;
+  width: 44px;
   height: 24px;
   background-image: url('../img/switch-on.png');
   background-color: inherit;
 }
 .switch-off {
   margin: 0 auto;
-  width: 24px;
+  width: 44px;
   height: 24px;
   background-image: url('../img/switch-off.png');
   background-color: inherit;
@@ -822,3 +822,8 @@ select option{
 .margin-right {
     margin-right: 4px !important;
 }
+
+/*@media only screen and (max-width: 500px) {
+    #pagetitle{display: none},
+    #sidebar{display: none}
+}*/

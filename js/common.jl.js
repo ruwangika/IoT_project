@@ -70,7 +70,7 @@ function loadGraphTypes(){
         ["Gauge", "guage"],
         ["Indicator", "ind"],
         ["Switch", "switch"],
-        //["Color Picker", "colorpicker"],
+        ["Color Picker", "colorpicker"],
         ["State Controller", "statecontroller"],
         //["Slider", "slider"],
         ["Bot", "bot"]
@@ -633,20 +633,23 @@ function saveGrid() {
     for (var i = 0; i < _len; i++) {
         var el = $(nodes[i]);
         var node = el.data('_gridstack_node');
-        var widgetID = node.el[0].id;
+        if (node.el[0]) {
+            var widgetID = node.el[0].id;
 
-        var grid_node = {
-            widgetID: node.el[0].id,
-            x: node.x,
-            y: node.y,
-            w: node.width,
-            h: node.height,
-            graphID: widgetID.substring(7),
-            chartData: graphs[widgetID.substring(7)]["chartData"]
+            var grid_node = {
+                widgetID: node.el[0].id,
+                x: node.x,
+                y: node.y,
+                w: node.width,
+                h: node.height,
+                graphID: widgetID.substring(7),
+                chartData: graphs[widgetID.substring(7)]["chartData"]
 
+            }
+            user_grid.push(grid_node);
         }
-        user_grid.push(grid_node);
     }
+    window.location = "#";
     $.ajax({
         url: "back/user_data.php",
         method: "POST",
@@ -728,7 +731,6 @@ function loadTheme() {
             console.log(XMLHttpRequest);
         }
     });
-
 }
 
 
@@ -872,6 +874,13 @@ function addGraph() {
         var xAxis = 'date_time';
         var interval = $("#intervalCombo").val();
         var endDate = $("#endDatePicker").val();
+
+        var currentDate = getCurrentDate();
+        if (endDate == currentDate) {
+            var currentTime = getCurrentTime();
+            endDate = endDate + ' ' + currentTime;
+        }
+
         var startDate = getIntDate(endDate, interval, "start");
         var type = 'line';
         var data = loadlineChartData(chartID, title, equationList, xAxis, startDate, endDate, interval, type);
@@ -1952,14 +1961,15 @@ function loadDevices() {
         },
         dataType: "json",
         success: function(data, status) {
-            if (data=="Null Data") return;
-            console.log("Load Devices: " + status);
-            $("#deviceList").empty();
-            var _len = data["DeviceId"].length;
-            for (j = 0; j < _len; j++) {
-                var deviceName = data["DeviceName"][j];
-                var deviceId = data["DeviceId"][j];
-                $("#deviceList").append("<li id=\"li"+deviceId+"\" value=\""+deviceId+"\" style=\"cursor:default\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+deviceId+"\">"+deviceName+"<button class=\"li-button\" onclick=\"copyToClipboard('"+deviceId+"')\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"Copy key\"><i class=\"fa fa-clipboard\" aria-hidden=\"true\"></i></button><span onclick=\"removeDevice('"+deviceId+"')\" class=\"w3-closebtn w3-margin-right w3-medium\">&times;</span></li>");
+            if (data!="Null Data" && data) {
+                console.log("Load Devices: " + status);
+                $("#deviceList").empty();
+                var _len = data["DeviceId"].length;
+                for (j = 0; j < _len; j++) {
+                    var deviceName = data["DeviceName"][j];
+                    var deviceId = data["DeviceId"][j];
+                    $("#deviceList").append("<li id=\"li"+deviceId+"\" value=\""+deviceId+"\" style=\"cursor:default\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+deviceId+"\">"+deviceName+"<button class=\"li-button\" onclick=\"copyToClipboard('"+deviceId+"')\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"Copy key\"><i class=\"fa fa-clipboard\" aria-hidden=\"true\"></i></button><span onclick=\"removeDevice('"+deviceId+"')\" class=\"w3-closebtn w3-margin-right w3-medium\">&times;</span></li>");
+                }
             }
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -1989,4 +1999,42 @@ function copyToClipboard(text) {
             document.body.removeChild(textarea);
         }
     }
+}
+
+function getCurrentDate() {
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth()+1; //January is 0!
+    var yyyy = today.getFullYear();
+
+    if(dd<10) {
+        dd='0'+dd
+    } 
+
+    if(mm<10) {
+        mm='0'+mm
+    } 
+
+    today = yyyy+'-'+mm+'-'+dd;
+    return today;
+}
+
+function getCurrentTime() {
+    var today = new Date();
+    var hh = today.getHours();
+    var mm = today.getMinutes();
+    var ss = today.getSeconds();
+
+    if(hh<10) {
+        dd='0'+dd
+    } 
+    if(mm<10) {
+        mm='0'+mm
+    } 
+    if(ss<10) {
+        ss='0'+mm
+    } 
+
+    var now = hh+':'+mm+':'+ss;
+    return now;    
 }

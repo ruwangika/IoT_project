@@ -33,7 +33,7 @@
 
     }
 
-    elseif($field=="device_CustomList"){// load on manege dashboard devices list------------------------------------------------------
+    elseif($field=="device_CustomList"){// load on manage dashboard devices list------------------------------------------------------
         $user_id=$_POST["user_id"];
         $result=getCustomUserDeviceList($user_id);
         echo json_encode($result);

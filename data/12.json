@@ -1,0 +1,1 @@
+{"EqList":[{"eqName":"Peak Demand","equation":[{"device":"103501","channel":"(ph1_apperant_power+ph2_apperant_power+ph3_apperant_power)","number":"1","op":"*","unit":"kVA"},{"device":"104201","channel":"(ph1_apperant_power+ph2_apperant_power+ph3_apperant_power)","number":"1","op":"*","unit":"kVA"}]}]}

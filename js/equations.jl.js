@@ -1,16 +1,30 @@
-function addEquation(){
+function addEquation(){    
+    if (!document.getElementById("equationNameText").value || $('#equationText').is(':empty')) return;
     
     var equation = parseEquation(tempExpressionsList);
     var eqName = document.getElementById("equationNameText").value;
-    if (!eqName) return;
-    $("#equationList").append("<li id=\"li"+equation+"\" value=\""+equation+"\" style=\"cursor:default\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+equation+"\">"+eqName+"<span onclick=\"deleteEquation('"+equation+"',this)\" class=\"w3-closebtn w3-margin-right w3-medium\">&times;</span></li>");
 
-    var eqn = {
-        eqName: eqName,
-        equation: tempExpressionsList
-    };
+    var eqList = $("#equationList li");
+    var exists = false;
+    eqList.each(function(idx, li) {
+        var eq = ($(li).attr('id')).substr(2);
+        if (eq == equation) {
+            addNote('Equation already exists!');
+            exists = true;
+            return;
+        }
+    });
+    if (!exists) {
+        $("#equationList").append("<li id=\"li"+equation+"\" value=\""+equation+"\" style=\"cursor:default\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+equation+"\">"+eqName+"<span onclick=\"deleteEquation('"+equation+"',this)\" class=\"w3-closebtn w3-margin-right w3-medium\">&times;</span></li>");
 
-    globalEqList.push(eqn);
+        var eqn = {
+            eqName: eqName,
+            equation: tempExpressionsList
+        };
+
+        globalEqList.push(eqn);
+        clearExpressions();
+    }
 }
 
 function clearExpressions(){
@@ -28,6 +42,7 @@ function addExpression(){
     var number = prefix.substring(0, n-1);
     if(!isNaN(number)){
         var op = prefix.substring(n-1, n);
+        //if (op=="") op = "*";
         var operands = "+/*-";
         if(operands.includes(op)){
             

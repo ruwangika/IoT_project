@@ -2,6 +2,7 @@
 
     require 'dbconn.php';
     require 'mongo_access.php';
+    require 'circularArray.php';
 
     $errorlogfile = "../test/errorlog.txt";
 
@@ -121,7 +122,9 @@
             }
         }
         closeConnection($con);
-        return $data;
+        $rs=formatData($data,$accInt);
+        //var_dump($rs);
+        return $rs;
     }
 
 function getMaxSampInterval($deviceIds) {
@@ -170,7 +173,8 @@ function getMaxSampInterval($deviceIds) {
             }
         }
         closeConnection($con);
-        return $data;
+        $rs=formatData($data,$samplingInterval);
+        return $rs;
     }
 
     
@@ -235,19 +239,21 @@ function getMaxSampInterval($deviceIds) {
         }
         else{
             $con_iot=getIoTDeviceDataConnection();
-            $iot_querry= "SELECT epro_userid FROM user where id=".$user_id;
+            $iot_querry= "SELECT epro_userid FROM user where id=".$user_id;// epro_userid=pid in c_epro_5000.userdata
             $iot_results = mysqli_query($con_iot,$iot_querry);
             $row=mysqli_fetch_assoc($iot_results);
+            
             closeConnection($con_iot);
-            if($row["epro_userid"]===NULL)
+            if($row["epro_userid"]===NULL){
                 return "Null Data";
+            }
             
             $con = getConnection();
             $sql = "SELECT device.DeviceId,device.DeviceName FROM userdata_device RIGHT JOIN device ON userdata_device.device_id=device.pid where userdata_device.userdata_id=".$row["epro_userid"];
             $results = mysqli_query($con,$sql);
             $nor = mysqli_num_rows($results);
             $counter = 0;
-            if($nor != 0){
+            if($nor !== 0){
                 while ($row=mysqli_fetch_assoc($results)) {
                     $data["DeviceName"][$counter] = $row["DeviceName"]; 
                     $data["DeviceId"][$counter++] = $row["DeviceId"]; 
@@ -343,13 +349,20 @@ function getMaxSampInterval($deviceIds) {
     function registerDevice($user_id,$user_device_id,$device_id){
 
         $con=getIoTDeviceDataConnection();
-        $query="INSERT INTO device(Name,Host,Port,Location,ID) VALUES ('$user_device_id','localhost',27017,'Sri Lanka','$device_id')";
-        $results=mysqli_query($con,$query);//To execute query
-        //$row=mysqli_fetch_assoc($results);
-        $query="INSERT INTO user_device(user_id,user_defined_device_id,device_id) VALUES ('$user_id','$user_device_id','$device_id')";
-        $results=mysqli_query($con,$query);//To execute query
-        closeConnection($con);
-        return $results;
+        $check_query="select count(*) as count from user_device where user_id='$user_id'";
+        $results=mysqli_query($con,$check_query);
+        $row=mysqli_fetch_assoc($results);
+        if($row["count"]<5){//////////////////////////////////////////////////////////////////////////////////////////////////count for maximum user device condition for free account////////////////
+            $query="INSERT INTO device(Name,Host,Port,Location,ID) VALUES ('$user_device_id','localhost',27017,'Sri Lanka','$device_id')";
+            $results=mysqli_query($con,$query);//To execute query
+            //$row=mysqli_fetch_assoc($results);
+            $query="INSERT INTO user_device(user_id,user_defined_device_id,device_id) VALUES ('$user_id','$user_device_id','$device_id')";
+            $results=mysqli_query($con,$query);//To execute query
+            closeConnection($con);
+            return $results;
+        }else{ 
+            closeConnection($con);
+            return NULL;}
     }
 
     function removeDevice($device_id){
@@ -416,5 +429,155 @@ function getMaxSampInterval($deviceIds) {
         return $data;
     }
 
+//////////////////////////////////////////////////////////////data formatting/////////////////////////////////////////////////////////
+    function formatData($data,$accInt){
+        if($data==NULL)
+            return NULL;
+        $queue=new circularArray();
+        $queue->init($data);
+        $minLengthArray=getShortest($data);
+        foreach($data as $key=>$value){
+            $targetSet[$key]=1;
+        }
+        $count=0;
+        $result=array();
+        foreach($minLengthArray as $time){
+            $rs=cicularFind($time,$data,$queue,$targetSet,$accInt);
+            if($rs!==NULL){
+                foreach($rs as $deviceID=>$dataSet){
+                    foreach($dataSet as $key=>$value){
+                        $result[$deviceID][$key][$count]=$value;
+
+                    }
+                }
+
+                $count++;
+                
+            }
+        }
+        return $result;
+
+
+    }
+    function getShortest($data){
+        $minLength=0;
+        $minLengthArray=NULL;
+        foreach($data as $key=>$value){
+            $count=count($data[$key]["date_time"]);
+            if($count<$minLength)
+                $minLength=$count;
+                $minLengthArray=$data[$key]["date_time"];
+        }
+        return $minLengthArray;
+
+    }
+    function cicularFind($time,$data,$queue,$targetSet,$accInt){
+        
+        $discoveredSet=array();
+        $rs=array();
+
+        while(TRUE){
+            $top=&$queue->getFirst();
+            $device=$data[$top["key"]];
+
+            if($discoveredSet==$targetSet)
+                return $rs;
+
+            elseif(format($time,$accInt)>format($device["date_time"][$top["count"]],$accInt)){
+                $top["count"]++;
+            }
+            elseif(format($time,$accInt)==format($device["date_time"][$top["count"]],$accInt)){
+                foreach($device as $channelName=>$chanelArray){
+                    $rs[$top["key"]][$channelName]=$chanelArray[$top["count"]];
+                }
+                $top["count"]++;
+                $queue->pushBack();
+                $discoveredSet[$top["key"]]=1;
+            }else{
+                return NULL;
+            }
+
+        }
+
+    }
+    function format($time,$accInt){
+        $len=strlen($time);
+        if($accInt==="HOUR"){
+            //substr_replace($time,"00",$len-2,$len-2);
+            $time[$len-2]="0";
+            $time[$len-1]="0";
+
+            $time[$len-4]="0";
+            $time[$len-5]="0";
+        }elseif($accInt==="DAY"){
+            $time[$len-2]="0";
+            $time[$len-1]="0";
+
+            $time[$len-4]="0";
+            $time[$len-5]="0";
+
+            $time[$len-7]="0";
+            $time[$len-8]="0";
+
+        }elseif($accInt==="MONTH"){
+            $time[$len-2]="0";
+            $time[$len-1]="0";
+
+            $time[$len-4]="0";
+            $time[$len-5]="0";
+
+            $time[$len-7]="0";
+            $time[$len-8]="0";
+
+            $time[$len-10]="0";
+            $time[$len-11]="0";
+
+
+        }elseif($accInt==="YEAR"){
+            $time[$len-2]="0";
+            $time[$len-1]="0";//seconds
+
+            $time[$len-4]="0";
+            $time[$len-5]="0";//minutes
+
+            $time[$len-7]="0";
+            $time[$len-8]="0";//hours
+
+            $time[$len-10]="0";
+            $time[$len-11]="0";//days
+
+            $time[$len-13]="0";
+            $time[$len-14]="0";//months
+
+        }elseif($accInt<60){
+
+            $time[$len-2]="0";
+            $time[$len-1]="0";//seconds
+
+        }
+        elseif($accInt>60 && $accInt<1440){
+            $time[$len-2]="0";
+            $time[$len-1]="0";//seconds
+
+            $time[$len-4]="0";
+            $time[$len-5]="0";//minutes
+        }
+        elseif($accInt>1440){
+            $time[$len-2]="0";
+            $time[$len-1]="0";//seconds
+
+            $time[$len-4]="0";
+            $time[$len-5]="0";//minutes
+
+            $time[$len-7]="0";
+            $time[$len-8]="0";//hours
+        }
+        $time=new DateTime($time);
+        return $time;
+    }
+
+
     
 ?> 
+
+
