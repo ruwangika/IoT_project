@@ -451,9 +451,18 @@ function graphdbclick(graph, id) {
         tempGraph = graph;
         tempId = id;
         graphnav_open();
-        if (graphs[id].type=="bot") 
+        if (graphs[id].type=="bot") {
             $("#chartIntDiv").hide();
-        else $("#chartIntDiv").show();
+            $("#downloadBtnDiv").hide();
+        }
+        else if (graphs[id].type=="pieChart") {
+            $("#chartIntDiv").show();
+            $("#downloadBtnDiv").hide();
+        }
+        else {
+            $("#chartIntDiv").show();
+            $("#downloadBtnDiv").show();
+        }
         $("#graphContainer").empty();                                       
         document.getElementById("graphContainer").appendChild(graph);
         graphs[id].chart.render();
@@ -1765,6 +1774,42 @@ function showLed(value) {
 
 function imageIsLoaded(e) {
     $('#customerLogo').attr('src', e.target.result);
+}
+
+function downloadData() {
+    var data = [];
+    var cData = graphs[tempId].chart.options.data;
+    var obj = [];
+    var name = "";
+    var dataPoints = [];
+    var chartName = graphs[tempId].chart.options.title.text;
+
+    for (i = 0; i < cData.length; i++) {
+        obj = cData[i];
+        name = obj.name.split(",")[0];
+        dataPoints = obj.dataPoints;
+        data.push([name]);
+        
+        data.push(["Timestamp", "Value"]);
+
+        for (j = 0; j < dataPoints.length; j++) {
+            data.push([dataPoints[j]["x"].toString().split("G")[0], dataPoints[j]["y"]]);
+        }
+        //.toString().split("G")[0]
+        data.push(["",""]);
+    }
+    //data=[["this","is","a","test"],["this","is","a","test"],["this","is","a","test"],["this","is","a","test"]];
+    var csvContent = "";
+    data.forEach(function(infoArray, index){
+        dataString = infoArray.join(",");
+        csvContent += index < data.length ? dataString+ "\n" : dataString;
+    }); 
+    var pom = document.createElement('a');
+    var blob = new Blob([csvContent],{type: 'text/csv;charset=utf-8;'});
+    var url = URL.createObjectURL(blob);
+    pom.href = url;
+    pom.setAttribute('download', chartName+".csv");
+    pom.click();
 }
 
 function changeTheme(themeId) {

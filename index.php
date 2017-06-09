@@ -549,6 +549,9 @@
             <button class="portal-button filter-button" onclick="graphNextInterval()"><i class="fa fa-arrow-right" aria-hidden="true"></i></button>        
         </div>
         <div id="graphContainer" class="w3-center" style="width: 100%; padding-right:50px; padding-left:50px;opacity: 1;"></div>
+        <div id="downloadBtnDiv" class="w3-panel widget-background-color w3-large" style="padding: 400px 64px 0px 64px; float: right">
+            <button class="portal-button filter-button" onclick="downloadData()" data-toggle="tooltip" data-placement="top" title="Download data"><i class="fa fa-download fa-2x" aria-hidden="true"></i></button>
+        </div>
     </nav>
 
     <!-- !PAGE CONTENT! -->
@@ -668,13 +671,13 @@
 
         <div class="w3-row" style="margin-bottom:64px; background-color : transparent;">
             <!-- Grid -->
-            <div class="w3-col" id="myGrid" style="width:80%" >
+            <div class="w3-col" id="myGrid" style="width:100%" >
                 <div id = "gridDiv" style="background-color : transparent;">
                     <div class="grid-stack" style="background-color : transparent"></div>
                 </div>     
             </div>
             <!-- Sidebar -->
-            <div  id="sidebar" class="w3-col" style="width:20%; float: right;">
+            <div  id="sidebar" class="w3-col" style="width:20%; float: right; display: none">
                 <!-- Weather widget -->
                 <div class="sidebar-widget" style="pointer-events:none">
                     <div class="sidebar-widget-header"><span class="w3-margin-right">Weather</span></div>

@@ -195,6 +195,7 @@ function initPieChart(chartID,title,chartData,time_range,unit){
             fontColor: fontColor
         },
         data: [{
+            name: graphs[chartID]["chartData"].title,
             type: "pie",
             showInLegend: true,
             toolTipContent: "{y} - #percent %",
