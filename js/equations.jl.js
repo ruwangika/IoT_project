@@ -30,6 +30,7 @@ function addEquation(){
 function clearExpressions(){
     tempExpressionsList = [];
     document.getElementById("equationText").innerHTML = "";
+    $('#equationNameText').val(null);
 }
 
 function addExpression(){
