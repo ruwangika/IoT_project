@@ -64,7 +64,11 @@ function loadGraphTypes(){
     var graphTypes_historical = [
         ["Line Chart", "line"],
         ["Bar Chart", "bar"],
-        ["Pie Chart", "pie"]
+        ["Pie Chart", "pie"],
+        ["Spline Chart", "spline"],
+        ["Step Line Chart", "stepLine"],
+        ["Area Chart", "splineArea"],
+        ["Scatter Chart", "scatter"]
     ];
     var graphTypes_realtime = [
         ["Gauge", "guage"],
@@ -281,17 +285,15 @@ function loadDeviceChannels(Type,id){
             },
             dataType: "json",
             success: function(data, status) {
-                if (data) {
-                    var _len = data.Channel.length;
-                    for (j = 0; j < _len; j++) {
-                        var channel = data.Channel[j];
-                        $('#channelCombo').append($('<option/>', {
-                            value: channel,
-                            text: channel
-                        }));
-                    }
-                    //updateEquationText();
+                var _len = data.Channel.length;
+                for (j = 0; j < _len; j++) {
+                    var channel = data.Channel[j];
+                    $('#channelCombo').append($('<option/>', {
+                        value: channel,
+                        text: channel
+                    }));
                 }
+                //updateEquationText();
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
                 console.log(XMLHttpRequest);
@@ -765,7 +767,7 @@ function loadGraph(widgetID, graphID, data, w, h, x, y) {
     var endDate = todayTime();
     var startDate = getIntDate(endDate, data.interval, "start");
     var type = data.type;
-    if (type == "line") {
+    if (type == "line" || type == "spline" || type =="stepLine" || type == "splineArea" || type == "scatter") {
         loadlineChartData(graphID, data.title,data.equationList, data.xAxis, startDate, endDate, data.interval, data.type);
         var div = generateChartDiv(graphID);
         addDivtoWidget(div, w, h, x, y, widgetID);
@@ -781,7 +783,7 @@ function loadGraph(widgetID, graphID, data, w, h, x, y) {
         if (c_i >= colChartIndex) {
             colChartIndex = c_i + 1;
         }
-    } else if (type == "pie") {
+    } else if (type == "pie" || type == "doughnut") {
         loadPieChartData(graphID, data.title, data.equationList, data.total_index, data.startDate, data.endDate, data.dataType, type);
         var div = generateChartDiv(graphID);
         addDivtoWidget(div, w, h, x, y, widgetID);
@@ -870,7 +872,7 @@ function addGraph() {
 
     var graphType = document.getElementById("graphTypeCombo").value;
     
-    if (graphType == "line") {
+    if (graphType == "line" || graphType == "spline" || graphType =="stepLine" || graphType == "splineArea" || graphType == "scatter") {
         if (_len == 0) {
             console.log("No equations selected");
             return;
@@ -893,7 +895,7 @@ function addGraph() {
         }
 
         var startDate = getIntDate(endDate, interval, "start");
-        var type = 'line';
+        var type = graphType;
         var data = loadlineChartData(chartID, title, equationList, xAxis, startDate, endDate, interval, type);
 
         var widgetID = "widget_" + "linechart" + lineChartIndex;
@@ -932,7 +934,7 @@ function addGraph() {
         addDivtoWidget(div, width, 6, 0, graphy, widgetID);
         graphy += 6;
 
-    } else if (graphType == "pie") {
+    } else if (graphType == "pie" || graphType == "doughnut") {
         if (_len == 0) {
             console.log("No equations selected");
             return;
@@ -950,7 +952,7 @@ function addGraph() {
         var startDate = $("#startDatePicker").val();
         var endDate = $("#endDatePicker").val();
         var dataType = 'acc';
-        var type = 'pie';
+        var type = graphType;
 
         loadPieChartData(chartID, title, equationList, totalIndex, startDate, endDate, dataType, type);
 

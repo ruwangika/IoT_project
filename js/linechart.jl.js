@@ -62,7 +62,7 @@ function initLineChart(chartID,title, chartData) {
             fontColor: fontColor,
             fontStyle: "normal",
             fontWeight: "lighter",
-            fontFamily: "calibri",
+            fontFamily: "candara",
             fontSize: 24
         },
         subtitles:[
@@ -71,7 +71,7 @@ function initLineChart(chartID,title, chartData) {
                 fontColor: fontColor,
                 fontStyle: "normal",
                 fontWeight: "lighter",
-                fontFamily: "calibri",
+                fontFamily: "candara",
                 fontSize: 14
             }
 		],
@@ -141,7 +141,7 @@ function loadlineChartData(chartID, title, equationList, xAxis, startDate, endDa
     var units = [];
     for(i = 0; i < equationList.length; i++){//ith equation
         for(j = 0; j < equationList[i]['equation'].length; j++){
-            var expression = equationList[i]['equation'][j];//
+            var expression = equationList[i]['equation'][j];
             devices.push(expression.device);
             channels.push(expression.number + expression.op + expression.channel);
             units.push(expression.unit);
@@ -197,7 +197,7 @@ function loadlineChartData(chartID, title, equationList, xAxis, startDate, endDa
                 var eqName = equationList[i]['eqName'];
                 var line={
                     name: eqName+', average:'+avg+', max:'+max+', min:'+min,
-                    type: "line",
+                    type: type,
                     showInLegend: true,
                     yValueFormatString:"#.## "+unit,
                     connectNullData:true,

@@ -3,7 +3,7 @@
     
     require 'dbaccess.php';
     $type = $_POST["type"];
-    if($type == 'line'){
+    if($type == 'line' || $type == 'spline' || $type == 'stepLine' || $type == 'splineArea' || $type == 'scatter'){
     	
     	$codes = $_POST["devices"];
 	    $yAxes = $_POST["channels"];
@@ -26,7 +26,7 @@
     	$data = getBarChartData($codes,$yAxes,$xAxis,$startDate,$endDate,$accInt,$tarrifs);
     	echo json_encode($data);
     
-    }else if($type == 'pie'){
+    }else if($type == 'pie' || $type == 'doughnut'){
     	$devices = $_POST["devices"];
     	$channel = $_POST["channel"];
         $startDate = $_POST["startDate"];

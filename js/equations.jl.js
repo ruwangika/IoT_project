@@ -93,7 +93,7 @@ function showEquations(){
     $("#dateRangeChooser").show();
     $("#startDateLbl").hide();
     $("#startDateText").hide();
-    if(graphType == "line"){
+    if(graphType == "line" || graphType == "spline" || graphType =="stepLine" || graphType == "splineArea" || graphType == "scatter"){
         for (var i = 0; i < _len; i++) {
         $("#barChartConfigPanel").show();
         $("#eqListHeader").show();
@@ -113,7 +113,7 @@ function showEquations(){
                 $("#equationListDisp").append("<li onclick=\"selectEquation('"+eqStr+"','"+i+"',this)\" id=\""+eqStr+"\" index=\""+i+"\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+eqStr+"\">"+eqName+"<span class=\"w3-closebtn w3-margin-right w3-medium\">+</span></li>");    
             }
         }   
-    }else if(graphType == "pie"){
+    }else if(graphType == "pie" || graphType == "doughnut"){
         $("#pieChartConfigPanel").show();
         $("#eqListHeader").show();
         $("#chartTitleText").val("chart");

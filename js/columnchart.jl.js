@@ -12,11 +12,11 @@ function getRandomColor() {
 function initBarChart(chartID,title, chartData,axisX) {
     //var themeId = document.getElementById("themeCombo");
     var backgroundColor, fontColor, theme;
-    if (globalTheme == "dark") {        
+    if (globalTheme == "dark") {
         backgroundColor = "#2A2A2A";
         theme = "theme2";
         fontColor = "lightgray";
-    } else if (globalTheme == "light") {        
+    } else if (globalTheme == "light") {
         backgroundColor = "white";
         theme = "theme1";
         fontColor = "#0d1a26";
@@ -42,7 +42,7 @@ function initBarChart(chartID,title, chartData,axisX) {
                 fontColor: fontColor,
                 fontStyle: "normal",
                 fontWeight: "lighter",
-                fontFamily: "calibri",
+                fontFamily: "candara",
                 fontSize: 24
             },
             subtitles:[
@@ -51,13 +51,13 @@ function initBarChart(chartID,title, chartData,axisX) {
                     fontColor: fontColor,
                     fontStyle: "normal",
                     fontWeight: "lighter",
-                    fontFamily: "calibri",
+                    fontFamily: "candara",
                     fontSize: 14
                 }
             ],
             toolTip: {
                 shared: true
-            },          
+            },
             axisY: {
                 //title: "Energy"
             }, axisX:axisX,
@@ -103,7 +103,7 @@ function loadBarChartData(chartID,title,equationList, xAxis, startDate, endDate,
         tarrifs: tarrifs,
         type: type
     };
-    
+
     graphs[chartID]["chartData"] = cData;
 
 // Get accInt from interval
@@ -160,9 +160,9 @@ function loadBarChartData(chartID,title,equationList, xAxis, startDate, endDate,
                 intervalType = "year";
             }
 
-            var axisX = {   
+            var axisX = {
                 valueFormatString: dateTimeFormat,
-                interval: 1, 
+                interval: 1,
                 intervalType: intervalType,
                 labelAngle: -30,
                 labelFontSize: 13,
@@ -192,19 +192,19 @@ function loadBarChartData(chartID,title,equationList, xAxis, startDate, endDate,
                         if(j == 0){
                             equationData[k] = 0;
                         }
-                        equationData[k] += data[device][channel][k];                        
+                        equationData[k] += data[device][channel][k];
                     }
                 }
                 // window.alert(device);
                 // if (!data[device]) window.alert("null");
-                
+
                 var column={
                     name: eqName,
                     type: "column", showInLegend: true,
                     yValueFormatString:"#.## "+equation[equation.length-1].unit,
                 };
                 var dataPoints = [];
-                
+
                 //var _len = data[device][xAxis].length;
                 for(j = 0; j < _len ; j++){
                     dataPoints.push({
@@ -212,22 +212,22 @@ function loadBarChartData(chartID,title,equationList, xAxis, startDate, endDate,
                         y: equationData[j]
                     });
                 }
-                
+
                 column.dataPoints = dataPoints;
                 chartData.push(column);
-            }  
+            }
             if(channelCounter == 0){
                 initBarChart(chartID,"No Data...",chartData,axisX);
             }else{
-                initBarChart(chartID,title,chartData,axisX);   
+                initBarChart(chartID,title,chartData,axisX);
             }
-            return chartData;  
+            return chartData;
         },
-        error: function(XMLHttpRequest, textStatus, errorThrown) { 
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
             console.log(XMLHttpRequest);
             $("#"+chartID).html(title+" : No data");
             $(".filter-button").removeAttr("disabled");
             return "No data";
-        }    
+        }
       });
 }

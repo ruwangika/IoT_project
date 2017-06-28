@@ -36,12 +36,12 @@ function loadPieChartData(chartID,title,equationList,total_index,startDate,endDa
         dataType: "json",
         success: function(data, status) {
             console.log("Pie chart load data: " + status);
-            var 
+            var
             chartData = [];
             var channelCounter = 0;
             var d_len = devices.length;
 //////////////////////////////////////////////////////////////////////////////////////////////////////
-        
+
             if(data == null){
                 $("#"+chartID).html(title+"No data");
                 $(".filter-button").removeAttr("disabled");
@@ -61,7 +61,7 @@ function loadPieChartData(chartID,title,equationList,total_index,startDate,endDa
                     if(data[device] == null){
                         continue;
                     }else{
-                        
+
                         if (!data[device][xAxis]) continue;
                         else channelCounter++;
                     }
@@ -71,19 +71,19 @@ function loadPieChartData(chartID,title,equationList,total_index,startDate,endDa
                             equationData[k] = 0;
                         }
                         equationData[k] += data[device][channel][k];
-                        
+
                     }
-                    
+
 
                 }
-                
+
                 var dataPoint = { legendText: eqName, indexLabel: "#percent%" };
                 var g_len = data[device][xAxis].length;
                 for(j = 0; j < g_len ; j++){
                     dataPoint.y=equationData[j];
                 }
                 chartData.push(dataPoint);
-            }  
+            }
             var sum=0;
             for(i=0;i<chartData.length;i++){
                 if(i!=total_index)
@@ -110,7 +110,7 @@ function loadPieChartData(chartID,title,equationList,total_index,startDate,endDa
             }
             time_range={startDate:startDate,endDate:endDate};
             if(channelCounter != 0){
-                initPieChart(chartID,title,chartData,time_range,units[0]);
+                initPieChart(chartID,title,chartData,time_range,units[0],type);
             }else{
                  $("#"+chartID).html(title+"No data");
                 $(".filter-button").removeAttr("disabled");
@@ -124,7 +124,7 @@ function loadPieChartData(chartID,title,equationList,total_index,startDate,endDa
                 var sum = 0;
                 for(i = 0; i < d_len-1; i++){
                     sum += data[devices[i]][channel];
-                }       
+                }
                 var other_val = data[devices[d_len-1]][channel] - sum;
                 data[devices[d_len-1]][channel] = (Math.round(other_val*10))/10;
                 data[devices[d_len-1]]["DeviceName"] = "Other";
@@ -136,27 +136,27 @@ function loadPieChartData(chartID,title,equationList,total_index,startDate,endDa
                 var dataPoints = { y: value, legendText: legend, indexLabel: legend+": #percent%" };
                 chartData.push(dataPoints);
             }*/
-            
+
         },
-        error: function(XMLHttpRequest, textStatus, errorThrown) { 
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
             console.log(XMLHttpRequest);
-            console.log("Status: " + textStatus); 
-            console.log("Error: " + errorThrown); 
+            console.log("Status: " + textStatus);
+            console.log("Error: " + errorThrown);
              $("#"+chartID).html(title+"No data");
              $(".filter-button").removeAttr("disabled");
             return "No data";
-        }    
+        }
     });
 }
 
-function initPieChart(chartID,title,chartData,time_range,unit){
+function initPieChart(chartID,title,chartData,time_range,unit,type){
     //var themeId = document.getElementById("themeCombo");
     var backgroundColor, fontColor, theme;
-    if (globalTheme == "dark") {        
+    if (globalTheme == "dark") {
         backgroundColor = "#2A2A2A";
         theme = "theme2";
         fontColor = "lightgray";
-    } else if (globalTheme == "light") {        
+    } else if (globalTheme == "light") {
         backgroundColor = "white";
         theme = "theme1";
         fontColor = "#0d1a26";
@@ -176,7 +176,7 @@ function initPieChart(chartID,title,chartData,time_range,unit){
             fontColor: fontColor,
             fontStyle: "normal",
             fontWeight: "lighter",
-            fontFamily: "calibri",
+            fontFamily: "candara",
             fontSize: 24
         },
         subtitles:[
@@ -185,7 +185,7 @@ function initPieChart(chartID,title,chartData,time_range,unit){
                 fontColor: fontColor,
                 fontStyle: "normal",
                 fontWeight: "lighter",
-                fontFamily: "calibri",
+                fontFamily: "candara",
                 fontSize: 14
             }
         ],
@@ -195,8 +195,7 @@ function initPieChart(chartID,title,chartData,time_range,unit){
             fontColor: fontColor
         },
         data: [{
-            name: graphs[chartID]["chartData"].title,
-            type: "pie",
+            type: type,
             showInLegend: true,
             toolTipContent: "{y} - #percent %",
             yValueFormatString: "#,###.## "+unit,

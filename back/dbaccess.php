@@ -482,14 +482,18 @@ function getMaxSampInterval($deviceIds) {
 
             if($discoveredSet==$targetSet)
                 return $rs;
-
-            elseif(format($time,$accInt)>format($device["date_time"][$top["count"]],$accInt)){
+            $t1=format($time,$accInt);
+            $t2=format($device["date_time"][$top["count"]],$accInt);
+            
+            if($t1>$t2){
                 $top["count"]++;
             }
-            elseif(format($time,$accInt)==format($device["date_time"][$top["count"]],$accInt)){
+            elseif($t1==$t2){
                 foreach($device as $channelName=>$chanelArray){
                     $rs[$top["key"]][$channelName]=$chanelArray[$top["count"]];
+                    //var_dump($rs);
                 }
+                $rs[$top["key"]]["date_time"]=$t1->format('Y-m-d H:i:s');;
                 $top["count"]++;
                 $queue->pushBack();
                 $discoveredSet[$top["key"]]=1;

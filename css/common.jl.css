@@ -231,7 +231,7 @@ img {
     position: absolute;
     right: 125px;
     top: 10px;
-    width: 160px;   
+    width: 160px;
     text-align: center;
 }
 
@@ -247,7 +247,7 @@ img {
 #addWidgetButton{
     position: absolute;
     right: 125px;
-    top: 49px;   
+    top: 49px;
     width: 160px;
     text-align: center;
 }
@@ -262,19 +262,24 @@ img {
 }
 
 #saveGridButton{
-    position: relative;
-    width: 170px;  
+    position: fixed;
+    left: 5px;
+    top: 15%;
+    width: 170px;
     text-align: center;
 }
 
 #fullScreenButton{
-    position: absolute;
-    right: 10px;
-    top: 15px; 
-    width: 170px;  
-    text-align: left;
+    position: fixed;
+    right: 5px;
+    top: 15%;
+    width: 170px;
+    text-align: center;
 }
-
+.navbar{
+  border: 0px;
+  min-height: 40px;
+}
 #linkAccBtn {
     float: right;
     right: 200px;
@@ -290,7 +295,7 @@ img {
     border: none;
     /*right: 110px;
     top: 10px;
-    width: 160px;   
+    width: 160px;
     text-align: left;*/
 }
 
@@ -324,7 +329,7 @@ img {
     color:black;
     text-decoration:none;
     font-weight:bold
-} 
+}
 
 #portal-sidebar{
     width: 220px;
@@ -335,19 +340,19 @@ img {
     right: 0px;
 }
 
-.blur {    
+.blur {
     height: 100%;
     width: 100%;
     margin: -20px auto;
     z-index: -3;
-    -webkit-filter: blur(10px); 
+    -webkit-filter: blur(10px);
        -moz-filter: blur(10px);
-        -ms-filter: blur(10px);    
-            filter: blur(10px);    
+        -ms-filter: blur(10px);
+            filter: blur(10px);
 }
 
 .chart-title-font{
-    font-family: 'Source Sans Pro', sans-serif;
+    font-family: 'Share Tech Mono', monospace;;
     font-size: large;
     font-weight: normal;
     text-align: center;
@@ -409,7 +414,7 @@ img {
     font-family: 'Source Sans Pro', sans-serif;
     font-weight: bold;
     font-size: 16px;
-    padding: 3px 20px 3px 20px; 
+    padding: 3px 20px 3px 20px;
 }
 
 .siteInfoLabel{
@@ -431,7 +436,7 @@ input[type=text], textarea {
   color: #808080;
   background-color: inherit;
 }
- 
+
 input[type=text]:focus, textarea:focus {
   box-shadow: 0 0 5px #B88F51;
   padding: 3px 0px 3px 3px;
@@ -445,12 +450,12 @@ input[type=text]:focus, textarea:focus {
     border-radius: 3px;
     text-align: left;
     color: #808080;
-    width: 100%; 
-    background-color: inherit;   
+    width: 100%;
+    background-color: inherit;
     margin-top: 5px;
     border: 1px solid #999999;
     padding: 3px 0px 3px 3px;
-    
+
 }
 
 .combo-1:focus{
@@ -460,7 +465,7 @@ input[type=text]:focus, textarea:focus {
 
 select option{
     background: inherit;
-    
+
 }
 
 .label-1{
@@ -489,8 +494,8 @@ select option{
   height: 10px;
   margin: 6px auto;
   background-color: lightgreen;
-  
-  border-radius: 100%;  
+
+  border-radius: 100%;
   -webkit-animation: sk-scaleout 1.0s infinite ease-in-out;
   animation: sk-scaleout 1.5s infinite ease-in-out;
 }
@@ -533,7 +538,7 @@ select option{
     float: right;
     font-size: 10px;
     font-weight: lighter;
-    color: inherit;    
+    color: inherit;
 }
 
 .closebtn,
@@ -612,8 +617,8 @@ select option{
     font-size: 16px;
     position: absolute;
     right: 25px;
-    bottom: 15px; 
-    width: 80px;  
+    bottom: 15px;
+    width: 80px;
     text-align: center;
 }
 
@@ -678,7 +683,7 @@ select option{
 }
 
 @keyframes sk-scaleout {
-  0% { 
+  0% {
     -webkit-transform: scale(0);
     transform: scale(0);
   } 100% {
@@ -708,13 +713,13 @@ select option{
 }
 
 @keyframes sk-rotateplane {
-  0% { 
+  0% {
     transform: perspective(120px) rotateX(0deg) rotateY(0deg);
-    -webkit-transform: perspective(120px) rotateX(0deg) rotateY(0deg) 
-  } 50% { 
+    -webkit-transform: perspective(120px) rotateX(0deg) rotateY(0deg)
+  } 50% {
     transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg);
-    -webkit-transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg) 
-  } 100% { 
+    -webkit-transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg)
+  } 100% {
     transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
     -webkit-transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
   }
@@ -753,15 +758,15 @@ select option{
 }
 
 @-webkit-keyframes sk-stretchdelay {
-  0%, 40%, 100% { -webkit-transform: scaleY(0.4) }  
+  0%, 40%, 100% { -webkit-transform: scaleY(0.4) }
   20% { -webkit-transform: scaleY(1.0) }
 }
 
 @keyframes sk-stretchdelay {
-  0%, 40%, 100% { 
+  0%, 40%, 100% {
     transform: scaleY(0.4);
     -webkit-transform: scaleY(0.4);
-  }  20% { 
+  }  20% {
     transform: scaleY(1.0);
     -webkit-transform: scaleY(1.0);
   }
@@ -794,7 +799,7 @@ select option{
 {
     display : none;
 }
-#divLoading.hide 
+#divLoading.hide
 {
     display : none;
 }

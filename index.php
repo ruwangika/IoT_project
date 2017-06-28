@@ -1,4 +1,4 @@
-<?php 
+<?php
     session_start();
 ?>
 <!DOCTYPE html>
@@ -7,11 +7,12 @@
     if(isset($_SESSION["id"])){
         $id = $_SESSION["id"];
     }else{
-        $_SESSION['msg'] = "Please log in first";
+        $_SESSION['msg'] = "Welcome";
         $id = "none";
+        echo "<script>location.href = 'login.php';</script>";
     }
 ?>
-<title>JL Portal</title>
+<title>IoTPlus</title>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -21,7 +22,8 @@
 
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
-<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Share+Tech+Mono">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
 <link rel="stylesheet" href="css/gridstack.css"/>
@@ -55,15 +57,22 @@
 <script src="js/rangeslider.js"></script>
 <script src="js/rangeslider.min.js"></script>
 
+<style>
+#savePan{
+  position: absolute;
+  bottom: 0;
+}
+</style>
+
 <body class="dashboard-background-color">
 
     <!-- Sidenav -->
     <nav class="w3-sidenav w3-card-2 w3-animate-zoom widget-font widget-background-color" style="display:none;padding-top:20px" id="sideNav">
-        <a href="javascript:void(0)" onclick="w3_close()" class="w3-closenav w3-xlarge w3-right w3-display-topright" style="padding:12px;" onmouseover="this.style.backgroundColor='inherit'">
+        <a href="javascript:void(0)" onclick="w3_close()" class="w3-closenav w3-large w3-right w3-display-topright" style="padding:12px;" onmouseover="this.style.backgroundColor='inherit'">
             <i class="fa fa-remove"></i>
         </a>
 
-        <div class="w3-panel widget-background-color w3-large" style="padding: 32px 64px 0px 64px">
+        <div class="w3-panel widget-background-color w3-small" style="padding: 10px 20px 0px 0px">
             <div id="changeUserDiv" class="nav-label w3-row">
                 <div class="w3-col w3-container" style="width:30%">
                     <p class="label-1">Select a User Environment to Edit
@@ -72,13 +81,13 @@
                 <div class="w3-col" style="width:70%">
                     <select id="userCombo" onchange="userChanged()" class="nav-combo"></select>
                 </div>
-            </div> 
+            </div>
             <div id="linkBtnDiv" style="display:none">
                 <button id="linkAccBtn" class="portal-button button-background" onclick="openLinkModal()" data-toggle="tooltip" data-placement="left" title="Link ePro account">ePro<br><i class="fa fa-link" aria-hidden="true"></i></button>
             </div>
         </div>
         <!--Equation Nav-->
-        <div id="equationNav" class="w3-panel w3-padding-jumbo widget-background-color w3-large">
+        <div id="equationNav" class="w3-panel widget-background-color w3-large">
             <div class="w3-row w3-padding-4">
                 <div class="nav-button-selected w3-col container-1" style="width:50%">
                     <p><div style="text-align: center;" onclick="">Manage Equations</div></p>
@@ -86,20 +95,20 @@
                 <div class="nav-button w3-col container-1" style="width:50%">
                     <p><div style="text-align: center;" onclick="equationNav_close(); deviceNav_open()">Manage Devices</div></p>
                 </div>
-            </div> 
+            </div>
             <div class="w3-row w3-padding-8 widget-color">
                 <div class="w3-col container-1" style="width:2%">
                 </div>
                 <div class="w3-col container-1" style="width:8%">
                     <input type="text" id="prefixEquationText" data-toggle="tooltip" data-placement="top" title="Expression prefix" placeholder="prefix" style="width:100%" >
-                </div>   
+                </div>
                 <div class="w3-col container-1" style="width:11%">
                     <p class="label-2">Device type</p>
                 </div>
                 <div class="w3-col container-1" style="width:12%">
                     <select id="deviceTypeCombo" class="combo-1" onchange="updateDevicesCombo(); updateDeviceChannels()">
                     </select>
-                </div>                    
+                </div>
                 <div class="w3-col container-1" style="width:8%">
                     <p class="label-2">Device</p>
                 </div>
@@ -132,30 +141,30 @@
                 </div>
                 <div class="w3-col w3-container w3-right" style="width:8%">
                     <p><button class="portal-pane-button" onclick="clearExpressions()" data-toggle="tooltip" data-placement="top" title="Clear Expressions"><i class="fa fa-trash-o fa-2x" aria-hidden="true"></i></button></p>
-                </div>                
+                </div>
             </div>
 
             <div class="w3-row w3-padding-8 widget-color">
                 <div class="w3-col w3-container" style="width:15%">
                     <p class="label-1">Equation Name</p>
-                </div>            
+                </div>
                 <div class="w3-col w3-container" style="width:20%">
                    <input type="text" size="6" id="equationNameText" style="width:100%">
-                </div>      
+                </div>
                 <div class="w3-col w3-container" style="width:8%; float:right">
                     <p><button class="portal-pane-button" onclick="addEquation()" data-toggle="tooltip" data-placement="top" title="Add Equation"><i class="fa fa-check fa-2x" aria-hidden="true"></i></button></p>
-                </div>          
-            </div>           
-                    
+                </div>
+            </div>
+
             <div class="w3-container">
               <ul class="w3-ul w3-card-4" id="equationList">
-                
+
               </ul>
             </div>
         </div>
 
         <!--Device Nav-->
-        <div id="deviceNav" class="w3-panel w3-padding-jumbo widget-background-color w3-large" style="display:none">
+        <div id="deviceNav" class="w3-panel widget-background-color w3-large" style="display:none">
             <div class="w3-row w3-padding-4">
                 <div class="nav-button w3-col w3-container" style="width:50%;">
                     <p><div style="text-align: center;" onclick="deviceNav_close(); equationNav_open()">Manage Equations</div></p>
@@ -163,8 +172,8 @@
                 <div class="nav-button-selected w3-col w3-container" style="width:50%">
                     <p><div style="text-align: center;" onclick="">Manage Devices</div></p>
                 </div>
-            </div>  
-            <div class="w3-row w3-padding-8 widget-color">  
+            </div>
+            <div class="w3-row w3-padding-8 widget-color">
                 <div class="w3-col w3-container" style="width:12%">
                     <p class="label-2">Device type</p>
                 </div>
@@ -173,7 +182,7 @@
                         <option value="custom">Custom</option>
                         <!--<option>Other</option>-->
                     </select>
-                </div>                    
+                </div>
                 <div class="w3-col w3-container" style="width:12%">
                     <p class="label-2">Device ID</p>
                 </div>
@@ -192,12 +201,12 @@
 
             </div>
 
-            <div class="w3-row w3-padding-8 widget-color">              
-            </div>         
-                    
+            <div class="w3-row w3-padding-8 widget-color">
+            </div>
+
             <div class="w3-container">
               <ul class="w3-ul w3-card-4" id="deviceList">
-                
+
               </ul>
             </div>
         </div>
@@ -208,9 +217,9 @@
         <a href="javascript:void(0)" onclick="widgetnav_close()" class="w3-closenav w3-xlarge w3-right w3-display-topright" style="padding:12px;" onmouseover="this.style.backgroundColor='inherit'">
             <i class="fa fa-remove"></i>
         </a>
-        
+
         <div class="w3-panel w3-padding-jumbo widget-background-color w3-large">
-            
+
             <div id="settingsMain" class="w3-row w3-padding-8 widget-color">
                 <div class="w3-col w3-container" style="width:10%">
                     <p class="label-1">Graph Category</p>
@@ -229,10 +238,15 @@
                         <option value="line">Line Chart</option>
                         <option value="bar">Bar Chart</option>
                         <option value="pie">Pie Chart</option>
+                        <option value="doughnut">Doughnut Chart</option>
+                        <option value="spline">Spline Chart</option>
+                        <option value="stepLine">Step Line Chart</option>
+                        <option value="splineArea">Area Chart</option>
+                        <option value="scatter">Scatter chart</option>
                     </select>
                 </div>
                 <div id="graphWidthLabel" class="w3-col w3-container" style="width:10%">
-                    <p class="label-1">Widget Size</p>  
+                    <p class="label-1">Widget Size</p>
                 </div>
                 <div class="w3-col w3-container" style="width:20%">
                     <select id="graphWidthCombo" class="combo-1">
@@ -242,9 +256,9 @@
                         <option>9</option><option>10</option>
                     </select>
                 </div>
-                <div class="w3-col w3-container" style="width:30%; align-content: right;">  
+                <div class="w3-col w3-container" style="width:30%; align-content: right;">
                 </div>
-            </div> 
+            </div>
             <div class="w3-row w3-padding-8 widget-color">
                 <div class="w3-col w3-container" style="width:10%">
                     <p class="label-1">Chart title</p>
@@ -272,7 +286,7 @@
 
             <div class="w3-row w3-padding-8 widget-color" id="barChartConfigPanel">
                 <div class="w3-col w3-container" style="width:10%">
-                    <p class="label-1">Interval</p>    
+                    <p class="label-1">Interval</p>
                 </div>
                 <div class="w3-col w3-container" style="width:20%">
                     <select id="intervalCombo" class="combo-1">
@@ -283,7 +297,7 @@
                     </select>
                 </div>
             </div>
-             
+
             <div class="w3-row w3-padding-8 widget-color" id="pieChartConfigPanel">
                 <div class="w3-col w3-container" style="width:10%">
                     <p class="label-1">Set Total</p>
@@ -343,7 +357,7 @@
                     <div class="w3-col w3-container" style="width:20%">
                         <input id="gaugeMax" type="text" value="100">
                     </div>
-                    
+
                 </div>
                 <div class="w3-row w3-padding-8">
                     <div class="w3-col w3-container" style="width:10%">
@@ -456,12 +470,12 @@
                             <div class="w3-col container-1" style="">
                                 <ul id="classList" class="w3-ul w3-card">
                                 </ul>
-                            </div>                
-                        </div>  
-                    </div>     
-                                                      
-                </div>   
-                          
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
                 <div class="w3-row w3-padding-8">
                     <div class="w3-col w3-container" style="width:50%">
                         <p class="label-1 w3-center">Controllers</p>
@@ -475,7 +489,7 @@
                         <div class="w3-col container-1" style="width:35%">
                             <select id="deviceComboControl" class="combo-1" onchange="updateChannelComboControl()"></select>
                         </div>
-                        <div class="w3-col w3-container" style="width:40%">    
+                        <div class="w3-col w3-container" style="width:40%">
                             <select id="channelComboControl" class="combo-1" onchange=""></select>
                         </div>
                         <div class="w3-col w3-container" style="width:16%">
@@ -486,7 +500,7 @@
                         <div class="w3-col container-1" style="width:35%">
                             <select id="deviceComboTarget" class="combo-1" onchange="updateChannelComboTarget()"></select>
                         </div>
-                        <div class="w3-col w3-container" style="width:40%">    
+                        <div class="w3-col w3-container" style="width:40%">
                             <select id="channelComboTarget" class="combo-1" onchange=""></select>
                         </div>
                         <div class="w3-col w3-container" style="width:16%">
@@ -507,7 +521,7 @@
                             </ul>
                         </div>
                     </div>
-                </div>                
+                </div>
             </div>
             <div class="w3-row w3-padding-8 widget-color w3-center">
                 <button id="addGraphBtn" class="portal-pane-button" style="font-size:22px; width:auto" onclick="addGraph()">Done</button>
@@ -519,14 +533,14 @@
             <div class="w3-container">
                 <ul class="w3-ul w3-card-4" id="selectedEquationList">
                 </ul>
-            </div>   
+            </div>
             <div class="w3-container">
                 <ul class="w3-ul w3-card-4" id="optionList">
                 </ul>
-            </div>      
+            </div>
             <div id="eqListHeader" class="w3-row w3-padding-8">
                 <center><p class="w3-large">Select Equations From Here</p></center>
-            </div>  
+            </div>
             <div class="w3-container">
                 <ul class="w3-ul w3-card-4" id="equationListDisp">
 
@@ -541,12 +555,12 @@
             <i class="fa fa-remove"></i>
         </a>
         <div id="chartIntDiv" style="padding-bottom:10px;opacity: 1;" class="">
-            <button class="portal-button filter-button" onclick="graphPrevInterval()"><i class="fa fa-arrow-left" aria-hidden="true"></i></button>        
+            <button class="portal-button filter-button" onclick="graphPrevInterval()"><i class="fa fa-arrow-left" aria-hidden="true"></i></button>
             <button class="portal-button filter-button" onclick="graphFilterDay()">Day</button>
             <button class="portal-button filter-button" onclick="graphFilterWeek()">Week</button>
             <button class="portal-button filter-button" onclick="graphFilterMonth()">Month</button>
             <button class="portal-button filter-button" onclick="graphFilterYear()">Year</button>
-            <button class="portal-button filter-button" onclick="graphNextInterval()"><i class="fa fa-arrow-right" aria-hidden="true"></i></button>        
+            <button class="portal-button filter-button" onclick="graphNextInterval()"><i class="fa fa-arrow-right" aria-hidden="true"></i></button>
         </div>
         <div id="graphContainer" class="w3-center" style="width: 100%; padding-right:50px; padding-left:50px;opacity: 1;"></div>
         <div id="downloadBtnDiv" class="w3-panel widget-background-color w3-large" style="padding: 400px 64px 0px 64px; float: right">
@@ -571,7 +585,7 @@
                 <div class="w3-col w3-container" style="width:60%">
                     <input id="chartTitleTextWS" type="text" value="chart">
                 </div>
-                <div class="w3-col w3-container w3-right" style="width:10%">                   
+                <div class="w3-col w3-container w3-right" style="width:10%">
                 </div>
             </div>
             <div id="settingsModelDateDiv" class="w3-row widget-color">
@@ -592,7 +606,7 @@
 
         </div>
     </div>
-    <div id="addLogoModal" class="settings-modal">        
+    <div id="addLogoModal" class="settings-modal">
         <div class="link-modal-content widget-font w3-round-large">
             <span id="addLogoModalCloseBtn" class="settings-close margin-right"><img src="img/delete.png"></span>
             <p class="link-modal-title">Add Logo</p>
@@ -615,7 +629,7 @@
                 <div class="w3-col w3-container" style="width:60%">
                     <input id="usernameTextLink" type="text" style="padding:0px 0px">
                 </div>
-                <div class="w3-col w3-container w3-right" style="width:10%">                   
+                <div class="w3-col w3-container w3-right" style="width:10%">
                 </div>
             </div>
             <div class="w3-row widget-color">
@@ -628,7 +642,7 @@
             </div>
             <button id="linkSubmitBtn" class="portal-button settings-modal-button" onclick="eproConnect('link')">Link</button>
         </div>
-    </div>  
+    </div>
     <!--Unlink epro confirmation modal-->
     <div id="unlinkModal" class="settings-modal">
         <div class="unlink-modal-content widget-font w3-round-large">
@@ -643,21 +657,21 @@
                 </div>
             </div>
         </div>
-    </div>  
+    </div>
     <!--Loader modal-->
     <div id="divLoading" class="loader-modal" style="display:none">
             <img src="img/loadinggif.gif">
-    </div>    
+    </div>
 
 
     <div class="w3-content" style="max-width:100%">
-        
-        
+
+
         <!-- Header -->
         <header class="portal-header widget-color w3-padding-48">
-            <img id="logo" src="img/logo.png" class="jllogo">
+            <img id="logo" src="img/logo.png" class="jllogo" style="top:15px;left:10px;">
             <div class="w3-clear"></div>
-            <p id="pagetitle" class="page-title">Visualize, Compare, Control</p>
+            <p id="pagetitle" class="page-title" style="font-family: 'Share Tech Mono', monospace;">Visualize, Compare, Control</p>
             <button id="addWidgetButton" class="portal-button" onclick="addWidget()">ADD PANE</button>
             <button id="settingsButton" class="portal-button" onclick="w3_open()">ADMIN CONSOLE</button>
             <button id="logoutButton" class="portal-button" onclick="logout()">LOGOUT</button>
@@ -666,15 +680,15 @@
                 <option value="dark" class="option-background">DARK</option>
             </select>
         </header>
-        
-        
+
+
 
         <div class="w3-row" style="margin-bottom:64px; background-color : transparent;">
             <!-- Grid -->
             <div class="w3-col" id="myGrid" style="width:100%" >
                 <div id = "gridDiv" style="background-color : transparent;">
                     <div class="grid-stack" style="background-color : transparent"></div>
-                </div>     
+                </div>
             </div>
             <!-- Sidebar -->
             <div  id="sidebar" class="w3-col" style="width:20%; float: right; display: none">
@@ -711,10 +725,10 @@
                             <tr style="height:20px">
                                 <td></td>
                             </tr>
-                            <tr style="margin-top:20px;"> 
+                            <tr style="margin-top:20px;">
                                 <td><p id="environmentalFactorsCO2" style="text-align:center"></p></td>
                                 <td><p id="environmentalFactorsBulbs" style="text-align:center"></p></td>
-                            </tr>    
+                            </tr>
                         </table>
                     </div>
                 </div>
@@ -725,26 +739,31 @@
         </div>
 
         <!-- Draggable Grid -->
-        
-        
+
+
 
     </div>
 
     <!-- Footer -->
     <div class="w3-container w3-padding-8 widget-color w3-center w3-margin-top w3-opacity" style="margin-top:60px;position: relative">
-        <button id="fullScreenButton" class="portal-button" onclick="toggleFullscreen()" >FULLSCREEN</button>
-        <button id="saveGridButton" class="portal-button" onclick="saveGrid()">SAVE DASHBOARD</button>
-        <div class="w3-xlarge w3-padding-16">
+
+<div class="navbar navbar-inverse navbar-fixed-bottom">
+      <button id="saveGridButton" class="btn-success btn pull-left" onclick="saveGrid()">SAVE DASHBOARD</button>
+      <button id="fullScreenButton" class="btn btn-warning pull-right" onclick="toggleFullscreen()" >FULLSCREEN</button>
+</div>
+      <!-- <button id="fullScreenButton" class="portal-button" onclick="toggleFullscreen()" >FULLSCREEN</button>
+      <button id="saveGridButton" class="portal-button" onclick="saveGrid()">SAVE DASHBOARD</button> -->
+        <!-- <div class="w3-xlarge w3-padding-16">
 
             <a href="#" class="w3-hover-text-indigo"><i class="fa fa-facebook-official"></i></a>
             <a href="#" class="w3-hover-text-red"><i class="fa fa-pinterest-p"></i></a>
             <a href="#" class="w3-hover-text-light-blue"><i class="fa fa-twitter"></i></a>
             <a href="#" class="w3-hover-text-grey"><i class="fa fa-flickr"></i></a>
             <a href="#" class="w3-hover-text-indigo"><i class="fa fa-linkedin"></i></a>
-        </div>
+        </div> -->
     </div>
-    </div> 
- 
+    </div>
+
     <script>
         if (<?php echo '"'.$id.'"'?> == "none") {
             location.href = 'login.php';
@@ -756,7 +775,7 @@
         var colChartIndex = 0;
         var pieChartIndex = 0;
         var gaugeIndex = 0;
-        var indicatorIndex = 0; 
+        var indicatorIndex = 0;
         var colorPickerIndex = 0;
         var switchIndex = 0;
         var stateControllerIndex = 0;
@@ -770,7 +789,7 @@
         var tempGraph;
         var tempParent;
         var tempId;
-        var graphs = {}; 
+        var graphs = {};
         var admin = false;
         var graphy = 0;
         var resizeId;
@@ -780,7 +799,7 @@
         var gridSaved = true;
         var globalTheme;
         var rgb_string = "";
-        
+
 
         window.onload = function(){
             decComponents();
@@ -809,7 +828,7 @@
             loadGrid();
             loadUserCombo();
             loadClientLogo();
-            if (!admin) 
+            if (!admin)
                 eproConnect("stat");
         }
         // $('body').tooltip({

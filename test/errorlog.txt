@@ -1,1 +1,1 @@
-{"query":"SELECT  floor((UNIX_TIMESTAMP(date_time) - UNIX_TIMESTAMP(?))\/(?)) as  t, date_time, AVG(-1*(ph1_apperant_power+ph2_apperant_power+ph3_apperant_power)) FROM powerpro WHERE code=? AND date_time BETWEEN ? AND ? GROUP BY t","param":["206205","2017-05-16 9:38","2017-05-23"]}
+{"query":"SELECT  floor((UNIX_TIMESTAMP(date_time) - UNIX_TIMESTAMP(?))\/(?)) as  t, date_time, AVG(100+(ph1_active_power+ph2_active_power+ph3_active_power)) FROM powerpro WHERE code=? AND date_time BETWEEN ? AND ? GROUP BY t","param":["1082","2017-06-16 9:43","2018-06-16"]}

@@ -2,7 +2,7 @@
     session_start();
     if(isset($_POST['username'])){
         require 'back/userdbconn.php';
-        
+
         $uname=$_POST['username'];
         $pwd=md5($_POST['password']);
         $uname=$_POST['username'];
@@ -18,10 +18,10 @@
             echo "<h3 align='center'>Please enter a different username!</h3>";
         }
     }
-    
-    if(isset($_SESSION['msg'])){
-        echo "<h3 align='center'>".$_SESSION['msg']."</h3>";
-    }
+
+    // if(isset($_SESSION['msg'])){
+    //     echo "<h2 id='loginText' align='center'>".$_SESSION['msg']."</h2><br>";
+    // }
 ?>
 
 <!DOCTYPE html>
@@ -35,7 +35,7 @@
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <link href="css/login.css" rel="stylesheet" id="bootstrap-css">
     <style type="text/css">
-    
+
 
     </style>
     <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
@@ -44,21 +44,67 @@
         window.alert = function(){};
         var defaultCSS = document.getElementById('bootstrap-css');
         function changeCSS(css){
-            if(css) $('head > link').filter(':first').replaceWith('<link rel="stylesheet" href="'+ css +'" type="text/css" />'); 
-            else $('head > link').filter(':first').replaceWith(defaultCSS); 
+            if(css) $('head > link').filter(':first').replaceWith('<link rel="stylesheet" href="'+ css +'" type="text/css" />');
+            else $('head > link').filter(':first').replaceWith(defaultCSS);
         }
         $( document ).ready(function() {
-          var iframe_height = parseInt($('html').height()); 
+          var iframe_height = parseInt($('html').height());
           window.parent.postMessage( iframe_height, 'http://bootsnipp.com');
         });
     </script>
+    <style>
+    video#bgvid{
+      position: fixed;
+      top:0px;
+      width: inherit;
+      height: inherit;
+      min-width: 100%;
+      min-height: 100%;
+    }
+    .container{
+      position: absolute;
+      top: 25%;
+      left: 12%;
+    }
+    #loginText{
+      color:#FFF;
+    }
+    #login-submit{
+      background-color: #2d2d2d;
+    }
+    #login-submit:hover {
+    background-color: #407377;
+    }
+    #register-submit{
+      background-color: #2d2d2d;
+    }
+    #register-submit:hover {
+    background-color: #4cc468;
+    }
+    div#blur{
+      background-color: rgba(255,255,255,0.20);
+    }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6 col-md-offset-3">
-                <div class="panel panel-login">
-                    <div class="panel-heading">
+  <div>
+    <video id="bgvid" autoplay="true" loop="true" muted>
+      <source src="video/video.mp4" type="video/ogv">
+      <source src="video/video.webm" type="video/webm">
+      <source src="video/video.mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <div class="container" >
+    <?php
+    if(isset($_SESSION['msg'])){
+        echo "<h2 id='loginText' align='center'>".$_SESSION['msg']."</h2>";
+    }
+     ?>
+        <div class="row" >
+            <div class="col-md-6 col-md-offset-3" >
+                <div class="panel panel-login" id="blur">
+                    <div class="panel-heading" id="blur" >
                         <div class="row">
                             <div class="col-xs-6">
                                 <a href="#" class="active" id="login-form-link">Login</a>
