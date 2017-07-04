@@ -42,7 +42,7 @@ function initBarChart(chartID,title, chartData,axisX) {
                 fontColor: fontColor,
                 fontStyle: "normal",
                 fontWeight: "lighter",
-                fontFamily: "candara",
+                fontFamily: "Share Tech Mono",
                 fontSize: 24
             },
             subtitles:[
@@ -60,7 +60,8 @@ function initBarChart(chartID,title, chartData,axisX) {
             },
             axisY: {
                 //title: "Energy"
-            }, axisX:axisX,
+            }, 
+            axisX:axisX,
             data: chartData,
 
           legend:{
@@ -167,55 +168,123 @@ function loadBarChartData(chartID,title,equationList, xAxis, startDate, endDate,
                 labelAngle: -30,
                 labelFontSize: 13,
             }
-            if(data == null){
-                initBarChart(chartID,"No Data...",chartData,axisX);
-                $(".filter-button").removeAttr("disabled");
-                return "No data";
-            }
 
-            for(i = 0; i < equationList.length; i++){
-                var equation = equationList[i]['equation'];
-                var eqName = equationList[i]['eqName'];
-                var equationData = [];
-                for(j = 0; j < equation.length; j++){
-                    var expression = equation[j];
-                    var channel = expression.number + expression.op + expression.channel;
-                    var device = expression.device;
-                    if(data[device] == null){
-                        continue;
-                    }else{
-                        if (!data[device][xAxis]) continue;
-                        else channelCounter++;
-                    }
-                    var _len = data[device][xAxis].length;
-                    for(k = 0; k < _len ; k++){
-                        if(j == 0){
-                            equationData[k] = 0;
+////////////////////////
+            if (type=="column") {
+                
+                if(data == null){
+                    initBarChart(chartID,"No Data...",chartData,axisX);
+                    $(".filter-button").removeAttr("disabled");
+                    return "No data";
+                }
+
+                for(i = 0; i < equationList.length; i++){
+                    var equation = equationList[i]['equation'];
+                    var eqName = equationList[i]['eqName'];
+                    var equationData = [];
+                    for(j = 0; j < equation.length; j++){
+                        var expression = equation[j];
+                        var channel = expression.number + expression.op + expression.channel;
+                        var device = expression.device;
+                        if(data[device] == null){
+                            continue;
+                        }else{
+                            if (!data[device][xAxis]) continue;
+                            else channelCounter++;
                         }
-                        equationData[k] += data[device][channel][k];
+                        var _len = data[device][xAxis].length;
+                        for(k = 0; k < _len ; k++){
+                            if(j == 0){
+                                equationData[k] = 0;
+                            }
+                            equationData[k] += data[device][channel][k];
+                        }
                     }
+                    // window.alert(device);
+                    // if (!data[device]) window.alert("null");
+                    
+
+
+                    var column={
+                        name: eqName,
+                        type: "column", showInLegend: true,
+                        yValueFormatString:"#.## "+equation[equation.length-1].unit,
+                    };
+                    var dataPoints = [];
+
+                    //var _len = data[device][xAxis].length;
+                    for(j = 0; j < _len ; j++){
+                        dataPoints.push({
+                            x: new Date(data[device][xAxis][j]),
+                            y: equationData[j]
+                        });
+                    }
+
+                    column.dataPoints = dataPoints;
+                    chartData.push(column);
                 }
-                // window.alert(device);
-                // if (!data[device]) window.alert("null");
+            } else if (type=="stackedColumn") {
 
-                var column={
-                    name: eqName,
-                    type: "column", showInLegend: true,
-                    yValueFormatString:"#.## "+equation[equation.length-1].unit,
-                };
-                var dataPoints = [];
+            // if(data == null){
+            //     initBarChart(chartID,"No Data...",chartData,axisX);
+            //     $(".filter-button").removeAttr("disabled");
+            //     return "No data";
+            // }
 
-                //var _len = data[device][xAxis].length;
-                for(j = 0; j < _len ; j++){
-                    dataPoints.push({
-                        x: new Date(data[device][xAxis][j]),
-                        y: equationData[j]
-                    });
-                }
+                for (key in data) {
+                    var deviceData = data[key];
+                
+                    for(i = 0; i < equationList.length; i++){
+                        var equation = equationList[i]['equation'];
+                        var eqName = equationList[i]['eqName'];
+                        var equationData = [];
+                        for(j = 0; j < equation.length; j++){
+                            var expression = equation[j];
+                            var channel = expression.number + expression.op + expression.channel;
+                            var device = expression.device;
+                            if(deviceData[device] == null){
+                                continue;
+                            }else{
+                                if (!deviceData[device][xAxis]) continue;
+                                else channelCounter++;
+                            }
+                            var _len = deviceData[device][xAxis].length;
+                            for(k = 0; k < _len ; k++){
+                                if(j == 0){
+                                    equationData[k] = 0;
+                                }
+                                equationData[k] += deviceData[device][channel][k];
+                            }
+                        }
+                        // window.alert(device);
+                        // if (!deviceData[device]) window.alert("null");
+                        
 
-                column.dataPoints = dataPoints;
-                chartData.push(column);
+
+                        var column={
+                            name: key,
+                            type: "stackedColumn", showInLegend: true,
+                            toolTipContent: "{label}<br/><span style='\"'color: {color};'\"'><strong>{name}</strong></span>: {y}".unit,
+                            yValueFormatString:"#.## "+equation[equation.length-1].unit,
+                        };
+                        var dataPoints = [];
+
+                        //var _len = deviceData[device][xAxis].length;
+                        for(j = 0; j < _len ; j++){
+                            dataPoints.push({
+                                x: new Date(deviceData[device][xAxis][j]),
+                                y: equationData[j]
+                            });
+                        }
+
+                        column.dataPoints = dataPoints;
+                        chartData.push(column);
+                    }
+                }    
             }
+            
+/////////////////////////////
+
             if(channelCounter == 0){
                 initBarChart(chartID,"No Data...",chartData,axisX);
             }else{

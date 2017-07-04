@@ -68,7 +68,8 @@ function loadGraphTypes(){
         ["Spline Chart", "spline"],
         ["Step Line Chart", "stepLine"],
         ["Area Chart", "splineArea"],
-        ["Scatter Chart", "scatter"]
+        ["Scatter Chart", "scatter"],
+        ["Stacked Bar Chart", "stackedColumn"]
     ];
     var graphTypes_realtime = [
         ["Gauge", "guage"],
@@ -775,7 +776,7 @@ function loadGraph(widgetID, graphID, data, w, h, x, y) {
         if (l_i >= lineChartIndex) {
             lineChartIndex = l_i + 1;
         }
-    } else if (type == "column") {
+    } else if (type == "column" || type == "stackedColumn") {
         loadBarChartData(graphID, data.title, data.equationList,data.xAxis, startDate, endDate, data.interval, data.tarrifs, data.type);
         var div = generateChartDiv(graphID);
         addDivtoWidget(div, w, h, x, y, widgetID);
@@ -874,6 +875,7 @@ function addGraph() {
     
     if (graphType == "line" || graphType == "spline" || graphType =="stepLine" || graphType == "splineArea" || graphType == "scatter") {
         if (_len == 0) {
+            addNote("Select equations!");
             console.log("No equations selected");
             return;
         }
@@ -907,6 +909,7 @@ function addGraph() {
 
     } else if (graphType == "bar") {
         if (_len == 0) {
+            addNote("Select equations!");
             console.log("No equations selected");
             return;
         }
@@ -936,6 +939,7 @@ function addGraph() {
 
     } else if (graphType == "pie" || graphType == "doughnut") {
         if (_len == 0) {
+            addNote("Select equations!");
             console.log("No equations selected");
             return;
         }
@@ -961,7 +965,58 @@ function addGraph() {
         pieChartIndex++;
         addDivtoWidget(div, width, 6, 0, graphy, widgetID);
         graphy += 6;
-    } else if (graphType == "guage") {
+    } else if (graphType == "stackedColumn") {
+        if (_len == 0) {
+            addNote("Select equations!");
+            console.log("No equations selected");
+            return;
+        }
+        var equationList = [];
+        for (var i = 0; i < _len; i++) {
+            equationList.push(globalEqList[selEqs[i]]);
+        }
+
+        var startTime = $("#startTime").val();
+        var endTime = $("#endTime").val();
+        var intArray = [];
+        intArray.push(startTime);
+        $("#intList").find('input:text').each(function(){
+            var val = $(this).val();
+            if (val) intArray.push(val);
+        });
+        intArray.push(endTime);
+
+        var isValid = true;
+        for (i = 0; i < intArray.length - 1; i++) {
+            isValid = validateTime(intArray[i], intArray[i + 1]);
+            if (!isValid) break;
+        }
+
+        if (!isValid) {
+            addNote("Invalid time values. Check again!");
+            alertColor(i, intArray.length);
+            return;
+        }
+
+        var chartID = "colchart" + colChartIndex;
+        var title = $("#chartTitleText").val();
+        var xAxis = 'date_time';
+        var endDate = $("#endDatePicker").val();
+        var interval = $("#intervalCombo").val();
+        var startDate = getIntDate(endDate, interval, "start");
+        var type = graphType;
+        var tarrifs = intArray;
+
+        var data = loadBarChartData(chartID, title, equationList, xAxis, startDate, endDate, interval, tarrifs, type);
+
+        var div = generateChartDiv("colchart" + colChartIndex);
+        var widgetID = "widget_" + "colchart" + colChartIndex + "";
+        colChartIndex++;
+        addDivtoWidget(div, width, 6, 0, graphy, widgetID);
+        graphy += 6;
+    } 
+    
+    else if (graphType == "guage") {
         
         var ip = $("#gaugeIPAddress").val();
         var title = $("#gaugeTitle").val();
@@ -1293,6 +1348,17 @@ function addSlider(widgetID, graphID, data, w, h, x, y){
 
 }
 
+function addIntBox(elm) {
+    var index = $(elm).parent().index();
+    $("#intList li:eq("+index+")").after('<li class="input-append"><input class="add-on" data-format="hh:mm:ss" onclick="removeBGColor(this)" type="text"></input><button class="portal-pane-button" style="width:10%; padding:3px 0px" onclick="addIntBox(this)" data-toggle="tooltip" data-placement="top" title="Add new interval here"><i class="fa fa-plus-circle" aria-hidden="true"></i></button><button class="portal-pane-button" style="width:10%; padding:3px 0px" onclick="removeIntBox(this)" data-toggle="tooltip" data-placement="top" title="Remove intervel"><i class="fa fa-times-circle" aria-hidden="true"></i></button></li>');
+    
+    initDateTimePicker();
+}
+
+function removeIntBox(elm) {
+    $(elm).parent().remove();
+}
+
 ////
 function changeUserEnvironment() {
     loadEquations();
@@ -1474,11 +1540,11 @@ function refreshGraph(chartID,data){
         $("#title_"+chartID).text(data.chartTitle);
 
     }else{
-        if (data.type == "line") {
+        if (data.type == "line" || data.type == "spline" || data.type == "stepLine" || data.type == "splineArea" || data.type == "scatter") {
             loadlineChartData(chartID, data.title, data.equationList, data.xAxis, data.startDate, data.endDate, data.interval, data.type);
-        } else if (data.type == "column") {
+        } else if (data.type == "column" || data.type == "stackedColumn") {
             loadBarChartData(chartID, data.title, data.equationList, data.xAxis, data.startDate, data.endDate, data.interval, data.tarrifs, data.type)
-        } else if (data.type == "pie") {
+        } else if (data.type == "pie" || data.type == "doughnut") {
             loadPieChartData(chartID, data.title, data.equationList, data.total_index, data.startDate, data.endDate, data.dataType, data.type);
         }
     }
@@ -2086,4 +2152,82 @@ function getCurrentTime() {
 
     var now = hh+':'+mm+':'+ss;
     return now;    
+}
+
+/////
+function setOriginalSelect ($select) {
+    if ($select.data("originalHTML") == undefined) {
+        $select.data("originalHTML", $select.html());
+    } // If it's already there, don't re-set it
+}
+
+function removeOptions ($select, $options) {
+    setOriginalSelect($select);
+    $options.remove();
+}
+
+function restoreOptions ($select) {
+    var ogHTML = $select.data("originalHTML");
+    if (ogHTML != undefined) {
+        $select.html(ogHTML);
+    }
+}
+
+function initDateTimePicker() {
+    $('.input-append').datetimepicker({
+        pickDate: false
+        // icons: {
+        //         time: "fa fa-clock-o",
+        //         date: "fa fa-calendar",
+        //         up: "fa fa-arrow-up",
+        //         down: "fa fa-arrow-down"
+        //     }
+    });
+
+    // $('.input-append').find('.dropdown-menu').css("background-color", "#ccc");
+
+    // $( ".input-append" ).each(function(index) {
+    //     var x = $(this).find('.dropdown-menu');
+    //     console.log(this);
+    // });
+}
+
+function validateTime(timeStr_lower, timeStr_upper) {
+    var valid = true;
+
+    var time_lower = timeStr_lower.split(":").map(Number);
+    var time_upper = timeStr_upper.split(":").map(Number);
+
+    if (time_upper[0] - time_lower[0] < 0) {
+        valid = false;
+    }
+    else if (time_upper[0] - time_lower[0] == 0) {
+        if (time_upper[1] - time_lower[1] < 0) {
+            valid = false;
+        }
+        else if (time_upper[1] - time_lower[1] == 0) { 
+            if (time_upper[2] - time_lower[2] <= 0) {
+                valid = false;
+            }      
+        }
+    }
+    
+    return valid;
+}
+
+function alertColor(i, len) {
+    if (i == 0) {
+        $("#startTime").css("background-color", "#ffbaba");
+        $("#intList li").eq(0).find("input").css("background-color", "#ffbaba");
+    } else if (i == len) {
+        $("#startTime").css("background-color", "#ffbaba");
+        $("#intList li").eq(0).find("input").css("background-color", "#ffbaba");
+    } else {
+        $("#intList li").eq(i - 1).find("input").css("background-color", "#ffbaba");
+        $("#intList li").eq(i).find("input").css("background-color", "#ffbaba");
+    }
+}
+
+function removeBGColor(elm) {
+    $(elm).css("background-color", "#ffffff");
 }

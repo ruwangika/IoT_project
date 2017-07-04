@@ -37,7 +37,7 @@ function initBotGraph(graphID, data) {
             fontColor: fontColor,
             fontStyle: "normal",
             fontWeight: "lighter",
-            fontFamily: "calibri",
+            fontFamily: "Share Tech Mono",
             fontSize: 24		
         },
         subtitles: {

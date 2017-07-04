@@ -43,7 +43,7 @@ function loadPieChartData(chartID,title,equationList,total_index,startDate,endDa
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
             if(data == null){
-                $("#"+chartID).html(title+"No data");
+                $("#"+chartID).html(title+" : No Data..");
                 $(".filter-button").removeAttr("disabled");
                 return "No data";
             }
@@ -112,7 +112,7 @@ function loadPieChartData(chartID,title,equationList,total_index,startDate,endDa
             if(channelCounter != 0){
                 initPieChart(chartID,title,chartData,time_range,units[0],type);
             }else{
-                 $("#"+chartID).html(title+"No data");
+                 $("#"+chartID).html(title+" : No Data..");
                 $(".filter-button").removeAttr("disabled");
                 return "No data";
             }
@@ -142,7 +142,7 @@ function loadPieChartData(chartID,title,equationList,total_index,startDate,endDa
             console.log(XMLHttpRequest);
             console.log("Status: " + textStatus);
             console.log("Error: " + errorThrown);
-             $("#"+chartID).html(title+"No data");
+             $("#"+chartID).html(title+" : No Data..");
              $(".filter-button").removeAttr("disabled");
             return "No data";
         }
@@ -176,7 +176,7 @@ function initPieChart(chartID,title,chartData,time_range,unit,type){
             fontColor: fontColor,
             fontStyle: "normal",
             fontWeight: "lighter",
-            fontFamily: "candara",
+            fontFamily: "Share Tech Mono",
             fontSize: 24
         },
         subtitles:[

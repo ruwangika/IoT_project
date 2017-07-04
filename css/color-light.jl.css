@@ -1,5 +1,7 @@
 
-#notification,
+#notification {
+    background-color: white;
+}
 .widget-color,
 .settings-modal-content,
 .link-modal-content,

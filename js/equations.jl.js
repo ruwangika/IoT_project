@@ -86,6 +86,7 @@ function showEquations(){
     $("#selectedEquationList").empty();
     $("#barChartConfigPanel").hide();
     $("#pieChartConfigPanel").hide();
+    $("#stackedBarChartConfigPanel").hide();
     $("#gaugeConfigPanel").hide();
     $("#indicatorConfigPanel").hide();
     $("#stateControllerConfigPanel").hide();
@@ -94,15 +95,17 @@ function showEquations(){
     $("#startDateLbl").hide();
     $("#startDateText").hide();
     if(graphType == "line" || graphType == "spline" || graphType =="stepLine" || graphType == "splineArea" || graphType == "scatter"){
+        restoreOptions($("#intervalCombo"));
         for (var i = 0; i < _len; i++) {
-        $("#barChartConfigPanel").show();
-        $("#eqListHeader").show();
-            var eq = globalEqList[i].equation;
-            var eqStr = parseEquation(eq);
-            var eqName = globalEqList[i].eqName;
-            $("#equationListDisp").append("<li onclick=\"selectEquation('"+eqStr+"','"+i+"',this)\" id=\""+eqStr+"\" index=\""+i+"\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+eqStr+"\">"+eqName+"<span class=\"w3-closebtn w3-margin-right w3-medium\">+</span></li>");
+            $("#barChartConfigPanel").show();
+            $("#eqListHeader").show();
+                var eq = globalEqList[i].equation;
+                var eqStr = parseEquation(eq);
+                var eqName = globalEqList[i].eqName;
+                $("#equationListDisp").append("<li onclick=\"selectEquation('"+eqStr+"','"+i+"',this)\" id=\""+eqStr+"\" index=\""+i+"\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+eqStr+"\">"+eqName+"<span class=\"w3-closebtn w3-margin-right w3-medium\">+</span></li>");
         }
     }else if(graphType == "bar"){
+        restoreOptions($("#intervalCombo"));
         $("#barChartConfigPanel").show();
         $("#eqListHeader").show();
         for (var i = 0; i < _len; i++) {
@@ -113,6 +116,26 @@ function showEquations(){
                 $("#equationListDisp").append("<li onclick=\"selectEquation('"+eqStr+"','"+i+"',this)\" id=\""+eqStr+"\" index=\""+i+"\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+eqStr+"\">"+eqName+"<span class=\"w3-closebtn w3-margin-right w3-medium\">+</span></li>");    
             }
         }   
+    }else if(graphType == "stackedColumn"){
+        $("#barChartConfigPanel").show();
+        removeOptions($("#intervalCombo"), $('#intervalCombo option[value="day"]')); 
+        removeOptions($("#intervalCombo"), $('#intervalCombo option[value="year"]')); 
+
+        $("#stackedBarChartConfigPanel").show();
+        $("#eqListHeader").show();
+        $("#chartTitleText").val("chart");
+        $("#startDateLbl").show();
+        $("#startDateText").show();
+
+        $("#eqListHeader").show();
+        for (var i = 0; i < _len; i++) {
+            if((parseEquation(globalEqList[i].equation)).includes("")){
+                var eq = globalEqList[i].equation;
+                var eqStr = parseEquation(eq);
+                var eqName = globalEqList[i].eqName;
+                $("#equationListDisp").append("<li onclick=\"selectSingleEquation('"+eqStr+"','"+i+"',this)\" id=\""+eqStr+"\" index=\""+i+"\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+eqStr+"\">"+eqName+"<span class=\"w3-closebtn w3-margin-right w3-medium\">+</span></li>");    
+            }
+        } 
     }else if(graphType == "pie" || graphType == "doughnut"){
         $("#pieChartConfigPanel").show();
         $("#eqListHeader").show();
@@ -172,7 +195,7 @@ function showEquations(){
     }
 }
 
-var selectEquation =function(eqStr,index,object){  
+var selectEquation = function(eqStr,index,object){  
     var li = document.getElementById(eqStr);
     li.style.display = "none";
     // var parent = document.getElementById("equationListDisp");
@@ -183,7 +206,17 @@ var selectEquation =function(eqStr,index,object){
     if (document.getElementById("toggleTotalComboBtn").value==1) loadPieChartTotalCombo();
 };  
 
-var removeEquation =function(eqStr,index,object){  
+var selectSingleEquation = function(eqStr,index,object){  
+    var li = document.getElementById(eqStr);
+    li.style.display = "none";
+    // var parent = document.getElementById("equationListDisp");
+    // parent.removeChild(li);    
+    li.remove();
+    var eqName = globalEqList[index].eqName;
+    $("#selectedEquationList").html("<li onclick=\"removeEquation('"+eqStr+"','"+index+"',this)\" id=\""+eqStr+"\" index=\""+index+"\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+eqStr+"\">"+eqName+"<span class=\"w3-closebtn w3-margin-right w3-medium\">-</span></li>");
+};  
+
+var removeEquation = function(eqStr,index,object){  
     var li = document.getElementById(eqStr);
     li.style.display = "none";
     li.remove();

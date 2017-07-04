@@ -6,7 +6,7 @@
 
     $errorlogfile = "../test/errorlog.txt";
 
-    function getDeviceData($con,$deviceID,$channelID,$xAxis,$startDate,$endDate,$accInt){
+    function getDeviceData($con,$deviceID,$channelID,$xAxis,$startDate,$endDate,$accInt){//line chart data
        // echo "test";
         $accInt=intval($accInt)*60;
         global $errorlogfile;
@@ -33,24 +33,27 @@
         return $data;
     }
 
-    function getDeviceSDCounters($con,$deviceID,$startDate,$endDate,$accInt){
-        
+    function getDeviceSDCounters($con,$deviceID,$startDate,$endDate,$accInt,$duration=null){
+        $rest=" ";
+        if($duration!==null)
+            $rest=" and time(date_time) between '$duration[0]' and '$duration[1]' ";
         $accInt= strtolower($accInt);
         if ($accInt==="hour"){
             $accInt='year(date_time),month(date_time),day(date_time),hour';
-            $sql =  'SELECT MIN(sdCounter),MAX(sdCounter) FROM powerpro WHERE code=? AND date_time BETWEEN ? AND ?  GROUP BY '.$accInt.'(date_time)';
+            $sql =  'SELECT MIN(sdCounter),MAX(sdCounter) FROM powerpro WHERE code=? AND date_time BETWEEN ? AND ?'.$rest.'GROUP BY '.$accInt.'(date_time)';
+
         }
         elseif ($accInt==="day"){
             $accInt='year(date_time),month(date_time),day';
-            $sql =  'SELECT MIN(sdCounter),MAX(sdCounter) FROM powerpro WHERE code=? AND date_time BETWEEN ? AND ?  GROUP BY '.$accInt.'(date_time)';
+            $sql =  'SELECT MIN(sdCounter),MAX(sdCounter) FROM powerpro WHERE code=? AND date_time BETWEEN ? AND ?'.$rest.'GROUP BY '.$accInt.'(date_time)';
         }
         elseif ($accInt==="month"){
             $accInt='year(date_time),month';
-            $sql =  'SELECT MIN(sdCounter),MAX(sdCounter) FROM powerpro WHERE code=? AND date_time BETWEEN ? AND ?  GROUP BY '.$accInt.'(date_time)';
+            $sql =  'SELECT MIN(sdCounter),MAX(sdCounter) FROM powerpro WHERE code=? AND date_time BETWEEN ? AND ?'.$rest.'GROUP BY '.$accInt.'(date_time)';
         }
         elseif ($accInt==="year"){
             $accInt='year';
-            $sql =  'SELECT MIN(sdCounter),MAX(sdCounter) FROM powerpro WHERE code=? AND date_time BETWEEN ? AND ?  GROUP BY '.$accInt.'(date_time)';
+            $sql =  'SELECT MIN(sdCounter),MAX(sdCounter) FROM powerpro WHERE code=? AND date_time BETWEEN ? AND ?'.$rest.'GROUP BY '.$accInt.'(date_time)';
         }
         elseif($accInt==="pie")
             $sql =  'SELECT MIN(sdCounter),MAX(sdCounter) FROM powerpro WHERE code=? AND date_time BETWEEN ? AND ?';
@@ -431,19 +434,30 @@ function getMaxSampInterval($deviceIds) {
 
 //////////////////////////////////////////////////////////////data formatting/////////////////////////////////////////////////////////
     function formatData($data,$accInt){
-        if($data==NULL)
+	//var_dump($data);
+
+        if($data==NULL){
             return NULL;
+	}
+
         $queue=new circularArray();
         $queue->init($data);
         $minLengthArray=getShortest($data);
         foreach($data as $key=>$value){
             $targetSet[$key]=1;
         }
+
         $count=0;
-        $result=array();
+	$result=array();
+
         foreach($minLengthArray as $time){
+	    try{
             $rs=cicularFind($time,$data,$queue,$targetSet,$accInt);
+	    }catch(Exception $e) {
+		continue;
+	    }
             if($rs!==NULL){
+
                 foreach($rs as $deviceID=>$dataSet){
                     foreach($dataSet as $key=>$value){
                         $result[$deviceID][$key][$count]=$value;
@@ -452,10 +466,13 @@ function getMaxSampInterval($deviceIds) {
                 }
 
                 $count++;
-                
+
             }
+
         }
+
         return $result;
+
 
 
     }
@@ -484,7 +501,6 @@ function getMaxSampInterval($deviceIds) {
                 return $rs;
             $t1=format($time,$accInt);
             $t2=format($device["date_time"][$top["count"]],$accInt);
-            
             if($t1>$t2){
                 $top["count"]++;
             }
@@ -578,6 +594,37 @@ function getMaxSampInterval($deviceIds) {
         }
         $time=new DateTime($time);
         return $time;
+    }
+    function getStackedBarChartData($deviceIDs,$channelIDs,$xAxis,$startDate,$endDate,$accInt,$tarrifs){
+        $con = getConnection();  
+        $d_len = count($deviceIDs);
+        $start=$tarrifs[0];
+        for($i=1;$i<count($tarrifs);$i++){
+            $end=$tarrifs[$i];
+            for ($d_i=0; $d_i <  $d_len; $d_i++) { 
+                $deviceID = $deviceIDs[$d_i];
+                $channelID = $channelIDs[$d_i];
+                $needle='M';
+                if (strpos($deviceID,$needle)===0){////toto need to be changed into mongo//////////////////////////////////////////////////////////////////
+                        
+                }
+                /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                else{
+                    $sdCounters = getDeviceSDCounters($con,$deviceID,$startDate,$endDate,$accInt,[$start,$end]);
+                    $_len = count($sdCounters);
+                    for ($i=0; $i <  $_len; $i++) { 
+                        //print_r($sdCounters[$i]);
+                        $ar = getDeviceAccData($con,$deviceID,$channelID,$xAxis,$sdCounters[$i][1],$sdCounters[$i][0]);
+                        $data[$deviceID][$channelID][$i] = $ar[1];
+                        $data[$deviceID][$xAxis][$i] = $ar[0];
+                    }
+                }
+            }
+            $rs[$start."-".$end]=formatData($data,$accInt);
+            $start=$end;
+        }
+        closeConnection($con);
+        return $rs;
     }
 
 

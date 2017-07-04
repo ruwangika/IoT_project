@@ -62,7 +62,7 @@ function initLineChart(chartID,title, chartData) {
             fontColor: fontColor,
             fontStyle: "normal",
             fontWeight: "lighter",
-            fontFamily: "candara",
+            fontFamily: "Share Tech Mono",
             fontSize: 24
         },
         subtitles:[

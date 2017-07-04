@@ -1,5 +1,7 @@
 
-#notification,
+#notification {
+    background-color: #2A2A2A;
+}
 .widget-color,
 .sidebar-widget,
 .settings-modal-content,
@@ -26,7 +28,7 @@
 .widget-background-color,
 .dashboard-background-color,
 .settings-modal-title{
-    color: lightgray;     /** lightgray **/
+    color: #808080;     /** lightgray **/
 }
 
 .widget-color,

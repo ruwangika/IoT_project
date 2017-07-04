@@ -31,6 +31,9 @@
 <link rel="stylesheet" href="css/w3.css">
 <link rel="stylesheet" href="css/common.jl.css">
 <link rel="stylesheet" href="css/bootstrap-colorpicker.min.css">
+<link rel="stylesheet" href="css/bootstrap-timepicker.css">
+<link rel="stylesheet" href="css/bootstrap-timepicker.min.css">
+<link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css">
 <link rel="stylesheet" href="css/rangeslider.css">
 <!--<link rel="stylesheet" href="css/color-light.jl.css">-->
 
@@ -54,6 +57,9 @@
 <script src="js/browserMqtt.js"></script>
 <script src="js/colorpicker.js"></script>
 <script src="js/bootstrap-colorpicker.js"></script>
+<script src="js/bootstrap-timepicker.js"></script>
+<script src="js/bootstrap-timepicker.min.js"></script>
+<script src="js/bootstrap-datetimepicker.min.js"></script>
 <script src="js/rangeslider.js"></script>
 <script src="js/rangeslider.min.js"></script>
 
@@ -243,6 +249,7 @@
                         <option value="stepLine">Step Line Chart</option>
                         <option value="splineArea">Area Chart</option>
                         <option value="scatter">Scatter chart</option>
+                        <option value="stackedColumn">Stacked Bar Chart</option>
                     </select>
                 </div>
                 <div id="graphWidthLabel" class="w3-col w3-container" style="width:10%">
@@ -306,10 +313,39 @@
                     <button id="toggleTotalComboBtn" class="toggle-button" value="0"; onclick="showTotalCombo()" style="padding:6px 0px"><i class="fa fa-toggle-off" aria-hidden="true"></i></button>
                 </div>
                 <div id="pieChartTotalComboDiv" class="w3-col w3-container" style="width:80%; display:none">
-                    <select id="pieChartTotalCombo" class="combo-1" style="width: 600px">s
+                    <select id="pieChartTotalCombo" class="combo-1" style="width: 600px">
                     </select>
                 </div>
             </div>
+
+            <div class="w3-row w3-padding-8 widget-color" id="stackedBarChartConfigPanel">
+                <div class="w3-row widget-color">
+                    <div class="w3-col w3-container" style="width:10%">
+                        <p class="label-1">Start</p>
+                    </div>
+                    <div class="w3-col w3-container input-append" style="width:30%">
+                        <input class="add-on" data-format="hh:mm:ss" id="startTime" type="text" value="00:00:00" onclick="removeBGColor(this)" style="width:25%">
+                    </div>
+                </div>
+                <div class="w3-container">
+                    <ul class="w3-ul w3-card-4" id="intList" style="width:25%">
+                        <li class="input-append">
+                                <input class="add-on" data-format="hh:mm:ss" onclick="removeBGColor(this)" type="text"></input>
+                                <button class="portal-pane-button" style="width:10%; padding:3px 0px" onclick="addIntBox(this)" data-toggle="tooltip" data-placement="top" title="Add new interval here"><i class="fa fa-plus-circle" aria-hidden="true"></i></button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="w3-row widget-color">
+                    <div class="w3-col w3-container" style="width:10%">
+                        <p class="label-1">End</p>
+                    </div>
+                    <div class="w3-col w3-container input-append" style="width:30%">
+                        <input class="add-on" data-format="hh:mm:ss" id="endTime" type="text" value="23:59:59" onclick="removeBGColor(this)" style="width:25%">
+                    </div>
+                </div>
+            </div>
+
+            <!--Real time-->
             <div class="w3-row w3-padding-8 widget-color widget-font" id="indicatorConfigPanel">
                 <div class="w3-row w3-padding-8">
                     <div class="w3-col w3-container" style="width:10%">
@@ -831,9 +867,7 @@
             if (!admin)
                 eproConnect("stat");
         }
-        // $('body').tooltip({
-        //     selector: '[data-toggle="tooltip"]',
-        // });
+        initDateTimePicker();
     </script>
 
 </body>
