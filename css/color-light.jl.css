@@ -2,6 +2,11 @@
 #notification {
     background-color: white;
 }
+
+.header-color {
+    background-color: #b3b3b3;
+}
+
 .widget-color,
 .settings-modal-content,
 .link-modal-content,
@@ -21,6 +26,7 @@
 
 .portal-button:hover,
 .portal-pane-button:hover,
+.portal-pane-button-small:hover,
 .portal-dropdown:hover{
     background-color: #cccccc;   /** #cccccc **/
 }
@@ -39,6 +45,7 @@
 
 .portal-button,
 .portal-pane-button,
+.portal-pane-button-small,
 .portal-dropdown{
     color: #4d4d4d;   /** #4d4d4d **/
 }

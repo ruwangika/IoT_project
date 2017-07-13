@@ -47,6 +47,27 @@
 		
 	}
 
+	function writeAlerts($userID,$alertData){
+		global $json_directory;
+		$userdataFile=$json_directory."".$userID.".json";
+		$userdata = json_decode(file_get_contents($userdataFile),TRUE);
+		$userdata["Alerts"] = $alertData;
+		file_put_contents($userdataFile, json_encode($userdata,TRUE));
+		return True;
+	}
+
+	function getAlerts($userID){
+		global $json_directory;
+		$userdataFile=$json_directory."".$userID.".json";
+		$userdata = json_decode(file_get_contents($userdataFile),TRUE);
+		if(isset($userdata)){
+			if(isset($userdata["Alerts"])){
+				return $userdata["Alerts"];
+			} 
+		}
+		return [];
+	}
+
 	function loadTheme($userID){
 		global $json_directory;
 		$userdataFile=$json_directory."".$userID.".json";

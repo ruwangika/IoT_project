@@ -55,6 +55,7 @@ function addExpression(){
             var ex = {
                 device: device,
                 channel: channel,
+                constant: "",
                 number: number,
                 op: op,
                 unit: unit
@@ -81,6 +82,7 @@ function showEquations(){
     var eqList = [];
     var _len = globalEqList.length;
     
+    $("#settings_chart").show();
     $("#graphWidthCombo").show();
     $("#equationListDisp").empty();
     $("#selectedEquationList").empty();
@@ -91,6 +93,7 @@ function showEquations(){
     $("#indicatorConfigPanel").hide();
     $("#stateControllerConfigPanel").hide();
     $("#botConfigPanel").hide();
+    $("#alertConfigPanel").hide();
     $("#dateRangeChooser").show();
     $("#startDateLbl").hide();
     $("#startDateText").hide();
@@ -122,7 +125,6 @@ function showEquations(){
         removeOptions($("#intervalCombo"), $('#intervalCombo option[value="year"]')); 
 
         $("#stackedBarChartConfigPanel").show();
-        $("#eqListHeader").show();
         $("#chartTitleText").val("chart");
         $("#startDateLbl").show();
         $("#startDateText").show();
@@ -192,6 +194,15 @@ function showEquations(){
         $("#classList").empty();
         $("#dateRangeChooser").hide();
         $("#eqListHeader").hide();
+        loadLearners();
+    }else if (graphType == "alert") {
+        $("#alertConfigPanel").show();
+        $("#settings_chart").hide();
+        $("#dateRangeChooser").hide();
+        $("#graphWidthCombo").hide();
+        $("#graphWidthLabel").hide();
+        loadAlertList();
+        loadAlertGroupsCombo();
     }
 }
 
@@ -239,10 +250,16 @@ var deleteEquation = function(eqStr,object){
 
 function parseExpression(ar){
     var eq = "";
+
     if(!(ar.number == "1" && ar.op == "*")){
         eq += ar.number+" "+ar.op;
     }
-    return eq+" "+ar.device+":"+ar.channel;
+    if (ar.device == "const") {
+        return eq + " " + ar.constant;
+    }
+    else {
+        return eq+" "+ar.device+":"+ar.channel;
+    }
 }
 
 function parseEquation(expressionList){
@@ -321,5 +338,4 @@ function loadEquationList(){
         var eqStr = parseEquation(eq);
         $("#equationList").append("<li id=\"li"+eqStr+"\" value=\""+eqStr+"\" style=\"cursor:default\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+eqStr+"\">"+eqName+"<span onclick=\"deleteEquation('"+eqStr+"',this)\" class=\"w3-closebtn w3-margin-right w3-medium\">&times;</span></li>");
     }
-
 }

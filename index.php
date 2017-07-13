@@ -51,6 +51,7 @@
 <script src="js/columnchart.jl.js"></script>
 <script src="js/piechart.jl.js"></script>
 <script src="js/bot.jl.js"></script>
+<script src="js/alert.jl.js"></script>
 <script src="js/equations.jl.js"></script>
 <script src="js/common.jl.js"></script>
 <script src="js/epoch.js"></script>
@@ -225,32 +226,46 @@
         </a>
 
         <div class="w3-panel w3-padding-jumbo widget-background-color w3-large">
+            <div id="" class="w3-row w3-padding-8 widget-color">
+                <div class="w3-col w3-container" style="width:10%">
+                    <p class="label-1">Object Type</p>
+                </div>
+                <div class="w3-col w3-container" style="width:20%">
+                      <select id="objTypeCombo" onchange="loadCategories()" class="combo-1">
+                        <option value="graph" selected>Graph</option>
+                        <option value="ai_agent">AI Agent</option>
+                        <option value="alert_agent">Alert Agent</option>
+                    </select>
+                </div>
+            </div>
 
-            <div id="settingsMain" class="w3-row w3-padding-8 widget-color">
-                <div class="w3-col w3-container" style="width:10%">
-                    <p class="label-1">Graph Category</p>
-                </div>
-                <div class="w3-col w3-container" style="width:20%">
-                      <select id="graphCategoryCombo" onchange="loadGraphTypes(); showEquations()" class="combo-1">
-                        <option value="historical" selected>Historical</option>
-                        <option value="realtime">Real-time</option>
-                    </select>
-                </div>
-                <div class="w3-col w3-container" style="width:10%">
-                    <p class="label-1">Graph Type</p>
-                </div>
-                <div class="w3-col w3-container" style="width:20%">
-                      <select id="graphTypeCombo" onchange="showEquations()" class="combo-1">
-                        <option value="line">Line Chart</option>
-                        <option value="bar">Bar Chart</option>
-                        <option value="pie">Pie Chart</option>
-                        <option value="doughnut">Doughnut Chart</option>
-                        <option value="spline">Spline Chart</option>
-                        <option value="stepLine">Step Line Chart</option>
-                        <option value="splineArea">Area Chart</option>
-                        <option value="scatter">Scatter chart</option>
-                        <option value="stackedColumn">Stacked Bar Chart</option>
-                    </select>
+            <div id="settingsMain" class="w3-row w3-padding-8 widget-color" style="display:none">
+                <div id=graphInfoDiv>
+                    <div class="w3-col w3-container" style="width:10%">
+                        <p class="label-1">Graph Category</p>
+                    </div>
+                    <div class="w3-col w3-container" style="width:20%">
+                        <select id="graphCategoryCombo" onchange="loadGraphTypes(); showEquations()" class="combo-1">
+                            <option value="historical" selected>Historical</option>
+                            <option value="realtime">Real-time</option>
+                        </select>
+                    </div>
+                    <div class="w3-col w3-container" style="width:10%">
+                        <p class="label-1">Graph Type</p>
+                    </div>
+                    <div class="w3-col w3-container" style="width:20%">
+                        <select id="graphTypeCombo" onchange="showEquations()" class="combo-1">
+                            <option value="line">Line Chart</option>
+                            <option value="bar">Bar Chart</option>
+                            <option value="pie">Pie Chart</option>
+                            <option value="doughnut">Doughnut Chart</option>
+                            <option value="spline">Spline Chart</option>
+                            <option value="stepLine">Step Line Chart</option>
+                            <option value="splineArea">Area Chart</option>
+                            <option value="scatter">Scatter chart</option>
+                            <option value="stackedColumn">Stacked Bar Chart</option>
+                        </select>
+                    </div>
                 </div>
                 <div id="graphWidthLabel" class="w3-col w3-container" style="width:10%">
                     <p class="label-1">Widget Size</p>
@@ -266,9 +281,9 @@
                 <div class="w3-col w3-container" style="width:30%; align-content: right;">
                 </div>
             </div>
-            <div class="w3-row w3-padding-8 widget-color">
+            <div id="settings_chart" class="w3-row w3-padding-8 widget-color">
                 <div class="w3-col w3-container" style="width:10%">
-                    <p class="label-1">Chart title</p>
+                    <p class="label-1">Title</p>
                 </div>
                 <div class="w3-col w3-container" style="width:20%">
                     <input id="chartTitleText" type="text" value="chart">
@@ -440,35 +455,17 @@
                     </div>
                 </div>
             </div>
-            <div class="w3-row w3-padding-8 widget-color widget-font" id="botConfigPanel">
+            <div class="w3-row w3-padding-8 widget-color w3-large" id="botConfigPanel">
                 <div class="w3-row w3-padding-8">
                     <div class="w3-col w3-container" style="width:10%">
                         <p class="label-1">IP Port</p>
                     </div>
-                    <div class="w3-col w3-container" style="width:20%">
-                        <input id="botIPPort" type="text" value="ws://development.enetlk.com:1885">
+                    <div class="w3-col w3-container" style="width:26%">
+                        <input id="botIPPort" type="text" value="ws://development.enetlk.com:1885" style="width:100%">
                     </div>
-                    <div class="w3-col w3-container" style="width:8%">
-                        <p><button class="portal-pane-button" onclick="syncDevices()" data-toggle="tooltip" data-placement="top" title="Sync"><i class="fa fa-refresh fa-2x" aria-hidden="true"></i></button></p>
+                    <div class="w3-col w3-container" style="width:6%">
+                        <p><button class="portal-pane-button-small" onclick="syncDevices()" data-toggle="tooltip" data-placement="top" title="Sync"><i class="fa fa-refresh fa-2x" aria-hidden="true"></i></button></p>
                     </div>
-                    <!--<div class="w3-col w3-container" style="width:4%">
-                    </div>
-                    <div class="w3-col w3-container" style="width:12%">
-                        <p class="label-1">Learner Type</p>
-                    </div>
-                    <div class="w3-col w3-container" style="width:15%">
-                        <select id="learnerTypeCombo" class="combo-1" onchange="loadLearners()">
-                            <option value="classifier">Classifier</option>
-                            <option value="regressor">Regressor</option>
-                        </select>
-                    </div>
-                    <div class="w3-col w3-container" style="width:8%">
-                        <p class="label-1">Learner</p>
-                    </div>
-                    <div class="w3-col w3-container" style="width:20%">
-                        <select id="learnerCombo" class="combo-1" onchange="">
-                        </select>
-                    </div>-->
                 </div>
                 <div class="w3-row w3-padding-8">
                     <div class="w3-col w3-container" style="width:12%">
@@ -498,8 +495,8 @@
                             <div class="w3-col w3-container" style="width:35%; padding-left:2px">
                                 <input id="classValueText" type="text" style="width:100%"   >
                             </div>
-                            <div class="w3-col w3-container" style="width:24%">
-                                <p><button class="portal-pane-button" onclick="addClass()" data-toggle="tooltip" data-placement="top" title="Add Class"><i class="fa fa-plus fa-lg" aria-hidden="true"></i></button></p>
+                            <div class="w3-col w3-container" style="width:18%">
+                                <p><button class="portal-pane-button-small" onclick="addClass()" data-toggle="tooltip" data-placement="top" title="Add Class"><i class="fa fa-plus fa-lg" aria-hidden="true"></i></button></p>
                             </div>
                         </div>
                         <div id="classListDiv" class="w3-row w3-padding-8" style="display:none; width:90%">
@@ -528,8 +525,8 @@
                         <div class="w3-col w3-container" style="width:40%">
                             <select id="channelComboControl" class="combo-1" onchange=""></select>
                         </div>
-                        <div class="w3-col w3-container" style="width:16%">
-                            <p><button class="portal-pane-button" onclick="addControllerDevice()" data-toggle="tooltip" data-placement="top" title="Add Device"><i class="fa fa-plus-square-o fa-2x" aria-hidden="true"></i></button></p>
+                        <div class="w3-col w3-container" style="width:13%">
+                            <p><button class="portal-pane-button-small" onclick="addControllerDevice()" data-toggle="tooltip" data-placement="top" title="Add Device"><i class="fa fa-plus-square-o fa-2x" aria-hidden="true"></i></button></p>
                         </div>
                     </div>
                     <div class="w3-col container-1" style="width:50%">
@@ -539,8 +536,8 @@
                         <div class="w3-col w3-container" style="width:40%">
                             <select id="channelComboTarget" class="combo-1" onchange=""></select>
                         </div>
-                        <div class="w3-col w3-container" style="width:16%">
-                            <p><button class="portal-pane-button" onclick="addTarget()" data-toggle="tooltip" data-placement="top" title="Select Target Device"><i class="fa fa-plus-square-o fa-2x" aria-hidden="true"></i></button></p>
+                        <div class="w3-col w3-container" style="width:13%">
+                            <p><button class="portal-pane-button-small" onclick="addTarget()" data-toggle="tooltip" data-placement="top" title="Select Target Device"><i class="fa fa-plus-square-o fa-2x" aria-hidden="true"></i></button></p>
                         </div>
                     </div>
                 </div>
@@ -559,6 +556,135 @@
                     </div>
                 </div>
             </div>
+
+            <!--New: Alert COnfig Panel-->
+            <div class="w3-row w3-padding-8 widget-color w3-large" id="alertConfigPanel">
+                <div class="w3-row w3-padding-8">
+                    <div class="w3-col w3-container" style="width:10%">
+                        <p class="label-1">Title</p>
+                    </div>
+                    <div class="w3-col w3-container" style="width:17%">
+                        <input id="alertTitleText" type="text" value="alert">
+                    </div>
+                    <div class="w3-col w3-container" style="width:10%">
+                        <p class="label-1">Group</p>
+                    </div>
+                    <div class="w3-col w3-container" style="width:15%">
+                        <select id="alertGroupCombo" class="combo-1"></select>
+                    </div>
+                    <div class="w3-col w3-container" style="width:6%">
+                        <p><button class="portal-pane-button-small" onclick="openEditAlertGroupsModal()" data-toggle="tooltip" data-placement="top" title="Edit Groups" style="font-size:18px"><i class="fa fa-pencil" aria-hidden="true"></i></button></p>
+                    </div>
+                    <div class="w3-col w3-container" style="width:40%">
+                        <div class="w3-row w3-container">
+                            <div class="w3-col w3-container" style="width:40%">
+                                <p class="label-1">Alert Messages</p>
+                            </div>
+                            <div class="w3-col" style="width:25%">
+                                <p><button id="warningMsgBtn" class="portal-pane-button" onclick="toggleAlertMsg('warning')">Warning</button></p>
+                            </div>
+                            <div class="w3-col" style="width:25%">
+                                <p><button id="normalMsgBtn" class="portal-pane-button" onclick="toggleAlertMsg('normal')">Normal</button></p>
+                            </div>
+                        </div>
+                        <div class="w3-row w3-container">
+                            <input id="warningMsgText" type="text" value="Warning!" style="display:inline-block; width:90%; margin-left:20px">
+                            <input id="normalMsgText" type="text" value="Normal" style="display:none; width:90%; margin-left:20px">
+                        </div>
+                    </div>
+                </div>
+                <div class="w3-row w3-padding-8">
+                    <div class="w3-col w3-container" style="width:10%">
+                        <p class="label-1">IP Port</p>
+                    </div>
+                    <div class="w3-col w3-container" style="width:26%">
+                        <input id="alertIPPort" type="text" value="ws://development.enetlk.com:1885"; style="width:100%">
+                    </div>
+                    <div class="w3-col w3-container" style="width:6%">
+                        <p><button class="portal-pane-button-small" onclick="syncDevices_alert()" data-toggle="tooltip" data-placement="top" title="Sync"><i class="fa fa-refresh fa-2x" aria-hidden="true"></i></button></p>
+                    </div>
+                </div>
+                <div class="w3-row w3-padding-8 widget-color">
+                    <div class="w3-col container-1" style="width:2%">
+                    </div>
+                    <div class="w3-col container-1" style="width:8%">
+                        <input type="text" id="prefixEquationText_alert" data-toggle="tooltip" data-placement="top" title="Expression prefix" placeholder="prefix" style="width:100%" >
+                    </div>
+                    <div class="w3-col container-1" style="width:8%">
+                        <p class="label-2">Device</p>
+                    </div>
+                    <div class="w3-col container-1" style="width:15%">
+                        <select id="deviceCombo_alert" class="combo-1" onchange="updateChannelCombo_alert()">
+                            <option value="const">Const</option>
+                        </select>
+                    </div>
+                    <div class="w3-col container-1" style="width:2%">
+                    </div>
+                    <div id="channelDiv" style="display:none">
+                        <div class="w3-col container-1" style="width:8%">
+                            <p class="label-2">Channel</p>
+                        </div>
+                        <div class="w3-col container-1" style="width:18%">
+                            <select id="channelCombo_alert" class="combo-1">
+                            </select>
+                        </div>
+                    </div>
+                    <div id="constDiv">
+                        <div class="w3-col container-1" style="width:8%">
+                            <p class="label-2">Value</p>
+                        </div>
+                        <div class="w3-col container-1" style="width:8%">
+                            <input id="constValText" type="text" style="width:100%">
+                        </div>
+                    </div>
+                    <div class="w3-col container-1" style="width:6%; float:right">
+                        <p><button class="portal-pane-button-small" onclick="addExpression_alert()" data-toggle="tooltip" data-placement="top" title="Add Expression"><i class="fa fa-plus-square-o fa-2x" aria-hidden="true"></i></button></p>
+                    </div>
+
+                </div>
+                <!---->
+                <div class="w3-row w3-padding-8 widget-color">
+                    <div class="w3-col container-1" style="width:15%">
+                        <p class="label-2">Choose operator:</p>
+                    </div>
+                    <div class="w3-col container-1" style="width:6%">
+                        <p><button class="portal-pane-button-small" onclick="addOperator('=')"><i class="fa fa-equal fa-2x" aria-hidden="true"></i></button></p>
+                    </div>
+                    <div class="w3-col container-1" style="width:6%">
+                        <p><button class="portal-pane-button-small" onclick="addOperator('<')"><i class="fa fa-less-than fa-2x" aria-hidden="true"></i></button></p>
+                    </div>
+                    <div class="w3-col container-1" style="width:6%">
+                        <p><button class="portal-pane-button-small" onclick="addOperator('>')"><i class="fa fa-greater-than fa-2x" aria-hidden="true"></i></button></p>
+                    </div>
+
+                </div>
+                <!---->
+
+                <div class="w3-row w3-padding-8 widget-color">
+                    <div class="w3-col w3-container" style="width:80%">
+                        <p id="equationText_alert"></p>
+                    </div>
+                    <div class="w3-col w3-container w3-right" style="width:6%">
+                        <p><button class="portal-pane-button-small" onclick="clearExpressions_alert()" data-toggle="tooltip" data-placement="top" title="Clear Expressions"><i class="fa fa-trash-o fa-2x" aria-hidden="true"></i></button></p>
+                    </div>
+                </div>
+
+                <div class="w3-row w3-padding-8 widget-color">
+                    <div class="w3-col w3-container" style="width:15%">
+                        <p class="label-1">Option</p>
+                    </div>
+                    <div class="w3-col container-1" style="width:12%">
+                    <select id="optionCombo_alert" class="combo-1">
+                        <option value="mobile">Mobile</option>
+                    </select>
+                </div>
+                    <div class="w3-col w3-container" style="width:6%; float:right">
+                        <p><button class="portal-pane-button-small" onclick="addAlertExpression()" data-toggle="tooltip" data-placement="top" title="Add Alert"><i class="fa fa-check fa-2x" aria-hidden="true"></i></button></p>
+                    </div>
+                </div>
+            </div>
+            <!---->
+
             <div class="w3-row w3-padding-8 widget-color w3-center">
                 <button id="addGraphBtn" class="portal-pane-button" style="font-size:22px; width:auto" onclick="addGraph()">Done</button>
             </div>
@@ -592,10 +718,10 @@
         </a>
         <div id="chartIntDiv" style="padding-bottom:10px;opacity: 1;" class="">
             <button class="portal-button filter-button" onclick="graphPrevInterval()"><i class="fa fa-arrow-left" aria-hidden="true"></i></button>
-            <button class="portal-button filter-button" onclick="graphFilterDay()">Day</button>
+            <button id="dayFilterBtn" class="portal-button filter-button" onclick="graphFilterDay()">Day</button>
             <button class="portal-button filter-button" onclick="graphFilterWeek()">Week</button>
             <button class="portal-button filter-button" onclick="graphFilterMonth()">Month</button>
-            <button class="portal-button filter-button" onclick="graphFilterYear()">Year</button>
+            <button id="yearFilterBtn" class="portal-button filter-button" onclick="graphFilterYear()">Year</button>
             <button class="portal-button filter-button" onclick="graphNextInterval()"><i class="fa fa-arrow-right" aria-hidden="true"></i></button>
         </div>
         <div id="graphContainer" class="w3-center" style="width: 100%; padding-right:50px; padding-left:50px;opacity: 1;"></div>
@@ -694,6 +820,49 @@
             </div>
         </div>
     </div>
+    <!--Edit alert groups modal-->
+    <div id="editAlertGroupsModal" class="settings-modal">
+        <div class="settings-modal-content widget-font w3-round-large" style="width:35%">
+            <span id="" class="settings-close margin-right" onclick="closeEditAlertGroupsModal()"><img src="img/delete.png"></span>
+            <p class="settings-modal-title">Edit Alert Groups</p>
+
+            <div id="addAlertGroupDiv" class="w3-row widget-color" style="display:none">
+                <div class="w3-col w3-container" style="width:20%">
+                    <p class="label-1">Group Name</p>
+                </div>
+                <div class="w3-col w3-container" style="width:30%">
+                    <input id="alertGroupNameText" type="text" value="">
+                </div>
+                <div class="w3-col w3-container" style="width:15%">
+                    <p><button class="portal-pane-button-small" onclick="addAlertGroup()" data-toggle="tooltip" data-placement="top" title="Add"><i class="fa fa-plus-circle" aria-hidden="true"></i></button></p>
+                </div>
+                <div class="w3-col w3-container" style="width:15%">
+                    <p><button class="portal-pane-button-small" onclick="hideAddAlertGroupDiv()" data-toggle="tooltip" data-placement="top" title="Cancel"><i class="fa fa-times-circle" aria-hidden="true"></i></button></p>
+                </div>
+            </div>
+            <div class="w3-container">
+            <div class="w3-col" style="width:50%">
+                <p id="noAlertGroupsText" style="display:none">You don't have any alert groups.</p>
+                <ul class="w3-ul w3-card-4" id="alertGroupList">
+                </ul>
+            </div>
+            <div class="w3-col" style="width:50%; float:right">
+                <div class="w3-row">
+                    <button id="" class="portal-button settings-modal-button-col" onclick="showAddAlertGroupDiv()">Add</button>
+                </div>
+                <div class="w3-row">
+                    <button id="" class="portal-button settings-modal-button-col" onclick="editAlertGroup()">Edit</button>
+                </div>
+                <div class="w3-row">
+                    <button id="" class="portal-button settings-modal-button-col" onclick="deleteAlertGroup()">Delete</button>
+                </div>             
+            </div>
+            </div>
+            <button id="" class="portal-button settings-modal-button" onclick="closeEditAlertGroupsModal()">Done</button>
+
+        </div>
+    </div>
+
     <!--Loader modal-->
     <div id="divLoading" class="loader-modal" style="display:none">
             <img src="img/loadinggif.gif">
@@ -704,7 +873,7 @@
 
 
         <!-- Header -->
-        <header class="portal-header widget-color w3-padding-48">
+        <header class="portal-header header-color w3-padding-48">
             <img id="logo" src="img/logo.png" class="jllogo" style="top:15px;left:10px;">
             <div class="w3-clear"></div>
             <p id="pagetitle" class="page-title" style="font-family: 'Share Tech Mono', monospace;">Visualize, Compare, Control</p>
@@ -835,7 +1004,10 @@
         var gridSaved = true;
         var globalTheme;
         var rgb_string = "";
-
+        var globalAlertList = [];
+        var globalAlertGroupList = [];
+        var tempExpressionsList_alert=[];
+        var tempAlertGroup = "";
 
         window.onload = function(){
             decComponents();
@@ -860,6 +1032,7 @@
 
             loadEquations();
             loadDevices();
+            loadAlerts();
             loadTheme();
             loadGrid();
             loadUserCombo();
@@ -868,6 +1041,8 @@
                 eproConnect("stat");
         }
         initDateTimePicker();
+        //$('.grid-stack-item').draggable({cancel: ".canvasjs-chart-canvas" });
+        //$('.grid-stack-item').draggable({cancel: ".widget-color" });
     </script>
 
 </body>

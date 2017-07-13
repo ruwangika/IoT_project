@@ -10,6 +10,7 @@ function addBot(widgetID, graphID, data) {
     graphs[graphID]["chartData"] = data;
 
     initMQTTClientBot(graphID, data, chart, data.model);
+    botIndex++;
 
 }
 
@@ -274,7 +275,7 @@ function loadLearners() {
 
 function syncDevices() {
     $("#learnerCombo").empty();
-    $("classList").empty();
+    $("#classList").empty();
     $("#classListDiv").hide();
     $("#deviceComboControl").empty();
     $("#channelComboControl").empty();

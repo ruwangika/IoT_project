@@ -28,7 +28,16 @@
         $userID = $_POST["userID"];
         echo json_encode(loadGrid($userID));
 
+    } else if($type == 'save_alerts'){        
+    	$alertData = $_POST["alertData"];  
+        $userID = $_POST["userID"];
+      	echo writeAlerts($userID,$alertData);
+    } else if($type == 'get_alerts'){        
+        $userID = $_POST["userID"];
+        echo json_encode(getAlerts($userID));
     }
+
+
     else if($type == 'load_theme') {
         $userID = $_POST["userID"];
         echo json_encode(loadTheme($userID));

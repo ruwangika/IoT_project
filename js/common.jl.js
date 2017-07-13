@@ -57,6 +57,58 @@ $(function() {
 
 });
 
+////
+function loadCategories(){
+    $('#graphCategoryCombo').empty();
+
+    var categories = [];
+    var categories_graph = [
+        ["Historical", "historical"],
+        ["Real-time", "realtime"]
+    ];
+    var categories_ai = [
+        ["Bot", "bot"]
+    ];
+    var categories_alert = [
+        ["Alert", "alert"]
+    ];
+
+    var obj_type = $("#objTypeCombo").val();
+
+    if (obj_type=="graph") {
+        $("#settingsMain").show();
+        $("#graphInfoDiv").show();
+        $("#eqListHeader").show();
+        $("#equationListDisp").empty();
+        categories = categories_graph;
+    }
+    else if (obj_type=="ai_agent") {
+        $("#settingsMain").show();
+        $("#graphInfoDiv").hide();
+        $("#eqListHeader").hide();
+        $("#equationListDisp").empty();
+        categories = categories_ai;
+    }
+    else if (obj_type=="alert_agent") {
+        $("#settingsMain").hide();
+        $("#graphInfoDiv").hide();
+        $("#eqListHeader").hide();
+        $("#equationListDisp").empty();
+        categories = categories_alert;  
+    }  
+     
+    for (var i=0; i<categories.length; i++){
+        $('#graphCategoryCombo').append($('<option/>', {
+            text: categories[i][0],
+            value: categories[i][1]
+        }));        
+    }
+    loadGraphTypes();
+    showEquations();
+}
+////
+
+
 function loadGraphTypes(){
     $('#graphTypeCombo').empty();
 
@@ -65,6 +117,7 @@ function loadGraphTypes(){
         ["Line Chart", "line"],
         ["Bar Chart", "bar"],
         ["Pie Chart", "pie"],
+        ["Doughnut Chart", "doughnut"],
         ["Spline Chart", "spline"],
         ["Step Line Chart", "stepLine"],
         ["Area Chart", "splineArea"],
@@ -78,15 +131,24 @@ function loadGraphTypes(){
         ["Color Picker", "colorpicker"],
         ["State Controller", "statecontroller"],
         //["Slider", "slider"],
+        //["Bot", "bot"]
+    ];
+    var graphTypes_ai = [
         ["Bot", "bot"]
+    ];
+    var graphTypes_alert = [
+        ["Alert", "alert"]
     ];
     var graphCategory = $("#graphCategoryCombo").val();
     if (graphCategory=="historical") 
         graphTypes = graphTypes_historical;
     else if (graphCategory=="realtime")
         graphTypes = graphTypes_realtime;
-     
-     for (var i=0; i<graphTypes.length; i++){
+    else if (graphCategory=="bot") 
+        graphTypes = graphTypes_ai;
+    else if (graphCategory=="alert")
+        graphTypes = graphTypes_alert;    
+    for (var i=0; i<graphTypes.length; i++){
         $('#graphTypeCombo').append($('<option/>', {
             text: graphTypes[i][0],
             value: graphTypes[i][1]
@@ -468,6 +530,15 @@ function graphdbclick(graph, id) {
             $("#chartIntDiv").show();
             $("#downloadBtnDiv").show();
         }
+
+        if (graphs[id]["chartData"].type=="stackedColumn") {
+            $("#dayFilterBtn").hide();
+            $("#yearFilterBtn").hide();
+        } else {
+            $("#dayFilterBtn").show();
+            $("#yearFilterBtn").show();
+        }
+
         $("#graphContainer").empty();                                       
         document.getElementById("graphContainer").appendChild(graph);
         graphs[id].chart.render();
@@ -617,6 +688,7 @@ function widgetnav_open() {
 
 function widgetnav_close() {
     document.getElementById("widgetNav").style.display = "none";
+    saveAlerts();
 }
 
 function graphnav_open() {
@@ -772,26 +844,29 @@ function loadGraph(widgetID, graphID, data, w, h, x, y) {
         loadlineChartData(graphID, data.title,data.equationList, data.xAxis, startDate, endDate, data.interval, data.type);
         var div = generateChartDiv(graphID);
         addDivtoWidget(div, w, h, x, y, widgetID);
-        var l_i = parseInt(graphID.substring(9));
-        if (l_i >= lineChartIndex) {
-            lineChartIndex = l_i + 1;
-        }
+        // var l_i = parseInt(graphID.substring(9));
+        // if (l_i >= lineChartIndex) {
+        //     lineChartIndex = l_i + 1;
+        // }
+        lineChartIndex++;
     } else if (type == "column" || type == "stackedColumn") {
         loadBarChartData(graphID, data.title, data.equationList,data.xAxis, startDate, endDate, data.interval, data.tarrifs, data.type);
         var div = generateChartDiv(graphID);
         addDivtoWidget(div, w, h, x, y, widgetID);
-        var c_i = parseInt(graphID.substring(8));
-        if (c_i >= colChartIndex) {
-            colChartIndex = c_i + 1;
-        }
+        // var c_i = parseInt(graphID.substring(8));
+        // if (c_i >= colChartIndex) {
+        //     colChartIndex = c_i + 1;
+        // }
+        colChartIndex++;
     } else if (type == "pie" || type == "doughnut") {
         loadPieChartData(graphID, data.title, data.equationList, data.total_index, data.startDate, data.endDate, data.dataType, type);
         var div = generateChartDiv(graphID);
         addDivtoWidget(div, w, h, x, y, widgetID);
-        var p_i = parseInt(graphID.substring(8));
-        if (p_i >= pieChartIndex) {
-            pieChartIndex = p_i + 1;
-        }
+        // var p_i = parseInt(graphID.substring(8));
+        // if (p_i >= pieChartIndex) {
+        //     pieChartIndex = p_i + 1;
+        // }
+        pieChartIndex++;
     }else if (type == "gauge") {
         addGauge(widgetID, graphID, data, w, h, x, y);
     }else if (type == "indicator") {
@@ -808,10 +883,10 @@ function loadGraph(widgetID, graphID, data, w, h, x, y) {
         var div = generateChartDiv(graphID);
         addDivtoWidget(div, w, h, x, y, widgetID);
         addBot(widgetID, graphID, data);
-        var b_i = parseInt(graphID.substring(3));
-        if (b_i >= botIndex) {
-            botIndex = b_i + 1;
-        }
+        // var b_i = parseInt(graphID.substring(3));
+        // if (b_i >= botIndex) {
+        //     botIndex = b_i + 1;
+        // }
     }
 
 
@@ -857,7 +932,6 @@ function setIndicatorLive(indicatorID,interval) {
 }
 
 function addGraph() {
-    gridSaved = false;  // New widget is being added
     var selEqs = []; // get the selected equations
     $('#selectedEquationList li').each(function() {
         selEqs.push(parseInt($(this).attr('index')));
@@ -883,8 +957,8 @@ function addGraph() {
         for (var i = 0; i < _len; i++) {
             equationList.push(globalEqList[selEqs[i]]);
         }
-
-        var chartID = "linechart" + lineChartIndex;
+        var widgetIndex = getIndex("linechart");
+        var chartID = "linechart" + widgetIndex;
         var title = $("#chartTitleText").val();
         var xAxis = 'date_time';
         var interval = $("#intervalCombo").val();
@@ -900,8 +974,8 @@ function addGraph() {
         var type = graphType;
         var data = loadlineChartData(chartID, title, equationList, xAxis, startDate, endDate, interval, type);
 
-        var widgetID = "widget_" + "linechart" + lineChartIndex;
-        var div = generateChartDiv("linechart" + lineChartIndex);
+        var widgetID = "widget_" + "linechart" + widgetIndex;
+        var div = generateChartDiv("linechart" + widgetIndex);
         lineChartIndex++;
         addDivtoWidget(div, width, 6, 0, graphy, widgetID);
         graphy += 6;
@@ -917,7 +991,8 @@ function addGraph() {
         for (var i = 0; i < _len; i++) {
             equationList.push(globalEqList[selEqs[i]]);
         }
-        var chartID = "colchart" + colChartIndex;
+        var widgetIndex = getIndex("colchart");
+        var chartID = "colchart" + widgetIndex;
         var title = $("#chartTitleText").val();
         var xAxis = 'date_time';
         var endDate = $("#endDatePicker").val();
@@ -931,8 +1006,8 @@ function addGraph() {
 
         var data = loadBarChartData(chartID, title, equationList, xAxis, startDate, endDate, interval, tarrifs, type);
 
-        var div = generateChartDiv("colchart" + colChartIndex);
-        var widgetID = "widget_" + "colchart" + colChartIndex + "";
+        var div = generateChartDiv("colchart" + widgetIndex);
+        var widgetID = "widget_" + "colchart" + widgetIndex + "";
         colChartIndex++;
         addDivtoWidget(div, width, 6, 0, graphy, widgetID);
         graphy += 6;
@@ -943,7 +1018,8 @@ function addGraph() {
             console.log("No equations selected");
             return;
         }
-        var chartID = "piechart" + pieChartIndex;
+        var widgetIndex = getIndex("piechart");
+        var chartID = "piechart" + widgetIndex;
         var title = $("#chartTitleText").val();
         var equationList = [];
         for (var i = 0; i < _len; i++) {
@@ -960,8 +1036,8 @@ function addGraph() {
 
         loadPieChartData(chartID, title, equationList, totalIndex, startDate, endDate, dataType, type);
 
-        var div = generateChartDiv("piechart" + pieChartIndex);
-        var widgetID = "widget_" + "piechart" + pieChartIndex + "";
+        var div = generateChartDiv("piechart" + widgetIndex);
+        var widgetID = "widget_" + "piechart" + widgetIndex + "";
         pieChartIndex++;
         addDivtoWidget(div, width, 6, 0, graphy, widgetID);
         graphy += 6;
@@ -998,7 +1074,8 @@ function addGraph() {
             return;
         }
 
-        var chartID = "colchart" + colChartIndex;
+        var widgetIndex = getIndex("colchart");
+        var chartID = "colchart" + widgetIndex;
         var title = $("#chartTitleText").val();
         var xAxis = 'date_time';
         var endDate = $("#endDatePicker").val();
@@ -1009,21 +1086,20 @@ function addGraph() {
 
         var data = loadBarChartData(chartID, title, equationList, xAxis, startDate, endDate, interval, tarrifs, type);
 
-        var div = generateChartDiv("colchart" + colChartIndex);
-        var widgetID = "widget_" + "colchart" + colChartIndex + "";
+        var div = generateChartDiv("colchart" + widgetIndex);
+        var widgetID = "widget_" + "colchart" + widgetIndex + "";
         colChartIndex++;
         addDivtoWidget(div, width, 6, 0, graphy, widgetID);
         graphy += 6;
-    } 
-    
+    }     
     else if (graphType == "guage") {
-        
+        var widgetIndex = getIndex("gauge");
         var ip = $("#gaugeIPAddress").val();
         var title = $("#gaugeTitle").val();
         var chartTitle = $("#chartTitleText").val();
         var unit = $("#gaugeUnit").val();
-        var widgetID = "widget_gauge"+gaugeIndex;
-        var chartID = "gauge"+gaugeIndex;
+        var widgetID = "widget_gauge"+widgetIndex;
+        var chartID = "gauge"+widgetIndex;
         var min = parseInt($("#gaugeMin").val());
         var max = parseInt($("#gaugeMax").val());
         var cData = {
@@ -1041,11 +1117,12 @@ function addGraph() {
     } else if (graphType == "led") {
 
     } else if (graphType == "ind") {
+        var widgetIndex = getIndex("indicator");
         var ip = $("#indicatorIPAddress").val();
         var title = $("#indicatorTopic").val();
         var chartTitle = $("#chartTitleText").val();
-        var widgetID = "widget_indicator"+indicatorIndex;
-        var chartID = "indicator"+indicatorIndex;
+        var widgetID = "widget_indicator"+widgetIndex;
+        var chartID = "indicator"+widgetIndex;
         var interval = $("#indicatorInteravl").val();
         var cData = {
             ip: ip,
@@ -1057,11 +1134,12 @@ function addGraph() {
         addIndicator(widgetID, chartID, cData, 2, 2, 0, graphy);
         graphy += 2;
     } else if (graphType == "switch") {
+        var widgetIndex = getIndex("switch");
         var ip = $("#indicatorIPAddress").val();
         var title = $("#indicatorTopic").val();
         var chartTitle = $("#chartTitleText").val();
-        var widgetID = "widget_switch"+switchIndex;
-        var chartID = "switch"+switchIndex;
+        var widgetID = "widget_switch"+widgetIndex;
+        var chartID = "switch"+widgetIndex;
         var cData = {
             ip: ip,
             title: title,
@@ -1071,26 +1149,27 @@ function addGraph() {
         addSwitch(widgetID, chartID, cData, 2, 2, 0, graphy);
         graphy += 2;
     } else if (graphType == "colorpicker") {
+        var widgetIndex = getIndex("colorpicker");
         var ip = $("#indicatorIPAddress").val();
         var title = $("#indicatorTopic").val();
         var chartTitle = $("#chartTitleText").val();
-        var widgetID = "widget_colorpicker"+colorPickerIndex;
-        var chartID = "colorpicker"+colorPickerIndex;
+        var widgetID = "widget_colorpicker"+widgetIndex;
+        var chartID = "colorpicker"+widgetIndex;
         var cData = {
             ip: ip,
             title: title,
             type: "colorpicker",
             chartTitle: chartTitle
         };
-        colorPickerIndex++;
         addColorPicker(widgetID, chartID, cData, 2, 3, 0, graphy);
         graphy += 3;
     } else if (graphType == "statecontroller") {
+        var widgetIndex = getIndex("statecontroller");
         var ip = $("#controllerIPAddress").val();
         var title = $("#controllerTopic").val();
         var chartTitle = $("#chartTitleText").val();
-        var widgetID = "widget_statecontroller"+stateControllerIndex;
-        var chartID = "statecontroller"+stateControllerIndex;
+        var widgetID = "widget_statecontroller"+widgetIndex;
+        var chartID = "statecontroller"+widgetIndex;
         var cData = {
             ip: ip,
             title: title,
@@ -1106,12 +1185,13 @@ function addGraph() {
         tempOptionList = [];     
         graphy += _h;
     } else if (graphType == "slider") {
+        var widgetIndex = getIndex("slider");
         var ip = $("#gaugeIPAddress").val();
         var title = $("#gaugeTitle").val();
         var chartTitle = $("#chartTitleText").val();
         var unit = $("#gaugeUnit").val();
-        var widgetID = "widget_slider"+sliderIndex;
-        var chartID = "slider"+sliderIndex;
+        var widgetID = "widget_slider"+widgetIndex;
+        var chartID = "slider"+widgetIndex;
         var min = parseInt($("#gaugeMin").val());
         var max = parseInt($("#gaugeMax").val());
         var cData = {
@@ -1126,15 +1206,16 @@ function addGraph() {
         addSlider(widgetID, chartID, cData, 3, 4, 0, graphy);  
         graphy += 4;
     } else if (graphType == "bot") {
+        var widgetIndex = getIndex("bot");
         var ip = $("#botIPPort").val();
         var chartTitle = $("#chartTitleText").val();
         var learner = $("#learnerCombo").val();
-        var widgetID = "widget_bot"+botIndex;
-        var chartID = "bot"+botIndex;
+        var widgetID = "widget_bot"+widgetIndex;
+        var chartID = "bot"+widgetIndex;
         var learner_class = $("#learnerTypeCombo").val();
 
         var div = generateChartDiv(chartID);
-        botIndex++;
+        //botIndex++;
         addDivtoWidget(div, width, 6, 0, graphy, widgetID);
         graphy += 6;
 
@@ -1175,7 +1256,11 @@ function addGraph() {
             model: model
         };
         addBot(widgetID, chartID, cData);
+    } else if (graphType == "alert") {
+        //saveAlerts();
     }
+
+    gridSaved = false;  // New widget is being added
     $("#classList").empty();
     $("#classListDiv").hide();
     $("#selectedEquationList").empty();
@@ -1189,10 +1274,11 @@ function addIndicator(widgetID, graphID, data, w, h, x, y){
     addDivtoWidget(div, w, h, x, y, widgetID);
     
     var client = initMQQTClientIndicator(graphID,data.ip,data.title,data.interval);
-    var i_i = parseInt(graphID.substring(9));
-    if (i_i >= indicatorIndex) {
-        indicatorIndex = i_i + 1;
-    }
+    // var i_i = parseInt(graphID.substring(9));
+    // if (i_i >= indicatorIndex) {
+    //     indicatorIndex = i_i + 1;
+    // }
+    indicatorIndex++;
     graphs[graphID] = {};
     graphs[graphID]["type"] = "indicator";
     graphs[graphID]["chartData"] = data;
@@ -1205,9 +1291,10 @@ function addGauge(widgetID, graphID, data, w, h, x, y){
     var gauge = initGauge(graphID,data.min,data.max,data.unit);
     var client = initMQQTClient(graphID,data.ip,data.title,gauge);
     var g_i = parseInt(graphID.substring(5));
-    if (g_i >= gaugeIndex) {
-        gaugeIndex = g_i + 1;
-    }
+    // if (g_i >= gaugeIndex) {
+    //     gaugeIndex = g_i + 1;
+    // }
+    gaugeIndex++;
     graphs[graphID] = {};
     graphs[graphID]["chart"] = gauge;
     graphs[graphID]["type"] = "gauge";
@@ -1232,10 +1319,11 @@ function addColorPicker(widgetID, graphID, data, w, h, x, y) {
         rgb_string = rgb.r+','+rgb.g+','+rgb.b;
     });
 
-    var c_i = parseInt(graphID.substring(11));
-    if (c_i >= colorPickerIndex) {
-        colorPickerIndex = c_i + 1;
-    }
+    // var c_i = parseInt(graphID.substring(11));
+    // if (c_i >= colorPickerIndex) {
+    //     colorPickerIndex = c_i + 1;
+    // }
+    colorPickerIndex++;
     graphs[graphID] = {};
     graphs[graphID]["type"] = "colorpicker";
     graphs[graphID]["chartData"] = data;
@@ -1253,10 +1341,11 @@ function addSwitch(widgetID, graphID, data, w, h, x, y){
     addDivtoWidget(div, w, h, x, y, widgetID);
     var port = parseInt(data.ip.substr(data.ip.length - 4));
     var client = initMQQTClientSwitch(graphID, data.ip, port, data.title);
-    var s_i = parseInt(graphID.substring(6));
-    if (s_i >= switchIndex) {
-        switchIndex = s_i + 1;
-    }
+    // var s_i = parseInt(graphID.substring(6));
+    // if (s_i >= switchIndex) {
+    //     switchIndex = s_i + 1;
+    // }
+    switchIndex++;
     graphs[graphID] = {};
     graphs[graphID]["type"] = "switch";
     graphs[graphID]["chartData"] = data;
@@ -1313,10 +1402,11 @@ function addStateController(widgetID, graphID, data, w, h, x, y){
         });
     });
 
-    var sc_i = parseInt(graphID.substring(15));
-    if (sc_i >= stateControllerIndex) {
-        stateControllerIndex = sc_i + 1;
-    }
+    // var sc_i = parseInt(graphID.substring(15));
+    // if (sc_i >= stateControllerIndex) {
+    //     stateControllerIndex = sc_i + 1;
+    // }
+    stateControllerIndex++;
     graphs[graphID] = {};
     graphs[graphID]["type"] = "statecontroller";
     graphs[graphID]["chartData"] = data;
@@ -1338,10 +1428,11 @@ function addSlider(widgetID, graphID, data, w, h, x, y){
         $('input[type="range"]').rangeslider();
     });
 
-    var sl_i = parseInt(graphID.substring(6));
-    if (sl_i >= sliderIndex) {
-        sliderIndex = sl_i + 1;
-    }
+    // var sl_i = parseInt(graphID.substring(6));
+    // if (sl_i >= sliderIndex) {
+    //     sliderIndex = sl_i + 1;
+    // }
+    sliderIndex++;
     graphs[graphID] = {};
     graphs[graphID]["type"] = "slider";
     graphs[graphID]["chartData"] = data;
@@ -1359,7 +1450,8 @@ function removeIntBox(elm) {
     $(elm).parent().remove();
 }
 
-////
+///
+
 function changeUserEnvironment() {
     loadEquations();
     loadDevices();
@@ -1367,7 +1459,6 @@ function changeUserEnvironment() {
 }
 
 function addNote(content) {
-
     $("#notification").fadeIn("slow").html(content);
     setTimeout(function(){ $("#notification").fadeOut("slow") }, 1500);
 }
@@ -1589,6 +1680,7 @@ function addDivtoWidget(div, w, h, x, y, widgetID) {
             $('#close' + widgetID).click(function() {
                 //$('#widget'+widgetCount).remove();
                 $(this).parent().parent().remove();
+                updateIndex(widgetID);
                 //widgetCount--;
                 gridSaved = false;
             });
@@ -2176,12 +2268,6 @@ function restoreOptions ($select) {
 function initDateTimePicker() {
     $('.input-append').datetimepicker({
         pickDate: false
-        // icons: {
-        //         time: "fa fa-clock-o",
-        //         date: "fa fa-calendar",
-        //         up: "fa fa-arrow-up",
-        //         down: "fa fa-arrow-down"
-        //     }
     });
 
     // $('.input-append').find('.dropdown-menu').css("background-color", "#ccc");
@@ -2231,3 +2317,37 @@ function alertColor(i, len) {
 function removeBGColor(elm) {
     $(elm).css("background-color", "#ffffff");
 }
+
+function getIndex(type) {
+    var count = 0;
+    for (var key in graphs) {
+        if (key.includes(type)) {
+            if (key.charAt(type.length) == count) {
+                count++;
+            }
+            else break;
+        }
+    }
+    return count;
+}
+
+function updateIndex(widgetID) {
+    if (widgetID.includes("linechart")) lineChartIndex--;
+    else if (widgetID.includes("colchart")) colChartIndex--;
+    else if (widgetID.includes("piechart")) pieChartIndex--;
+    else if (widgetID.includes("gauge")) gaugeIndex--;
+    else if (widgetID.includes("indicator")) indicatorIndex--;
+    else if (widgetID.includes("switch")) switchIndex--;
+    else if (widgetID.includes("colorpicker")) colorpickerIndex--;
+    else if (widgetID.includes("statecontroller")) stateControllerIndex--;
+    else if (widgetID.includes("slider")) sliderIndex--;
+}
+
+// function escapeHtml(text) {
+//   return text
+//       .replace(/&/g, "&amp;")
+//       .replace(/</g, "&lt;")
+//       .replace(/>/g, "&gt;")
+//       .replace(/"/g, "&quot;")
+//       .replace(/'/g, "&#039;");
+// }
