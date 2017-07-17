@@ -159,10 +159,14 @@ function clearExpressions_alert() {
 function addOperator(op) {
     var operands = "=<>; ";
     var expText = $("#equationText_alert").html();
-    if (expText.includes("=") || expText.includes("<") || expText.includes(">")) return;
+    if (expText.includes("=") || expText.includes("&lt;") || expText.includes("&gt;")) return;
     if ((expText != "") && !operands.includes(expText[expText.length - 1])) {
         document.getElementById("equationText_alert").innerHTML += (" " + op + " ");
     }
+}
+
+function unescapeHTML(escapedHTML) {
+  return escapedHTML.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&');
 }
 
 //For the entire expression
@@ -183,10 +187,11 @@ function addAlertExpression() {
     var name = document.getElementById("alertTitleText").value;
     var group = document.getElementById("alertGroupCombo").value;
     var ip = $("#alertIPPort").val();
-    var expression = $("#equationText_alert").html();
+    var expression = unescapeHTML($("#equationText_alert").html());
     var option = document.getElementById("optionCombo_alert").value;
     var warningMsg = document.getElementById("warningMsgText").value;
     var normalMsg = document.getElementById("normalMsgText").value;
+    console.log(expression);
 
     var item = [];
     for (i = 0; i < globalAlertList.length; i++) {

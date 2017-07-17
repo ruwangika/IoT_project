@@ -35,6 +35,7 @@
 <link rel="stylesheet" href="css/bootstrap-timepicker.min.css">
 <link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css">
 <link rel="stylesheet" href="css/rangeslider.css">
+<link rel='stylesheet' href="css/spectrum.css"/>
 <!--<link rel="stylesheet" href="css/color-light.jl.css">-->
 
 <link href="css/datepicker.css" rel="stylesheet" type="text/css"/>
@@ -63,6 +64,7 @@
 <script src="js/bootstrap-datetimepicker.min.js"></script>
 <script src="js/rangeslider.js"></script>
 <script src="js/rangeslider.min.js"></script>
+<script src="js/spectrum.js"></script>
 
 <style>
 #savePan{
@@ -387,6 +389,23 @@
                         <p class="label-1"><i>seconds</i></p>
                     </div>
                 </div>
+                <div id="statesDiv" class="w3-row w3-padding-8">
+                    <div class="w3-col w3-container" style="width:10%">
+                        <p class="label-1">State</p>
+                    </div>
+                    <div class="w3-col w3-container" style="width:20%">
+                        <input id="stateNameText" placeholder="name" type="text">
+                    </div>
+                    <div class="w3-col w3-container" style="width:20%">
+                        <input id="stateValueText" placeholder="value" type="text">
+                    </div>
+                    <div class="w3-col w3-container" style="width:8%">
+                        <input type="text" id="stateColorPicker">
+                    </div>
+                    <div class="w3-col w3-container" style="width:8%; float:right">
+                        <p><button class="portal-pane-button" onclick="addState()" data-toggle="tooltip" data-placement="top" title="Add Option"><i class="fa fa-plus-square-o fa-2x" aria-hidden="true"></i></button></p>
+                    </div>
+                </div>
             </div>
             <div class="w3-row w3-padding-8 widget-color widget-font" id="gaugeConfigPanel">
                 <div class="w3-row w3-padding-8">
@@ -412,7 +431,7 @@
                 </div>
                 <div class="w3-row w3-padding-8">
                     <div class="w3-col w3-container" style="width:10%">
-                        <p class="label-1">MQQT Title</p>
+                        <p class="label-1">MQTT Title</p>
                     </div>
                     <div class="w3-col w3-container" style="width:20%">
                         <input id="gaugeTitle" type="text" value="0001/temperature">
@@ -981,12 +1000,14 @@
         var pieChartIndex = 0;
         var gaugeIndex = 0;
         var indicatorIndex = 0;
+        var stateIndicatorIndex = 0;
         var colorPickerIndex = 0;
         var switchIndex = 0;
         var stateControllerIndex = 0;
         var sliderIndex = 0;
         var botIndex = 0;
         var tempOptionList = [];
+        var tempStateList = [];
 
         var globalEqList = [];
         var tempExpressionsList=[];
@@ -1041,6 +1062,9 @@
                 eproConnect("stat");
         }
         initDateTimePicker();
+        $("#stateColorPicker").spectrum({
+            color: "#f00"
+        });
         //$('.grid-stack-item').draggable({cancel: ".canvasjs-chart-canvas" });
         //$('.grid-stack-item').draggable({cancel: ".widget-color" });
     </script>

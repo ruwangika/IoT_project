@@ -125,11 +125,12 @@ function loadGraphTypes(){
         ["Stacked Bar Chart", "stackedColumn"]
     ];
     var graphTypes_realtime = [
-        ["Gauge", "guage"],
+        ["Gauge", "gauge"],
         ["Indicator", "ind"],
         ["Switch", "switch"],
         ["Color Picker", "colorpicker"],
         ["State Controller", "statecontroller"],
+        ["Multi-state Indicator", "stateind"],
         //["Slider", "slider"],
         //["Bot", "bot"]
     ];
@@ -867,9 +868,9 @@ function loadGraph(widgetID, graphID, data, w, h, x, y) {
         //     pieChartIndex = p_i + 1;
         // }
         pieChartIndex++;
-    }else if (type == "gauge") {
+    } else if (type == "gauge") {
         addGauge(widgetID, graphID, data, w, h, x, y);
-    }else if (type == "indicator") {
+    } else if (type == "indicator") {
         addIndicator(widgetID, graphID, data, w, h, x, y);
     } else if (type == "switch") {
         addSwitch(widgetID, graphID, data, w, h, x, y);
@@ -879,6 +880,8 @@ function loadGraph(widgetID, graphID, data, w, h, x, y) {
         addStateController(widgetID, graphID, data, w, h, x, y);
     } else if (type == "slider") {
         addSlider(widgetID, graphID, data, w, h, x, y);
+    } else if (type == "stateindicator") {
+        addStateIndicator(widgetID, graphID, data, w, h, x, y);
     } else if (type == "bot") {
         var div = generateChartDiv(graphID);
         addDivtoWidget(div, w, h, x, y, widgetID);
@@ -920,6 +923,7 @@ function setGaugeLive(gaugeID) {
         $('#livewidget_'+gaugeID).hide();
     }, 2000);
 }
+
 function setIndicatorLive(indicatorID,interval) {
     if(indicatorID in indicatorLiveTimer){
         clearTimeout(indicatorLiveTimer[indicatorID]);
@@ -928,6 +932,17 @@ function setIndicatorLive(indicatorID,interval) {
         $('#'+indicatorID+'_ON').hide();
         $('#'+indicatorID+'_OFF').hide();
         $('#'+indicatorID+'_DISCONNECT').show();
+    }, parseInt(interval)*1000);
+}
+
+function setStateIndicatorLive(indicatorID,interval) {
+    if(indicatorID in indicatorLiveTimer){
+        clearTimeout(indicatorLiveTimer[indicatorID]);
+    }
+    indicatorLiveTimer[indicatorID] = setTimeout(function() {
+        $('#'+indicatorID+'_DISCONNECT').show();
+        $('#'+indicatorID).not(":eq(#"+indicatorID+"_DISCONNECT)").hide();   
+
     }, parseInt(interval)*1000);
 }
 
@@ -1092,7 +1107,7 @@ function addGraph() {
         addDivtoWidget(div, width, 6, 0, graphy, widgetID);
         graphy += 6;
     }     
-    else if (graphType == "guage") {
+    else if (graphType == "gauge") {
         var widgetIndex = getIndex("gauge");
         var ip = $("#gaugeIPAddress").val();
         var title = $("#gaugeTitle").val();
@@ -1205,6 +1220,26 @@ function addGraph() {
         };
         addSlider(widgetID, chartID, cData, 3, 4, 0, graphy);  
         graphy += 4;
+    } else if (graphType == "stateind") {        
+        var widgetIndex = getIndex("stateindicator");
+        var ip = $("#indicatorIPAddress").val();
+        var title = $("#indicatorTopic").val();
+        var chartTitle = $("#chartTitleText").val();
+        var widgetID = "widget_stateindicator"+widgetIndex;
+        var chartID = "stateindicator"+widgetIndex;
+        var interval = $("#indicatorInteravl").val();
+        var stateList = tempStateList;
+        var cData = {
+            ip: ip,
+            title: title,
+            states: stateList,
+            interval: interval,
+            type: "stateindicator",
+            chartTitle: chartTitle
+        };
+        addStateIndicator(widgetID, chartID, cData, 2, 2, 0, graphy);
+        tempStateList = [];
+        graphy += 2;
     } else if (graphType == "bot") {
         var widgetIndex = getIndex("bot");
         var ip = $("#botIPPort").val();
@@ -1273,7 +1308,7 @@ function addIndicator(widgetID, graphID, data, w, h, x, y){
     var div = '<div class="widget-color"><p id="title_'+graphID+'" class="chart-title-font">'+data.chartTitle+'</p><div id="'+graphID+'" class="widget-color" style="display: block;margin: 0 auto;"><div id="'+graphID+'_ON" style="display: none"><div class="led-green"></div><h4>On</h4></div> <div id="'+graphID+'_OFF" style="display: none"><div class="led-blue"></div><h4>Off</h4></div><div id="'+graphID+'_DISCONNECT"><div class="led-red"></div><h4>Disconnected!</h4></div></div></div>';
     addDivtoWidget(div, w, h, x, y, widgetID);
     
-    var client = initMQQTClientIndicator(graphID,data.ip,data.title,data.interval);
+    var client = initMQTTClientIndicator(graphID,data.ip,data.title,data.interval);
     // var i_i = parseInt(graphID.substring(9));
     // if (i_i >= indicatorIndex) {
     //     indicatorIndex = i_i + 1;
@@ -1289,7 +1324,7 @@ function addGauge(widgetID, graphID, data, w, h, x, y){
     var div = '<div class="widget-color"><p id="title_'+graphID+'" class="chart-title-font">'+data.chartTitle+'</p><div id="gauge'+graphID.substring(5)+'" class="epoch gauge-small widget-color" style="display: block;margin: 0 auto;"></div></div>';
     addDivtoWidget(div, w, h, x, y, widgetID);
     var gauge = initGauge(graphID,data.min,data.max,data.unit);
-    var client = initMQQTClient(graphID,data.ip,data.title,gauge);
+    var client = initMQTTClient(graphID,data.ip,data.title,gauge);
     var g_i = parseInt(graphID.substring(5));
     // if (g_i >= gaugeIndex) {
     //     gaugeIndex = g_i + 1;
@@ -1340,7 +1375,7 @@ function addSwitch(widgetID, graphID, data, w, h, x, y){
     var div = '<div class="widget-color"><p id="title_'+graphID+'" class="chart-title-font">'+data.chartTitle+'</p><div id="'+graphID+'" class="widget-color" style="display: block;margin: 0 auto;background-color: inherit;"><div id="'+graphID+'_ON" style="display: none"><div class="switch-off" onclick="switchOff(\''+graphID+'\')" style="cursor:pointer"></div><h6 style="padding-bottom:7px">On</h6></div><div id="'+graphID+'_OFF" style="display: none"><div class="switch-on" onclick="switchOn(\''+graphID+'\')" style="cursor:pointer"></div><h6 style="padding-bottom:7px">Off</h6></div><div id="'+graphID+'_UNIDENTIFIED"><div class="switch" style="cursor:pointer" onclick="setSwitch(\''+graphID+'\')"></div><h6 style="padding-bottom:7px">Pending</h6></div></div></div>';
     addDivtoWidget(div, w, h, x, y, widgetID);
     var port = parseInt(data.ip.substr(data.ip.length - 4));
-    var client = initMQQTClientSwitch(graphID, data.ip, port, data.title);
+    var client = initMQTTClientSwitch(graphID, data.ip, port, data.title);
     // var s_i = parseInt(graphID.substring(6));
     // if (s_i >= switchIndex) {
     //     switchIndex = s_i + 1;
@@ -1363,12 +1398,12 @@ function addOption() {
     var optionName = $("#optionNameText").val();
     var optionValue = $("#optionValueText").val();
 
-    $("#optionList").append("<li onclick=\"\" id=\"li"+optionValue+"\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+optionValue+"\">"+optionName+"<span class=\"w3-closebtn w3-margin-right w3-medium\" onclick=\"removeOption('"+optionName+"','"+optionValue+"',this)\">-</span></li>");
+    $("#optionList").append("<li onclick=\"\" id=\"li_option_"+optionValue+"\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+optionValue+"\">"+optionName+"<span class=\"w3-closebtn w3-margin-right w3-medium\" onclick=\"removeOption('"+optionName+"','"+optionValue+"',this)\">-</span></li>");
     tempOptionList.push([optionName, optionValue]);
 }
 
 var removeOption = function(optionName, optionValue, object){
-    var li = document.getElementById("li"+optionValue);
+    var li = document.getElementById("li_option_"+optionValue);
     li.remove();
     var option = [optionName, optionValue];
     var index = tempOptionList.map(function(el){return el[1];}).indexOf(optionValue);
@@ -1437,6 +1472,88 @@ function addSlider(widgetID, graphID, data, w, h, x, y){
     graphs[graphID]["type"] = "slider";
     graphs[graphID]["chartData"] = data;
 
+}
+
+function addStateIndicator(widgetID, graphID, data, w, h, x, y) {
+    //To do
+    var div = '<div class="widget-color"><p id="title_'+graphID+'" class="chart-title-font">'+data.chartTitle+'</p><div id="'+graphID+'" class="widget-color" style="display: block;margin: 0 auto;"><div id="'+graphID+'_DISCONNECT" style=""><div class="led-red"></div><h4>Disconnected!</h4></div></div></div>';
+    addDivtoWidget(div, w, h, x, y, widgetID);
+    
+    var indStr = $("#"+graphID).html();
+    var _len = data.states.length;
+    for (i = 0; i < _len; i++) {
+        var name = data.states[i][0];
+        var state = data.states[i][1];
+        var color = data.states[i][2];
+         indStr += '<div id="'+graphID+'_'+state+'" style="display:none"><div class="led" style="background-color:#'+color+'"></div><h4>'+name+'</h4></div>';
+         $("#"+graphID).html(indStr);
+    }
+
+    var client = initMQTTClientStateIndicator(graphID,data.ip,data.title,data.interval);
+
+    stateIndicatorIndex++;
+    graphs[graphID] = {};
+    graphs[graphID]["type"] = "stateindicator";
+    graphs[graphID]["chartData"] = data;
+}
+
+function initMQTTClientStateIndicator(id, ip, title, interval){
+    var randomstr=randomString(10);
+    options={
+        clientId: randomstr,
+        keepalive: 1,
+        clean: false};
+    var client = mqtt.connect(ip,options); // you add a ws:// url here
+    client.subscribe(title);
+    client.on("message", function(topic, payload) {
+        var msg_ = [payload].join("");
+        var value_ = parseFloat(msg_);        // Messege is given by [packetID,value];
+        console.log(value_);
+        if(!isNaN(value_)) {                
+            $('#'+id+'_'+value_).show(); 
+            $('#'+id).not(":eq(#"+id+"_"+value_+")").hide();           
+            
+            setStateIndicatorLive(id, interval);
+        }
+    });
+    client.on("reconnect", function() {
+        client.subscribe(title);
+    });
+    return client;
+}
+
+function addState() {
+    var stateName = $("#stateNameText").val();
+    var stateValue = $("#stateValueText").val();
+    var stateColor = $("#stateColorPicker").spectrum("get").toHex();
+    if (!stateValue) return;
+    if (!stateName) stateName = stateValue;
+
+    for (var i = 0; i < tempStateList.length; i++) {
+        if (tempStateList[i][0] == stateName) {
+            addNote("State name already exists!");
+            return;
+        } else if (tempStateList[i][1] == stateValue) {
+            addNote("State already exists!");
+            return;
+        } else if (tempStateList[i][2] == stateColor) {
+            addNote("Color already used for another state!");
+            return;
+        }
+    }
+
+    $("#equationListDisp").append("<li onclick=\"\" id=\"li_state_"+stateValue+"\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+stateValue+"\">"+stateName+"<span class=\"colorind\" style=\"background-color:#"+stateColor+"\"></span><span class=\"w3-closebtn w3-margin-right w3-medium\" onclick=\"removeState('"+stateName+"','"+stateValue+"',this)\">-</span></li>");
+    tempStateList.push([stateName, stateValue, stateColor]);    
+}
+
+function removeState(stateName, stateValue, object) {
+    var li = document.getElementById("li_state_"+stateValue);
+    li.remove();
+    var state = [stateName, stateValue];
+    var index = tempStateList.map(function(el){return el[1];}).indexOf(stateValue);
+    if (index > -1) {
+        tempStateList.splice(index, 1);
+    }      
 }
 
 function addIntBox(elm) {
@@ -1723,7 +1840,7 @@ function randomString(length) {
     return text;
 }
 
-function initMQQTClient(id,ip,title,gauge){
+function initMQTTClient(id,ip,title,gauge){
     //var client  = mqtt.connect('mqtt://karunasinghe.com')
     var randomstr=randomString(10);
     options={
@@ -1786,7 +1903,7 @@ function test(){
     return 0;
 }
 
-function initMQQTClientIndicator(id,ip,title,interval){
+function initMQTTClientIndicator(id,ip,title,interval){
 
     var randomstr=randomString(10);
     options={
@@ -1820,7 +1937,7 @@ function initMQQTClientIndicator(id,ip,title,interval){
     return client;
 }
 
-function initMQQTClientSwitch(id, ip, port, title) {
+function initMQTTClientSwitch(id, ip, port, title) {
     var payload = -1;
     $('#'+id+'_UNIDENTIFIED').show();
     mqttPub(payload, ip, port, title);
@@ -2341,6 +2458,7 @@ function updateIndex(widgetID) {
     else if (widgetID.includes("colorpicker")) colorpickerIndex--;
     else if (widgetID.includes("statecontroller")) stateControllerIndex--;
     else if (widgetID.includes("slider")) sliderIndex--;
+    else if (widgetID.includes("stateindicator")) stateIndicatorIndex--;
 }
 
 // function escapeHtml(text) {

@@ -97,6 +97,7 @@ function showEquations(){
     $("#dateRangeChooser").show();
     $("#startDateLbl").hide();
     $("#startDateText").hide();
+    $("#statesDiv").hide();
     if(graphType == "line" || graphType == "spline" || graphType =="stepLine" || graphType == "splineArea" || graphType == "scatter"){
         restoreOptions($("#intervalCombo"));
         for (var i = 0; i < _len; i++) {
@@ -154,7 +155,7 @@ function showEquations(){
                 $("#equationListDisp").append("<li onclick=\"selectEquation('"+eqStr+"','"+i+"',this)\" id=\""+eqStr+"\" index=\""+i+"\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+eqStr+"\">"+eqName+"<span class=\"w3-closebtn w3-margin-right w3-medium\">+</span></li>");    
             }
         }   
-    }else if(graphType == "guage"){
+    }else if(graphType == "gauge"){
         $("#gaugeConfigPanel").show();
         $("#dateRangeChooser").hide();
         $("#graphWidthCombo").hide();
@@ -187,6 +188,14 @@ function showEquations(){
         $("#dateRangeChooser").hide();
         $("#graphWidthCombo").hide();
         $("#graphWidthLabel").hide();
+        $("#eqListHeader").hide();
+    }else if(graphType == "stateind"){
+        $("#indicatorConfigPanel").show();
+        $("#statesDiv").show();
+        $("#dateRangeChooser").hide();
+        $("#graphWidthCombo").hide();
+        $("#graphWidthLabel").hide();
+        $("#timeIntDiv").show();
         $("#eqListHeader").hide();
     }else if (graphType == "bot") {
         $("#botConfigPanel").show();
