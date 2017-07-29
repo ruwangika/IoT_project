@@ -45,6 +45,7 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.5.0/lodash.min.js"></script>
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB6xx3ad8cDsfKz80pozua--O5GACUQi_U&callback=initMap" async defer></script>
 <script src="js/gridstack.js"></script>
 <script src="js/canvasjs.min.js"></script>
 <script src="js/gridstack.jQueryUI.js"></script>
@@ -53,6 +54,7 @@
 <script src="js/piechart.jl.js"></script>
 <script src="js/bot.jl.js"></script>
 <script src="js/alert.jl.js"></script>
+<script src="js/map.jl.js"></script>
 <script src="js/equations.jl.js"></script>
 <script src="js/common.jl.js"></script>
 <script src="js/epoch.js"></script>
@@ -234,7 +236,7 @@
                 </div>
                 <div class="w3-col w3-container" style="width:20%">
                       <select id="objTypeCombo" onchange="loadCategories()" class="combo-1">
-                        <option value="graph" selected>Graph</option>
+                        <option value="graph" selected>Widget</option>
                         <option value="ai_agent">AI Agent</option>
                         <option value="alert_agent">Alert Agent</option>
                     </select>
@@ -406,6 +408,17 @@
                         <p><button class="portal-pane-button" onclick="addState()" data-toggle="tooltip" data-placement="top" title="Add Option"><i class="fa fa-plus-square-o fa-2x" aria-hidden="true"></i></button></p>
                     </div>
                 </div>
+                <div id="locNamesDiv" class="w3-row w3-padding-8">
+                    <div class="w3-col w3-container" style="width:10%">
+                        <p class="label-1">Name</p>
+                    </div>
+                    <div class="w3-col w3-container" style="width:20%">
+                        <input id="locNameText" placeholder="name" type="text" maxlength="10">
+                    </div>
+                    <div class="w3-col w3-container" style="width:5%">
+                        <p><button class="portal-pane-button-small" onclick="addLocName()" data-toggle="tooltip" data-placement="top" title="Add Location" style="margin-top:8px"><i class="fa fa-plus-circle" aria-hidden="true"></i></button></p>
+                    </div>
+                </div>
             </div>
             <div class="w3-row w3-padding-8 widget-color widget-font" id="gaugeConfigPanel">
                 <div class="w3-row w3-padding-8">
@@ -471,6 +484,16 @@
                     </div>
                     <div class="w3-col w3-container" style="width:8%; float:right">
                         <p><button class="portal-pane-button" onclick="addOption()" data-toggle="tooltip" data-placement="top" title="Add Option"><i class="fa fa-plus-square-o fa-2x" aria-hidden="true"></i></button></p>
+                    </div>
+                </div>
+            </div>
+            <div class="w3-row w3-padding-8 widget-color w3-large" id="weatherInfoConfigPanel"> 
+                <div class="w3-row w3-padding-8">
+                    <div class="w3-col w3-container" style="width:10%">
+                        <p class="label-1">Select Location</p>
+                    </div>
+                    <div class="w3-col w3-container" style="width:10%">
+                        <div id="weatherMap" style="width: 400px; height: 300px;"></div>
                     </div>
                 </div>
             </div>
@@ -576,7 +599,7 @@
                 </div>
             </div>
 
-            <!--New: Alert COnfig Panel-->
+            <!--Alert COnfig Panel-->
             <div class="w3-row w3-padding-8 widget-color w3-large" id="alertConfigPanel">
                 <div class="w3-row w3-padding-8">
                     <div class="w3-col w3-container" style="width:10%">
@@ -1005,9 +1028,13 @@
         var switchIndex = 0;
         var stateControllerIndex = 0;
         var sliderIndex = 0;
+        var mapIndex = 0;
+        var weatherinfoIndex = 0;
         var botIndex = 0;
         var tempOptionList = [];
         var tempStateList = [];
+        var globalLocationList = [];
+        var myLocation = [];
 
         var globalEqList = [];
         var tempExpressionsList=[];
@@ -1029,6 +1056,7 @@
         var globalAlertGroupList = [];
         var tempExpressionsList_alert=[];
         var tempAlertGroup = "";
+        var alertStr = "";
 
         window.onload = function(){
             decComponents();
@@ -1065,8 +1093,6 @@
         $("#stateColorPicker").spectrum({
             color: "#f00"
         });
-        //$('.grid-stack-item').draggable({cancel: ".canvasjs-chart-canvas" });
-        //$('.grid-stack-item').draggable({cancel: ".widget-color" });
     </script>
 
 </body>

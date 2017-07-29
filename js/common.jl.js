@@ -131,6 +131,8 @@ function loadGraphTypes(){
         ["Color Picker", "colorpicker"],
         ["State Controller", "statecontroller"],
         ["Multi-state Indicator", "stateind"],
+        ["Map", "map"],
+        ["Weather Info", "weatherinfo"]
         //["Slider", "slider"],
         //["Bot", "bot"]
     ];
@@ -386,7 +388,11 @@ function loadChannelComboEpro() {//Private method
                 
                 if (channel.substring(0, 3) == "ph1") {         // Total 
                     var ch_postfix = channel.substring(4);
-                    var ch_total = '(ph1_'+ ch_postfix + '+ph2_'+ch_postfix + '+ph3_'+ch_postfix+')'; 
+                    if (ch_postfix == "volt" || ch_postfix == "pf") {
+                        var ch_total = '(ph1_'+ ch_postfix + '+ph2_'+ch_postfix + '+ph3_'+ch_postfix+')/3'; 
+                    } else {
+                        var ch_total = '(ph1_'+ ch_postfix + '+ph2_'+ch_postfix + '+ph3_'+ch_postfix+')'; 
+                    }                    
                     $('#channelCombo').append($('<option/>', {
                         value: ch_total,
                         text: ch_postfix
@@ -882,6 +888,8 @@ function loadGraph(widgetID, graphID, data, w, h, x, y) {
         addSlider(widgetID, graphID, data, w, h, x, y);
     } else if (type == "stateindicator") {
         addStateIndicator(widgetID, graphID, data, w, h, x, y);
+    } else if (type == "map") {
+        addMap(widgetID, graphID, data, w, h, x, y);
     } else if (type == "bot") {
         var div = generateChartDiv(graphID);
         addDivtoWidget(div, w, h, x, y, widgetID);
@@ -891,8 +899,7 @@ function loadGraph(widgetID, graphID, data, w, h, x, y) {
         //     botIndex = b_i + 1;
         // }
     }
-
-
+    disableDrag();
 }
 
 function resizeWidget(id) {
@@ -1240,6 +1247,40 @@ function addGraph() {
         addStateIndicator(widgetID, chartID, cData, 2, 2, 0, graphy);
         tempStateList = [];
         graphy += 2;
+    } else if (graphType == "map") {        
+        var widgetIndex = getIndex("map");
+        var ip = $("#indicatorIPAddress").val();
+        var title = $("#indicatorTopic").val();
+        var chartTitle = $("#chartTitleText").val();
+        var widgetID = "widget_map"+widgetIndex;
+        var chartID = "map"+widgetIndex;
+        var locationList = globalLocationList;
+        var cData = {
+            ip: ip,
+            title: title,
+            locations: locationList,
+            type: "map",
+            chartTitle: chartTitle
+        };
+        //var div = generateChartDiv("map" + widgetIndex);
+        //addDivtoWidget(div, width, 6, 0, graphy, widgetID);
+        addMap(widgetID, chartID, cData, width, 4, 0, graphy);
+
+        globalLocationList = [];
+        graphy += 4;
+    } else if (graphType == "weatherinfo") {
+        var location = myLocation;
+        var widgetIndex = getIndex("weatherinfo");
+        var chartTitle = $("#chartTitleText").val();
+        var widgetID = "widget_weatherinfo"+widgetIndex;
+        var chartID = "weatherinfo"+widgetIndex;
+        var cData = {
+            chartTitle: chartTitle,
+            location: myLocation,
+        };
+        width = 4;
+        addWeatherInfo(widgetID, chartID, cData, width, 5, 0, graphy);
+        graphy += 5;
     } else if (graphType == "bot") {
         var widgetIndex = getIndex("bot");
         var ip = $("#botIPPort").val();
@@ -1301,6 +1342,7 @@ function addGraph() {
     $("#selectedEquationList").empty();
     $("#optionList").empty();
     widgetnav_close();
+    disableDrag();
 }
 
 
@@ -1542,11 +1584,11 @@ function addState() {
         }
     }
 
-    $("#equationListDisp").append("<li onclick=\"\" id=\"li_state_"+stateValue+"\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+stateValue+"\">"+stateName+"<span class=\"colorind\" style=\"background-color:#"+stateColor+"\"></span><span class=\"w3-closebtn w3-margin-right w3-medium\" onclick=\"removeState('"+stateName+"','"+stateValue+"',this)\">-</span></li>");
+    $("#equationListDisp").append("<li id=\"li_state_"+stateValue+"\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+stateValue+"\">"+stateName+"<span class=\"colorind\" style=\"background-color:#"+stateColor+"\"></span><span class=\"w3-closebtn w3-margin-right w3-medium\" onclick=\"removeState('"+stateName+"','"+stateValue+"')\">&times;</span></li>");
     tempStateList.push([stateName, stateValue, stateColor]);    
 }
 
-function removeState(stateName, stateValue, object) {
+function removeState(stateName, stateValue) {
     var li = document.getElementById("li_state_"+stateValue);
     li.remove();
     var state = [stateName, stateValue];
@@ -1661,7 +1703,7 @@ function openSettingsModal(widgetID){
     var graphID = widgetID.substring(7);
     var chartData = graphs[graphID]["chartData"];
     
-    if(chartData["type"] == "gauge" || chartData["type"] == "indicator" || chartData["type"] == "switch" || chartData["type"] == "colorpicker" || chartData["type"] == "statecontroller" || chartData["type"] == "slider"){
+    if(chartData["type"] == "gauge" || chartData["type"] == "indicator" || chartData["type"] == "switch" || chartData["type"] == "colorpicker" || chartData["type"] == "statecontroller" || chartData["type"] == "slider" || chartData["type"] == "stateindicator" || chartData["type"] == "map"){
         $("#settingsModal").show();
         $("#settingsModelDateDiv").hide();
         $("#chartTitleTextWS").val(chartData["chartTitle"]); 
@@ -1727,7 +1769,7 @@ function changeWidgetSettings(){
     var title = $("#chartTitleTextWS").val();
     var graphID = tempwidget.substring(7);
     var chartData = graphs[graphID]["chartData"];
-    if(chartData["type"] == "gauge" || chartData["type"] == "indicator" || chartData["type"] == "switch" || chartData["type"] == "colorpicker" || chartData["type"] == "statecontroller" || chartData["type"] == "slider"){
+    if(chartData["type"] == "gauge" || chartData["type"] == "indicator" || chartData["type"] == "switch" || chartData["type"] == "colorpicker" || chartData["type"] == "statecontroller" || chartData["type"] == "slider" || chartData["type"] == "stateindicator" || chartData["type"] == "map"){
         chartData["chartTitle"] = title;
     }else{
         var startDate = $("#startDatePickerWS").val();
@@ -1743,7 +1785,7 @@ function changeWidgetSettings(){
 }
 
 function refreshGraph(chartID,data){
-    if(data.type == "gauge" || data.type == "indicator" || data.type == "switch" || data.type == "colorpicker" || data.type == "statecontroller" || data.type == "slider"){
+    if(data.type == "gauge" || data.type == "indicator" || data.type == "switch" || data.type == "colorpicker" || data.type == "statecontroller" || data.type == "slider" || data.type == "stateindicator" || data.type == "map"){
         
         $("#title_"+chartID).text(data.chartTitle);
 
@@ -2459,6 +2501,8 @@ function updateIndex(widgetID) {
     else if (widgetID.includes("statecontroller")) stateControllerIndex--;
     else if (widgetID.includes("slider")) sliderIndex--;
     else if (widgetID.includes("stateindicator")) stateIndicatorIndex--;
+    else if (widgetID.includes("map")) mapIndex--;
+    else if (widgetID.includes("weatherinfo")) weatherinfoIndex--;
 }
 
 // function escapeHtml(text) {
@@ -2469,3 +2513,179 @@ function updateIndex(widgetID) {
 //       .replace(/"/g, "&quot;")
 //       .replace(/'/g, "&#039;");
 // }
+
+function disableDrag() {    
+    $('.grid-stack-item').draggable({cancel: ".canvasjs-chart-canvas" });
+    $('.grid-stack-item').draggable({cancel: ".widget-color" });
+}
+
+function loadMap(mapDiv) {
+    var locations = [];
+    //var myLocation = [];
+    var weather = [];
+    var Latitude = undefined;
+    var Longitude = undefined;
+    var marker;
+
+    function getMapLocation() {
+        navigator.geolocation.getCurrentPosition
+            (onMapSuccess, onMapError, { enableHighAccuracy: true });
+    }
+
+    var onMapSuccess = function (position) {
+        Latitude = position.coords.latitude;
+        Longitude = position.coords.longitude;
+        console.log("Geolocation : " + "\n" + "Latitude  : " + Latitude + "\n" + "Longitude : " + Longitude);
+        myLocation.push(Latitude, Longitude);
+        initMap(mapDiv);
+    }
+
+    function onMapError(error) {
+        console.log('code: ' + error.code + '\n' + 'message: ' + error.message + '\n');
+    }
+
+    getMapLocation();
+
+    function initMap(divStr) {
+        var map = new google.maps.Map(document.getElementById(divStr), {
+            zoom: 15,
+            center: new google.maps.LatLng(myLocation[0], myLocation[1]),
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        });
+
+        var infowindow = new google.maps.InfoWindow();
+
+        // var marker, i;
+        var markers = [];
+
+        // for (i = 0; i < locations.length; i++) {
+        //     marker = new google.maps.Marker({
+        //         position: new google.maps.LatLng(locations[i][0], locations[i][1]),
+        //         map: map
+        //     });
+        // }
+
+        google.maps.event.addListener(map, 'click', function (event) {
+            var latitude = event.latLng.lat();
+            var longitude = event.latLng.lng();
+            myLocation = {latitude, longitude};
+            //getWeather(latitude, longitude);
+            var marker = placeMarker(event.latLng);
+            markers.push(marker);
+            console.log("Selected Location Data:");
+            console.log(myLocation);
+
+        });
+
+        function placeMarker(location) {
+            deleteMarkers();
+            markers = [];
+            var marker = new google.maps.Marker({
+                position: location,
+                map: map
+            });
+            return marker;
+        }
+        // Sets the map on all markers in the array.
+        function setMapOnAll(map) {
+            for (var i = 0; i < markers.length; i++) {
+                markers[i].setMap(map);
+            }
+        }
+
+        // Removes the markers from the map, but keeps them in the array.
+        function clearMarkers() {
+            setMapOnAll(null);
+        }
+
+        // Shows any markers currently in the array.
+        function showMarkers() {
+            setMapOnAll(map);
+        }
+
+        // Deletes all markers in the array by removing references to them.
+        function deleteMarkers() {
+            clearMarkers();
+            markers = [];
+        }
+    }  
+}
+
+function addWeatherInfo(widgetID, graphID, data, w, h, x, y) {
+    var div = '<div class="widget-color" style="height: 320px;"><p id="title_'+graphID+'" class="chart-title-font">'+data.chartTitle+'</p><div id="'+graphID+'" class="widget-color" style="display: block;margin: 0 auto;background-color: inherit;"></div><div class="w3-row w3-padding-8" style="height:30%"><div class="w3-col w3-container loc-icon" data-toggle="tooltip" data-placement="left" title="Location"></div><div class="w3-col w3-container w3-padding-16" style="width:40%; margin-top:8px;"><p id="'+graphID+'_locName" class="label-1">-</p><p id="'+graphID+'_latlong" class="label-1">-</p></div>'+
+    '</div>'+
+    '<div class="w3-row w3-padding-8" style="height:35%; margin-top:50px">'+
+        '<div class="w3-col w3-container weather-icon"><div class="w3-row temp-icon" data-toggle="tooltip" data-placement="left" title="Temperature"></div><div class="w3-row" style="width:100%; height: 50%;"><p id="'+graphID+'_temp" class="label-1">-</p></div></div>'+
+        '<div class="w3-col w3-container weather-icon"><div class="w3-row wind-icon" data-toggle="tooltip" data-placement="left" title="Wind Speed"></div><div class="w3-row" style="width:100%; height: 50%;"><p id="'+graphID+'_wind" class="label-1">-</p></div></div>'+
+        '<div class="w3-col w3-container weather-icon"><div class="w3-row humidity-icon" data-toggle="tooltip" data-placement="left" title="Humidity"></div><div class="w3-row" style="width:100%; height: 50%;"><p id="'+graphID+'_humidity" class="label-1">-</p></div></div>'+
+        '<div class="w3-col w3-container weather-icon"><div class="w3-row sky-icon" data-toggle="tooltip" data-placement="left" title="Sky"></div><div class="w3-row" style="width:100%; height: 50%;"><p id="'+graphID+'_sky" class="label-1">-</p></div></div>'+
+        '</div></div></div>';
+    addDivtoWidget(div, w, h, x, y, widgetID);
+    weatherinfoIndex++;
+    graphs[graphID] = {};
+    graphs[graphID]["type"] = "weatherinfo";
+    graphs[graphID]["chartData"] = data;
+    updateWeather(graphID);
+}
+
+// function updateWeather(graphID) {
+//     var location = graphs[graphID].chartData.location;
+//     var weather = getWeather(location);
+//     console.log(weather);
+//     console.log(weather[0]);
+//     console.log(weather.area);
+//     console.log(weather["area"]);
+//     $("#"+graphID+"_locName").html(weather.area);
+//     $("#"+graphID+"_location").html(weather.latitude+", "+weather.longitude);
+//     $("#"+graphID+"_temp").html(weather.temperature);
+//     $("#"+graphID+"_wind").html(weather.wind)
+//     $("#"+graphID+"_humidity").html(weather.humidity);
+//     $("#"+graphID+"_sky").html(weather.sky);
+// }
+
+function updateWeather(graphID) {
+    var location = graphs[graphID].chartData.location;
+    var latitude = location.latitude;
+    var longitude = location.longitude;
+
+    // if (!latitude || latitude == "") {
+    //     latitude = 6.89;
+    //     longitude = 79.92;
+    // }
+    var weather = {};
+    var OpenWeatherAppKey = "c9acdd420e05d02a6986427cb81d6c6c";
+
+    var queryString =
+        'http://api.openweathermap.org/data/2.5/weather?lat='
+        + latitude + '&lon=' + longitude + '&appid=' + OpenWeatherAppKey + '&units=imperial';
+
+    $.getJSON(queryString, function (results) {
+
+        if (results.weather.length) {
+
+            $.getJSON(queryString, function(results) {
+                if (results.weather.length) {
+                    weather = {
+                        latitude: latitude,
+                        longitude: longitude,
+                        area: results.name,
+                        temperature: (parseFloat(results.main.temp) - 32) / 1.8,
+                        wind: results.wind.speed,
+                        humidity: results.main.humidity,
+                        sky: results.weather[0].main,
+                    };
+                    console.log("Weather Data:");
+                    console.log(weather);
+                    $("#"+graphID+"_locName").html(weather.area);
+                    $("#"+graphID+"_ltlong").html(weather.latitude+", "+weather.longitude);
+                    $("#"+graphID+"_temp").html(weather.temperature);
+                    $("#"+graphID+"_wind").html(weather.wind)
+                    $("#"+graphID+"_humidity").html(weather.humidity);
+                    $("#"+graphID+"_sky").html(weather.sky);
+                }
+            });
+        }
+    }).fail(function () {
+        console.log("error getting location");
+    });
+}

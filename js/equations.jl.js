@@ -84,6 +84,7 @@ function showEquations(){
     
     $("#settings_chart").show();
     $("#graphWidthCombo").show();
+    $("#graphWidthLabel").show();
     $("#equationListDisp").empty();
     $("#selectedEquationList").empty();
     $("#barChartConfigPanel").hide();
@@ -92,12 +93,17 @@ function showEquations(){
     $("#gaugeConfigPanel").hide();
     $("#indicatorConfigPanel").hide();
     $("#stateControllerConfigPanel").hide();
+    $("#weatherInfoConfigPanel").hide();
     $("#botConfigPanel").hide();
     $("#alertConfigPanel").hide();
     $("#dateRangeChooser").show();
     $("#startDateLbl").hide();
     $("#startDateText").hide();
     $("#statesDiv").hide();
+
+    tempStateList = [];
+    globalLocationList = [];
+    
     if(graphType == "line" || graphType == "spline" || graphType =="stepLine" || graphType == "splineArea" || graphType == "scatter"){
         restoreOptions($("#intervalCombo"));
         for (var i = 0; i < _len; i++) {
@@ -165,6 +171,7 @@ function showEquations(){
         
     }else if(graphType == "ind"){
         $("#indicatorConfigPanel").show();
+        $("#locNamesDiv").hide();
         $("#dateRangeChooser").hide();
         $("#graphWidthCombo").hide();
         $("#graphWidthLabel").hide();
@@ -172,6 +179,7 @@ function showEquations(){
         $("#eqListHeader").hide();
     }else if(graphType == "switch" || graphType == "colorpicker"){
         $("#indicatorConfigPanel").show();
+        $("#locNamesDiv").hide();
         $("#dateRangeChooser").hide();
         $("#graphWidthCombo").hide();
         $("#graphWidthLabel").hide();
@@ -189,22 +197,31 @@ function showEquations(){
         $("#graphWidthCombo").hide();
         $("#graphWidthLabel").hide();
         $("#eqListHeader").hide();
-    }else if(graphType == "stateind"){
+    }else if (graphType == "stateind"){
         $("#indicatorConfigPanel").show();
         $("#statesDiv").show();
+        $("#locNamesDiv").hide();
         $("#dateRangeChooser").hide();
         $("#graphWidthCombo").hide();
         $("#graphWidthLabel").hide();
         $("#timeIntDiv").show();
         $("#eqListHeader").hide();
-    }else if (graphType == "bot") {
+    } else if (graphType == "weatherinfo") {
+        $("#weatherInfoConfigPanel").show();
+        loadMap("weatherMap");        
+        $("#dateRangeChooser").hide();
+        $("#graphWidthCombo").hide();
+        $("#graphWidthLabel").hide();
+        $("#timeIntDiv").hide();
+        $("#eqListHeader").hide();
+    } else if (graphType == "bot") {
         $("#botConfigPanel").show();
         $("#classListDiv").hide();
         $("#classList").empty();
         $("#dateRangeChooser").hide();
         $("#eqListHeader").hide();
         loadLearners();
-    }else if (graphType == "alert") {
+    } else if (graphType == "alert") {
         $("#alertConfigPanel").show();
         $("#settings_chart").hide();
         $("#dateRangeChooser").hide();
@@ -212,6 +229,15 @@ function showEquations(){
         $("#graphWidthLabel").hide();
         loadAlertList();
         loadAlertGroupsCombo();
+    } else if (graphType == "map") {
+        $("#indicatorConfigPanel").show();
+        $("#statesDiv").hide();
+        $("#locNamesDiv").show();
+        $("#dateRangeChooser").hide();
+        $("#graphWidthCombo").show();
+        $("#graphWidthLabel").show();
+        $("#timeIntDiv").hide();
+        $("#eqListHeader").hide();
     }
 }
 

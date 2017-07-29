@@ -3,7 +3,7 @@ function addAlert(obj) {
     var alert = {
         alertId: obj.alertId,
         group: obj.group,
-        condition: obj.expression,
+        condition: obj.alertString,
         option: obj.option,
         topic: obj.name,
         userid: tempUserID,
@@ -126,30 +126,50 @@ function addExpression_alert() {
                 op: op,
                 unit: ""
             };
-
             
-            var expression = parseExpression(ex);
+            var expression = parseExpression_alert(ex);
             expression = "(" + expression + ")";
+
             
             tempExpressionsList_alert.push(ex);
 
             var operands = "=<>;";
             var expText = $("#equationText_alert").html();
             if ((expText != "") && !operands.includes(expText[expText.length - 2])) {
-                expression = "+"+expression;
+                expression = "+" + expression;
+                //if (alertStr != "") alertStr = "+" + alertStr;
             }
             document.getElementById("equationText_alert").innerHTML += expression;
         }        
     }  
 }
-
 function parseExpression_alert(ar){
-    var eq = "";
+    var exp = "";
+    var tmpAlertStr = "";
+
     if(!(ar.number == "1" && ar.op == "*")){
-        eq += ar.number + " " + ar.op;
+        exp += ar.number+" "+ar.op;
+        tmpAlertStr += ar.number+ar.op;
     }
-    return eq + " " + ar.device + ":" + ar.channel;
+    if (ar.device == "const") {
+        exp = exp + " " + ar.constant;
+        tmpAlertStr = tmpAlertStr + ar.constant;
+    }
+    else {
+        exp = exp +" "+ar.device+":"+ar.channel;
+        tmpAlertStr = tmpAlertStr +" find('"+ar.device+"','"+ar.channel+"')";
+    }
+
+    var len = alertStr.length;
+    var operands = "<>=";
+    if (operands.includes(alertStr[len - 2])) alertStr += tmpAlertStr;
+    else if (alertStr != "") alertStr = alertStr + " + " + tmpAlertStr;
+    else alertStr = tmpAlertStr;
+    return exp;
 }
+
+
+// exp +" find("+ar.device+","+ar.channel+")";
 
 function clearExpressions_alert() {
     tempExpressionsList_alert = [];
@@ -162,6 +182,7 @@ function addOperator(op) {
     if (expText.includes("=") || expText.includes("&lt;") || expText.includes("&gt;")) return;
     if ((expText != "") && !operands.includes(expText[expText.length - 1])) {
         document.getElementById("equationText_alert").innerHTML += (" " + op + " ");
+        alertStr = alertStr + " " + op + " ";
     }
 }
 
@@ -207,12 +228,25 @@ function addAlertExpression() {
 
     $("#equationListDisp").append("<li id=\"li_"+alertId+"\" value=\""+alertId+"\" style=\"cursor:default\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+expression+"\">"+name+"<label class='toggle'><input type='checkbox' checked onclick='toggleAlert(this)'><span class='toggle-slider round'></span></label><span onclick=\"deleteAlertExpression('"+alertId+"')\" style='cursor:pointer' class=\"w3-closebtn w3-margin-right w3-medium\">&times;</span></li>");
 
+    // var alertData = {
+    //     alertId: alertId,
+    //     name: name,
+    //     group: group,
+    //     ip: ip,
+    //     expression: expression,
+    //     option: option,
+    //     state: "true",
+    //     oncondition: warningMsg,
+    //     offcondition: normalMsg
+    // };
+
     var alert = {
         alertId: alertId,
         name: name,
         group: group,
         ip: ip,
         expression: expression,
+        alertString: alertStr,
         option: option,
         state: "true",
         oncondition: warningMsg,
@@ -222,11 +256,13 @@ function addAlertExpression() {
     globalAlertList.push(alert);
     addAlert(alert);
     clearExpressions_alert();  
+    alertStr = "";
 }
 
 var deleteAlertExpression = function(alertId){
     var li = document.getElementById("li_"+alertId);
     li.remove();
+    changeAlertState(alertId, false);
     var _len = globalAlertList.length;
     for (var i = 0; i < _len; i++) {
         if(globalAlertList[i].alertId == alertId){
@@ -295,9 +331,9 @@ function loadAlerts(){
 function toggleAlert(elm) {
     var alertId = $(elm).parent().parent().attr("id").substr(3);
     if (elm.checked) {
-        changeAlertState(alertId, "true");
+        changeAlertState(alertId, true);
     } else {
-        changeAlertState(alertId, "false");
+        changeAlertState(alertId, false);
     }
 }
 
@@ -435,14 +471,6 @@ function editAlertGroup() {
     $(item).remove();
 }
 
-// function parseExpression_alert(ar){
-//     var eq = "";
-//     if(!(ar.number == "1" && ar.op == "*")){
-//         eq += ar.number+" "+ar.op;
-//     }
-//     return eq+" "+ar.device+":"+ar.channel;
-// }
-
 function parseEquation_alert(expressionList){
     
     var equation = "";
@@ -453,7 +481,7 @@ function parseEquation_alert(expressionList){
             equation += expressionList[i];
         }  
         else {
-            equation += "("+parseExpression(expressionList[i])+")";
+            equation += "("+parseExpression_alert(expressionList[i])+")";
             if(i != _len-1){
                 equation += " + ";
             }

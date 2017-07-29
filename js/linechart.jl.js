@@ -35,7 +35,7 @@ function todayTime() {
 }
 
 // This function renders a line chart:something vs date
-function initLineChart(chartID,title, chartData) {
+function initLineChart(chartID, title, chartData) {
     var backgroundColor, fontColor, theme;
     if (globalTheme == "dark") {        
         backgroundColor = "#2A2A2A";
@@ -50,7 +50,7 @@ function initLineChart(chartID,title, chartData) {
     var dp = chartData[0].dataPoints;
     var start = formatDate(dp[0].x);
     var end = formatDate(dp[dp.length - 1].x);
-    if (end==start) subtitle = end;
+    if (end == start) subtitle = end;
     else subtitle = start + ' to ' + end;
 
     lineChart = new CanvasJS.Chart(chartID, {

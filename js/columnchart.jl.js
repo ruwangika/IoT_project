@@ -9,7 +9,7 @@ function getRandomColor() {
     }
     return color;
 }
-function initBarChart(chartID,title, chartData,axisX) {
+function initBarChart(chartID,title, chartData, axisX) {
     //var themeId = document.getElementById("themeCombo");
     var backgroundColor, fontColor, theme;
     if (globalTheme == "dark") {
@@ -22,7 +22,13 @@ function initBarChart(chartID,title, chartData,axisX) {
         fontColor = "#0d1a26";
     }
     var subtitle = "";
-    var dp = chartData[0].dataPoints;
+    var dp = {};
+    if (chartData[0]) dp = chartData[0].dataPoints;
+    if (!(dp.length > 0)){
+        addNote("Data error");
+        return;
+    }
+        
     var start = formatDate(dp[0].x);
     var end = formatDate(dp[dp.length - 1].x);
     if (end==start) subtitle = end;
@@ -270,6 +276,7 @@ function loadBarChartData(chartID,title,equationList, xAxis, startDate, endDate,
                         var dataPoints = [];
 
                         //var _len = deviceData[device][xAxis].length;
+                        if (!deviceData[device]) continue;
                         for(j = 0; j < _len ; j++){
                             dataPoints.push({
                                 x: new Date(deviceData[device][xAxis][j]),
