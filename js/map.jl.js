@@ -17,7 +17,7 @@ function removeLoc(locName) {
 }
 
 function addMap(widgetID, graphID, data, w, h, x, y) {
-    var div = '<div class="widget-color"><p id="title_'+graphID+'" class="chart-title-font">'+data.chartTitle+'</p><div class="widget-color" id="'+graphID+'"style="display: block; margin: 0px auto; height: 200px; overflow: hidden;"><p id="title_'+graphID+'" class="chart-title-font">'+data.chartTitle+'</p><div id="'+graphID+'_" class="widget-color map-div" style=""></div></div></div>';
+    var div = '<div class="widget-color"><p id="title_'+graphID+'" class="chart-title-font">'+data.chartTitle+'</p><div class="widget-color" id="'+graphID+'"style="display: block; margin: 0px auto; height: 285px; overflow: hidden;"><p id="title_'+graphID+'" class="chart-title-font">'+data.chartTitle+'</p><div id="'+graphID+'_" class="widget-color map-div" style=""></div></div></div>';
     addDivtoWidget(div, w, h, x, y, widgetID);
     
 
@@ -73,7 +73,7 @@ function initMQTTClientMap(id, ip, title, interval){
         { lat: -27.142, lng: 210.431 },
         { lat: -18.467, lng: 200.027 }]
     }
-    updateMap(id, coordinates);
+    updateMap(id, coordinates); // Remove later
     return client;    
 }
 

@@ -1006,7 +1006,7 @@ input:checked + .toggle-slider:before {
 .loc-icon {
     width:20%; 
     height: 100%; 
-    background-image: url('../images/worldwide-location.png');
+    background-image: url('../img/worldwide-location.png');
     background-repeat: no-repeat; 
     background-position: center;
 }
@@ -1019,28 +1019,28 @@ input:checked + .toggle-slider:before {
 .temp-icon {
     width:100%; 
     height: 50%; 
-    background-image: url('../images/temperature.png'); 
+    background-image: url('../img/temperature.png'); 
     background-repeat: no-repeat;
 }
 
 .wind-icon {
     width:100%; 
     height: 50%; 
-    background-image: url('../images/wind.png'); 
+    background-image: url('../img/wind.png'); 
     background-repeat: no-repeat;
 }
 
 .humidity-icon {
     width:100%; 
     height: 50%; 
-    background-image: url('../images/humidity.png'); 
+    background-image: url('../img/humidity.png'); 
     background-repeat: no-repeat;
 }
 
 .sky-icon {
     width:100%; 
     height: 50%; 
-    background-image: url('../images/sky.png'); 
+    background-image: url('../img/sky.png'); 
     background-repeat: no-repeat;
 }
 

@@ -53,6 +53,7 @@
 <script src="js/columnchart.jl.js"></script>
 <script src="js/piechart.jl.js"></script>
 <script src="js/bot.jl.js"></script>
+<script src="js/weatherinfo.jl.js"></script>
 <script src="js/alert.jl.js"></script>
 <script src="js/map.jl.js"></script>
 <script src="js/equations.jl.js"></script>
