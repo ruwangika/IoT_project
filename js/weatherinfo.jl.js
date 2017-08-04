@@ -42,8 +42,8 @@ function loadMap(mapDiv) {
             myLocation = {latitude, longitude};
             var marker = placeMarker(event.latLng);
             markers.push(marker);
-            console.log("Selected Location Data:");
-            console.log(myLocation);
+            // console.log("Selected Location Data:");
+            // console.log(myLocation);
 
         });
 
@@ -77,14 +77,32 @@ function loadMap(mapDiv) {
 }
 
 function addWeatherInfo(widgetID, graphID, data, w, h, x, y) {
-    var div = '<div class="widget-color" style="height:320px; font-weight:normal"><p id="title_'+graphID+'" class="chart-title-font">'+data.chartTitle+'</p><div id="'+graphID+'" class="widget-color" style="display: block;margin: 0 auto;background-color: inherit;"></div><div class="w3-row w3-padding-8" style="height:30%"><div class="w3-col w3-container loc-icon" data-toggle="tooltip" data-placement="left" title="Location"></div><div class="w3-col w3-container w3-padding-16" style="width:40%; margin-top:8px;"><p id="'+graphID+'_locName" class="label-1">-</p><p id="'+graphID+'_latlong" class="label-1">-</p></div>'+
+    var div = '<div class="widget-color" style="height:180px; font-weight:normal; font-size:12px;"><p id="title_'+graphID+'" class="chart-title-font">'+data.chartTitle+'</p><div id="'+graphID+'" class="widget-color" style="display: block;margin: 0 auto;background-color: inherit;"></div>'+
+    '<div class="w3-row w3-padding-2 loc-details" style="height:30%; padding-left: 15px;">'+
+        '<p id="'+graphID+'_locName" class="label-4" style="font-size: 20px;"></p>'+
+        '<p id="'+graphID+'_latlong" class="label-4"></p>'+
     '</div>'+
-    '<div class="w3-row w3-padding-8" style="height:35%; margin-top:50px">'+
-        '<div class="w3-col w3-container weather-icon"><div class="w3-row temp-icon" data-toggle="tooltip" data-placement="left" title="Temperature"></div><div class="w3-row" style="width:100%; height: 50%;"><p id="'+graphID+'_temp" class="label-1">-</p></div></div>'+
-        '<div class="w3-col w3-container weather-icon"><div class="w3-row wind-icon" data-toggle="tooltip" data-placement="left" title="Wind Speed"></div><div class="w3-row" style="width:100%; height: 50%;"><p id="'+graphID+'_wind" class="label-1">-</p></div></div>'+
-        '<div class="w3-col w3-container weather-icon"><div class="w3-row humidity-icon" data-toggle="tooltip" data-placement="left" title="Humidity"></div><div class="w3-row" style="width:100%; height: 50%;"><p id="'+graphID+'_humidity" class="label-1">-</p></div></div>'+
-        '<div class="w3-col w3-container weather-icon"><div class="w3-row sky-icon" data-toggle="tooltip" data-placement="left" title="Sky"></div><div class="w3-row" style="width:100%; height: 50%;"><p id="'+graphID+'_sky" class="label-1">-</p></div></div>'+
-        '</div></div></div>';
+    '<div class="w3-row w3-padding-2" style="height:50%; padding-left: 15px">'+
+        '<div class="w3-col w3-container" style="width:40%; font-size: 20px;">'+
+            '<p id="'+graphID+'_temp" class="label-4"></p>'+
+            '<div id="'+graphID+'_weathericon" style="height: 40px;width: 55px;"></div>'+
+        '</div>'+
+        '<div class="w3-col w3-container"  style="width:60%">'+
+            '<div class="w3-row" style="width:100%; height: 20%;">'+
+                '<p id="'+graphID+'_weather" class="label-4"></p>'+
+            '</div>'+
+            '<div class="w3-row" style="width:100%; height: 20%;">'+
+                '<p id="'+graphID+'_wind" class="label-4"></p>'+
+            '</div>'+
+            '<div class="w3-row" style="width:100%; height: 20%;">'+
+                '<p id="'+graphID+'_humidity" class="label-4"></p>'+
+            '</div>'+
+            '<div class="w3-row" style="width:100%; height: 20%;">'+
+                '<p id="'+graphID+'_pressure" class="label-4"></p>'+
+            '</div>'+
+        '</div>'+
+    '</div>'
+    '</div>';
     addDivtoWidget(div, w, h, x, y, widgetID);
     weatherinfoIndex++;
     graphs[graphID] = {};
@@ -121,18 +139,23 @@ function updateWeather(graphID) {
                         longitude: longitude,
                         area: results.name,
                         temperature: (parseFloat(results.main.temp) - 32) / 1.8,
+                        weathertype: results.weather[0].main,
                         wind: results.wind.speed,
                         humidity: results.main.humidity,
-                        sky: results.weather[0].main,
+                        pressure: results.main.pressure / 2,
+                        icon: results.weather[0].icon,
                     };
                     console.log("Weather Data:");
                     console.log(weather);
+                    var iconstr = 'http://openweathermap.org/img/w/'+weather.icon+'.png'
                     $("#"+graphID+"_locName").html(weather.area);
                     $("#"+graphID+"_latlong").html((Number(latitude)).toFixed(4)+", "+(Number(longitude)).toFixed(4));
-                    $("#"+graphID+"_temp").html((Number(weather.temperature)).toFixed(2));
-                    $("#"+graphID+"_wind").html(weather.wind)
-                    $("#"+graphID+"_humidity").html(weather.humidity);
-                    $("#"+graphID+"_sky").html(weather.sky);
+                    $("#"+graphID+"_temp").html((Number(weather.temperature)).toFixed(2) + '&deg;C');
+                    $("#"+graphID+"_weather").html('<b>Weather:&nbsp;</b>' + weather.weathertype);
+                    $("#"+graphID+"_wind").html('<b>Wind:&nbsp;</b>' + weather.wind + '&nbsp;m/s')
+                    $("#"+graphID+"_humidity").html('<b>Humidity:&nbsp;</b>' + weather.humidity + '&nbsp;%');
+                    $("#"+graphID+"_pressure").html('<b>Pressure:&nbsp;</b>' + weather.pressure + '&nbsp;kPa');
+                    $("#"+graphID+"_weathericon").css('background-image', 'url("'+iconstr+'")');
                 }
             });
         }

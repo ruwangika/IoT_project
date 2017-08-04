@@ -494,7 +494,7 @@
                         <p class="label-1">Select Location</p>
                     </div>
                     <div class="w3-col w3-container" style="width:10%">
-                        <div id="weatherMap" style="width: 400px; height: 300px;"></div>
+                        <div id="weatherMap" style="width: 400px; height: 300px; border: 1px solid #999999; border-radius: 3px"></div>
                     </div>
                 </div>
             </div>

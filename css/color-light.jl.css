@@ -126,3 +126,7 @@
 .widget-li {
     border-color: #CCCCCC;
 }
+
+.loc-details {
+    background-color: lightgray;
+}

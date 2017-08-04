@@ -40,7 +40,7 @@
 .widget-color,
 .sidebar-widget,
 #notification{
-    color: #787878;   /** #787878 **/
+    color: #b3b3b3;   /** #787878 **/
 }
 
 .portal-button,
@@ -127,4 +127,6 @@
     border-color: #272727;
 }
 
-
+.loc-details {
+    background-color: #333333;
+}

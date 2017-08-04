@@ -1285,9 +1285,9 @@ function addGraph() {
             type: "weatherinfo",
             location: myLocation,
         };
-        width = 4;
-        addWeatherInfo(widgetID, chartID, cData, width, 5, 0, graphy);
-        graphy += 5;
+        width = 3;
+        addWeatherInfo(widgetID, chartID, cData, width, 3, 0, graphy);
+        graphy += 3;
     } else if (graphType == "bot") {
         var widgetIndex = getIndex("bot");
         var ip = $("#botIPPort").val();
@@ -2133,6 +2133,8 @@ function downloadData() {
         csvContent += index < data.length ? dataString+ "\n" : dataString;
     }); 
     var pom = document.createElement('a');
+    document.body.appendChild(pom);
+    pom.setAttribute("type", "hidden");
     var blob = new Blob([csvContent],{type: 'text/csv;charset=utf-8;'});
     var url = URL.createObjectURL(blob);
     pom.href = url;
