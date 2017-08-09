@@ -53,6 +53,21 @@
         $data=getCustomDeviceChennels($id);
         echo json_encode($data);
     }
+    // For help chat
+    elseif ($field=="get_msg") {
+        $chatMsg = $_POST["msg"];
+        $replyMsg = getChatReply($chatMsg);
+
+        //To log chat if needed
+
+        // $chatLog = "../data/chatlog.html";
+        // $file = fopen("log.html", 'a');
+        // fwrite($file, $chatMsg . '\n');
+        // fwrite($file, $replyMsg . '\n');
+        // fclose($file);
+        
+        echo json_encode($replyMsg);
+    }
 
     function generateRandomString($length = 10) {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -62,5 +77,10 @@
             $randomString .= $characters[rand(0, $charactersLength - 1)];
         }
         return $randomString;
+    }
+
+    function getChatReply($msg) {
+        // To do        
+        return "Sorry, we're still on testing stage.";
     }
 ?>

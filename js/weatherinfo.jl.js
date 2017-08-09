@@ -77,31 +77,24 @@ function loadMap(mapDiv) {
 }
 
 function addWeatherInfo(widgetID, graphID, data, w, h, x, y) {
-    var div = '<div class="widget-color" style="height:180px; font-weight:normal; font-size:12px;"><p id="title_'+graphID+'" class="chart-title-font">'+data.chartTitle+'</p><div id="'+graphID+'" class="widget-color" style="display: block;margin: 0 auto;background-color: inherit;"></div>'+
-    '<div class="w3-row w3-padding-2 loc-details" style="height:30%; padding-left: 15px;">'+
-        '<p id="'+graphID+'_locName" class="label-4" style="font-size: 20px;"></p>'+
-        '<p id="'+graphID+'_latlong" class="label-4"></p>'+
-    '</div>'+
-    '<div class="w3-row w3-padding-2" style="height:50%; padding-left: 15px">'+
-        '<div class="w3-col w3-container" style="width:40%; font-size: 20px;">'+
-            '<p id="'+graphID+'_temp" class="label-4"></p>'+
-            '<div id="'+graphID+'_weathericon" style="height: 40px;width: 55px;"></div>'+
+    var div = 
+    '<div class="widget-color weather-div"><p id="title_'+graphID+'" class="chart-title-font">'+data.chartTitle+'</p><div id="'+graphID+'" class="widget-color" style="display: block;margin: 0 auto;background-color: inherit;"></div>'+
+        '<div class="w3-row w3-padding-2 loc-details" style="height:30%; padding-left: 15px;">'+
+            '<p id="'+graphID+'_locName" class="label-4" style="font-size: 20px;"></p>'+
+            '<p id="'+graphID+'_latlong" class="label-4"></p>'+
         '</div>'+
-        '<div class="w3-col w3-container"  style="width:60%">'+
-            '<div class="w3-row" style="width:100%; height: 20%;">'+
-                '<p id="'+graphID+'_weather" class="label-4"></p>'+
+        '<div class="w3-row w3-padding-2" style="height:50%; padding-left: 15px">'+
+            '<div class="w3-col w3-container" style="width:40%; font-size: 20px;">'+
+                '<p id="'+graphID+'_temp" class="label-4"></p>'+
+                '<div id="'+graphID+'_weathericon" style="height: 40px;width: 55px;"></div>'+
             '</div>'+
-            '<div class="w3-row" style="width:100%; height: 20%;">'+
-                '<p id="'+graphID+'_wind" class="label-4"></p>'+
+            '<div class="w3-col w3-container"  style="width:60%">'+
+                '<div class="w3-row"><p id="'+graphID+'_weather" class="label-4"></p></div>'+
+                '<div class="w3-row"><p id="'+graphID+'_wind" class="label-4"></p></div>'+
+                '<div class="w3-row"><p id="'+graphID+'_humidity" class="label-4"></p></div>'+
+                '<div class="w3-row"><p id="'+graphID+'_pressure" class="label-4"></p></div>'+
             '</div>'+
-            '<div class="w3-row" style="width:100%; height: 20%;">'+
-                '<p id="'+graphID+'_humidity" class="label-4"></p>'+
-            '</div>'+
-            '<div class="w3-row" style="width:100%; height: 20%;">'+
-                '<p id="'+graphID+'_pressure" class="label-4"></p>'+
-            '</div>'+
-        '</div>'+
-    '</div>'
+        '</div>'
     '</div>';
     addDivtoWidget(div, w, h, x, y, widgetID);
     weatherinfoIndex++;

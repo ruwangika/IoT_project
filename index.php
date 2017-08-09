@@ -983,34 +983,33 @@
                 <!-- End of Environmental Factors widget -->
 
             </div>
-
         </div>
-
         <!-- Draggable Grid -->
-
-
 
     </div>
 
     <!-- Footer -->
-    <div class="w3-container w3-padding-8 widget-color w3-center w3-margin-top w3-opacity" style="margin-top:60px;position: relative">
-
-<div class="navbar navbar-inverse navbar-fixed-bottom">
-      <button id="saveGridButton" class="btn-success btn pull-left" onclick="saveGrid()">SAVE DASHBOARD</button>
-      <button id="fullScreenButton" class="btn btn-warning pull-right" onclick="toggleFullscreen()" >FULLSCREEN</button>
-</div>
-      <!-- <button id="fullScreenButton" class="portal-button" onclick="toggleFullscreen()" >FULLSCREEN</button>
-      <button id="saveGridButton" class="portal-button" onclick="saveGrid()">SAVE DASHBOARD</button> -->
-        <!-- <div class="w3-xlarge w3-padding-16">
-
-            <a href="#" class="w3-hover-text-indigo"><i class="fa fa-facebook-official"></i></a>
-            <a href="#" class="w3-hover-text-red"><i class="fa fa-pinterest-p"></i></a>
-            <a href="#" class="w3-hover-text-light-blue"><i class="fa fa-twitter"></i></a>
-            <a href="#" class="w3-hover-text-grey"><i class="fa fa-flickr"></i></a>
-            <a href="#" class="w3-hover-text-indigo"><i class="fa fa-linkedin"></i></a>
-        </div> -->
+    <div id="footerDiv" class="w3-container w3-padding-8 widget-color w3-center w3-margin-top w3-opacity" style="margin-top:60px;position: relative">
+        <div class="navbar navbar-inverse navbar-fixed-bottom">
+            <button id="saveGridButton" class="btn-success btn pull-left" onclick="saveGrid()">SAVE DASHBOARD</button>
+            <button id="chatBotButton" class="btn-info btn btn-info" onclick="openChat()">NEED HELP?</button>
+            <button id="fullScreenButton" class="btn btn-warning pull-right" onclick="toggleFullscreen()" >FULLSCREEN</button>
+        </div>
     </div>
+    
+    <!--  -->
+    <div id="chatWrapper" style="display:none">
+        <div id="chatMenu">
+            <p class="" style="float:left">Welcome! What's your question?<b></b></p>
+            <span class="closebtn margin-right" style="margin-top:1px; margin-right:0px !important"><img src="img/delete.png" onclick="closeChat()"></span>
+            <div style="clear:both"></div>
+        </div>
+        
+        <div id="chatbox"></div>
+        <input id="chatMsgText" type="text"/>
+        <button id="sendChatBtn" onclick="sendMsg()"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
     </div>
+    <!--  -->
 
     <script>
         if (<?php echo '"'.$id.'"'?> == "none") {
@@ -1093,6 +1092,11 @@
         initDateTimePicker();
         $("#stateColorPicker").spectrum({
             color: "#f00"
+        });
+        $("#chatMsgText").keyup(function(event){
+            if(event.keyCode == 13){
+                $("#sendChatBtn").click();
+            }
         });
     </script>
 

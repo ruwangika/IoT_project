@@ -2518,3 +2518,61 @@ function disableDrag() {
     $('.grid-stack-item').draggable({cancel: ".canvasjs-chart-canvas" });
     $('.grid-stack-item').draggable({cancel: ".widget-color" });
 }
+
+// Functions for help chat
+function openChat() {
+    $("#chatWrapper").show();
+    document.getElementById("chatMsgText").focus();
+}
+
+function closeChat() {
+    $("#chatWrapper").hide();
+}
+
+function sendMsg() {
+    var chatText = $("#chatMsgText").val();
+    $("#chatMsgText").val("");
+    if (chatText == "") return;
+
+    var oldscrollHeight = $("#chatbox").prop("scrollHeight") - 20;
+    updateChatBox(chatText, "user");
+    var newscrollHeight = $("#chatbox").prop("scrollHeight") - 20;
+    if(newscrollHeight > oldscrollHeight){
+        $("#chatbox").animate({ scrollTop: newscrollHeight }, 'normal'); //Autoscroll to bottom of div
+    }
+
+    oldscrollHeight = $("#chatbox").prop("scrollHeight") - 20;
+    $.ajax({
+        url: "back/load_misc_data.php",
+        method: "POST",
+        data: {
+            field: 'get_msg',
+            user_id: userID,
+            msg: chatText
+        },
+        dataType: "json",
+        success: function(data, status) {
+            if (data == "" || !data) return;
+            else {
+                updateChatBox(data, "help");
+                newscrollHeight = $("#chatbox").prop("scrollHeight") - 20;
+                if(newscrollHeight > oldscrollHeight){
+                    $("#chatbox").animate({ scrollTop: newscrollHeight }, 'normal'); //Autoscroll to bottom of div
+                }
+            }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            console.log(XMLHttpRequest);
+        }
+    });
+}
+
+function updateChatBox(msg, sender) {
+    var contents = $("#chatbox").html();
+    
+    if (sender=="user") var newMsgDiv = '<div style="text-align:right; padding-left:15px">'+msg+'</div>';
+    else if (sender=="help") var newMsgDiv = '<div style="text-align:left; padding-right:15px">'+msg+'</div>';
+
+    contents += newMsgDiv;
+    $("#chatbox").html(contents);
+}
