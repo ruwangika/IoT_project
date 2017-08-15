@@ -78,9 +78,4 @@
         }
         return $randomString;
     }
-
-    function getChatReply($msg) {
-        // To do        
-        return "Sorry, we're still on testing stage.";
-    }
 ?>

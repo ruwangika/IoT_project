@@ -299,27 +299,30 @@ img {
     right: 180px;
     bottom: 0;
     margin-bottom: 0;
-    height: 200px;
+    height: 34px;
     width: 300px;
     background-color: beige;
-    border-top: solid orange 5px;
+    border-top: solid #f0ad4e 5px;
     border-left: solid lightgrey 1px;
     border-right: solid lightgrey 1px;
     border-radius: 3px;
-    z-index: 1050;
+    /* z-index: 1050; */
     transform: translate3d(0,0,0);
     font-size: 14px;
 }
 
 #chatMenu {
-    border-bottom: solid orange 2px;
+    border-bottom: solid #f0ad4e 2px;
     padding-left: 10px;
     padding-right: 10px;
-    padding-top: 10px;
+    padding-top: 5px;
+    cursor: default;
+    height: 32px;
 }
 
 #chatbox {
-    height:113px; 
+    height:120px; 
+    width:290px;
     overflow-y: scroll;
     padding-left: 10px;
     padding-right: 10px;

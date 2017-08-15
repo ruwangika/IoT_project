@@ -138,8 +138,8 @@ function updateWeather(graphID) {
                         pressure: results.main.pressure / 2,
                         icon: results.weather[0].icon,
                     };
-                    console.log("Weather Data:");
-                    console.log(weather);
+                    // console.log("Weather Data:");
+                    // console.log(weather);
                     var iconstr = 'http://openweathermap.org/img/w/'+weather.icon+'.png'
                     $("#"+graphID+"_locName").html(weather.area);
                     $("#"+graphID+"_latlong").html((Number(latitude)).toFixed(4)+", "+(Number(longitude)).toFixed(4));

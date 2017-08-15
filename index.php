@@ -416,6 +416,12 @@
                     <div class="w3-col w3-container" style="width:20%">
                         <input id="locNameText" placeholder="name" type="text" maxlength="10">
                     </div>
+                    <div class="w3-col w3-container" style="width:10%">
+                        <p class="label-1">Value</p>
+                    </div>
+                    <div class="w3-col w3-container" style="width:20%">
+                        <input id="locValueText" placeholder="value" type="text" maxlength="10">
+                    </div>
                     <div class="w3-col w3-container" style="width:5%">
                         <p><button class="portal-pane-button-small" onclick="addLocName()" data-toggle="tooltip" data-placement="top" title="Add Location" style="margin-top:8px"><i class="fa fa-plus-circle" aria-hidden="true"></i></button></p>
                     </div>
@@ -992,16 +998,14 @@
     <div id="footerDiv" class="w3-container w3-padding-8 widget-color w3-center w3-margin-top w3-opacity" style="margin-top:60px;position: relative">
         <div class="navbar navbar-inverse navbar-fixed-bottom">
             <button id="saveGridButton" class="btn-success btn pull-left" onclick="saveGrid()">SAVE DASHBOARD</button>
-            <button id="chatBotButton" class="btn-info btn btn-info" onclick="openChat()">NEED HELP?</button>
             <button id="fullScreenButton" class="btn btn-warning pull-right" onclick="toggleFullscreen()" >FULLSCREEN</button>
         </div>
     </div>
     
     <!--  -->
-    <div id="chatWrapper" style="display:none">
-        <div id="chatMenu">
-            <p class="" style="float:left">Welcome! What's your question?<b></b></p>
-            <span class="closebtn margin-right" style="margin-top:1px; margin-right:0px !important"><img src="img/delete.png" onclick="closeChat()"></span>
+    <div id="chatWrapper" style="">
+        <div id="chatMenu" onclick="resizeChatBox()">
+            <p class="" style="float:left">Need help?<b></b></p>
             <div style="clear:both"></div>
         </div>
         

@@ -422,7 +422,7 @@ function getMaxSampInterval($deviceIds) {
     }
     
     function getCustomDeviceChennels($id){
-        $db=getMongoDB($id);
+        $db = getMongoDB($id);
         $collections=$db->getCollectionNames();
         $count=0;
         foreach ($collections as $collection) {
@@ -627,6 +627,24 @@ function getMaxSampInterval($deviceIds) {
         return $rs;
     }
 
+//// Chat
+    function getChatReply($msg) {
+        // To do        
+
+        $replyMsg = "Sorry, we are still on testing stage.";
+        // $con = getConnection();
+        // $query = "SELECT reply_msg FROM chat_tab WHERE msg = LOWER('" . $msg . "')";
+        // $results = mysqli_query($con,$query);
+        // $nor = mysqli_num_rows($results);
+        // $counter = 0;
+        // if($nor > 0){
+        //     while ($row = mysqli_fetch_assoc($results)) {
+        //         $replyMsg = $row["reply_msg"];
+        //     }
+        //     closeConnection($con);
+        // }
+        return $replyMsg;
+    }
 
     
 ?> 

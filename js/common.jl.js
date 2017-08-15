@@ -55,7 +55,23 @@ $(function() {
         //console.log("resize");
     });
 
+    if (document.addEventListener)
+    {
+        document.addEventListener('webkitfullscreenchange', exitHandler, false);
+        document.addEventListener('mozfullscreenchange', exitHandler, false);
+        document.addEventListener('fullscreenchange', exitHandler, false);
+        document.addEventListener('MSFullscreenChange', exitHandler, false);
+    }
 });
+
+function exitHandler()
+{
+    if (document.webkitIsFullScreen || document.mozFullScreen || document.msFullscreenElement !== null)
+    {
+        $("#footerDiv").show();
+        $("#chatWrapper").show();
+    }
+}
 
 ////
 function loadCategories(){
@@ -2206,6 +2222,9 @@ function toggleFullscreen() {
     } else if (document.documentElement.webkitRequestFullscreen) {
       document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
     }
+    $("#chatWrapper").animate({height: "34px"}, "fast", "swing", 1000);
+    $("#footerDiv").hide();
+    $("#chatWrapper").hide();
   } else {
     if (document.exitFullscreen) {
       document.exitFullscreen();
@@ -2519,15 +2538,16 @@ function disableDrag() {
     $('.grid-stack-item').draggable({cancel: ".widget-color" });
 }
 
-// Functions for help chat
-function openChat() {
-    $("#chatWrapper").show();
-    document.getElementById("chatMsgText").focus();
-}
+////////// Functions for help chat ////////////
 
-function closeChat() {
-    $("#chatWrapper").hide();
-}
+// function openChat() {
+//     $("#chatWrapper").show();
+//     document.getElementById("chatMsgText").focus();
+// }
+
+// function closeChat() {
+//     $("#chatWrapper").hide();
+// }
 
 function sendMsg() {
     var chatText = $("#chatMsgText").val();
@@ -2538,7 +2558,7 @@ function sendMsg() {
     updateChatBox(chatText, "user");
     var newscrollHeight = $("#chatbox").prop("scrollHeight") - 20;
     if(newscrollHeight > oldscrollHeight){
-        $("#chatbox").animate({ scrollTop: newscrollHeight }, 'normal'); //Autoscroll to bottom of div
+        $("#chatbox").animate({ scrollTop: newscrollHeight }, 'normal');
     }
 
     oldscrollHeight = $("#chatbox").prop("scrollHeight") - 20;
@@ -2570,9 +2590,22 @@ function sendMsg() {
 function updateChatBox(msg, sender) {
     var contents = $("#chatbox").html();
     
-    if (sender=="user") var newMsgDiv = '<div style="text-align:right; padding-left:15px">'+msg+'</div>';
-    else if (sender=="help") var newMsgDiv = '<div style="text-align:left; padding-right:15px">'+msg+'</div>';
+    if (sender=="user") var newMsgDiv = '<div style="text-align:right; padding-left:20px">'+msg+'</div>';
+    else if (sender=="help") var newMsgDiv = '<div style="text-align:left; padding-right:20px">'+msg+'</div>';
 
     contents += newMsgDiv;
     $("#chatbox").html(contents);
+}
+
+function resizeChatBox() {    
+    if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+        if ($("#chatWrapper").css("height") == "34px") {
+            $("#chatWrapper").animate({height: "200px"}, "fast", "swing", 1000);
+            document.getElementById("chatMsgText").focus();
+        } else if ($("#chatWrapper").css("height") == "200px") {
+            $("#chatWrapper").animate({height: "34px"}, "fast", "swing", 1000);
+        }
+    } else {
+    
+    }
 }
