@@ -350,7 +350,7 @@
                 <div class="w3-container">
                     <ul class="w3-ul w3-card-4" id="intList" style="width:25%">
                         <li class="input-append">
-                                <input class="add-on" data-format="hh:mm:ss" onclick="removeBGColor(this)" type="text"></input>
+                                <input class="add-on" data-format="hh:mm:ss" onclick="removeBGColor(this)" type="text" style="width:75%"></input>
                                 <button class="portal-pane-button" style="width:10%; padding:3px 0px" onclick="addIntBox(this)" data-toggle="tooltip" data-placement="top" title="Add new interval here"><i class="fa fa-plus-circle" aria-hidden="true"></i></button>
                         </li>
                     </ul>
@@ -367,7 +367,7 @@
 
             <!--Real time-->
             <div class="w3-row w3-padding-8 widget-color widget-font" id="indicatorConfigPanel">
-                <div class="w3-row w3-padding-8">
+                <div id="mqttDiv" class="w3-row w3-padding-8">
                     <div class="w3-col w3-container" style="width:10%">
                         <p class="label-1">IP Address</p>
                     </div>
@@ -414,13 +414,19 @@
                         <p class="label-1">Name</p>
                     </div>
                     <div class="w3-col w3-container" style="width:20%">
-                        <input id="locNameText" placeholder="name" type="text" maxlength="10">
+                        <input id="locNameText" type="text">
                     </div>
                     <div class="w3-col w3-container" style="width:10%">
-                        <p class="label-1">Value</p>
+                        <p class="label-1">ID</p>
                     </div>
                     <div class="w3-col w3-container" style="width:20%">
-                        <input id="locValueText" placeholder="value" type="text" maxlength="10">
+                        <input id="locIDText" type="text">
+                    </div>
+                    <div class="w3-col w3-container" style="width:10%">
+                        <p class="label-1">IP Address</p>
+                    </div>
+                    <div class="w3-col w3-container" style="width:20%">
+                        <input id="locIPText" type="text">
                     </div>
                     <div class="w3-col w3-container" style="width:5%">
                         <p><button class="portal-pane-button-small" onclick="addLocName()" data-toggle="tooltip" data-placement="top" title="Add Location" style="margin-top:8px"><i class="fa fa-plus-circle" aria-hidden="true"></i></button></p>

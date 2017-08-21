@@ -100,6 +100,7 @@ function showEquations(){
     $("#startDateLbl").hide();
     $("#startDateText").hide();
     $("#statesDiv").hide();
+    $("#mqttDiv").show();
 
     tempStateList = [];
     globalLocationList = [];
@@ -231,6 +232,7 @@ function showEquations(){
         loadAlertGroupsCombo();
     } else if (graphType == "map") {
         $("#indicatorConfigPanel").show();
+        $("#mqttDiv").hide();
         $("#statesDiv").hide();
         $("#locNamesDiv").show();
         $("#dateRangeChooser").hide();

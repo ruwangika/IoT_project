@@ -1265,18 +1265,23 @@ function addGraph() {
         addStateIndicator(widgetID, chartID, cData, 2, 2, 0, graphy);
         tempStateList = [];
         graphy += 2;
-    } else if (graphType == "map") {        
+    } else if (graphType == "map") {     
+        if (globalLocationList.length == 0) {
+            addNote("Enter locations!");
+            return;
+        }   
         var widgetIndex = getIndex("map");
-        var ip = $("#indicatorIPAddress").val();
-        var title = $("#indicatorTopic").val();
+        // var ip = $("#indicatorIPAddress").val();
+        // var title = $("#indicatorTopic").val();
         var chartTitle = $("#chartTitleText").val();
         var widgetID = "widget_map"+widgetIndex;
         var chartID = "map"+widgetIndex;
         var locationList = globalLocationList;
         var cData = {
-            ip: ip,
-            title: title,
+            // ip: ip,
+            // title: title,
             locations: locationList,
+            coordinates: [],
             type: "map",
             chartTitle: chartTitle
         };
@@ -1623,7 +1628,7 @@ function removeState(stateName, stateValue) {
 
 function addIntBox(elm) {
     var index = $(elm).parent().index();
-    $("#intList li:eq("+index+")").after('<li class="input-append"><input class="add-on" data-format="hh:mm:ss" onclick="removeBGColor(this)" type="text"></input><button class="portal-pane-button" style="width:10%; padding:3px 0px" onclick="addIntBox(this)" data-toggle="tooltip" data-placement="top" title="Add new interval here"><i class="fa fa-plus-circle" aria-hidden="true"></i></button><button class="portal-pane-button" style="width:10%; padding:3px 0px" onclick="removeIntBox(this)" data-toggle="tooltip" data-placement="top" title="Remove intervel"><i class="fa fa-times-circle" aria-hidden="true"></i></button></li>');
+    $("#intList li:eq("+index+")").after('<li class="input-append"><input class="add-on" data-format="hh:mm:ss" onclick="removeBGColor(this)" type="text" style="width:75%"></input><button class="portal-pane-button" style="width:10%; padding:3px 0px" onclick="addIntBox(this)" data-toggle="tooltip" data-placement="top" title="Add new interval here"><i class="fa fa-plus-circle" aria-hidden="true"></i></button><button class="portal-pane-button" style="width:10%; padding:3px 0px" onclick="removeIntBox(this)" data-toggle="tooltip" data-placement="top" title="Remove intervel"><i class="fa fa-times-circle" aria-hidden="true"></i></button></li>');
     
     initDateTimePicker();
 }
@@ -1918,7 +1923,7 @@ function initMQTTClient(id,ip,title,gauge){
     client.on("message", function(topic, payload) {
         var msg_ = [payload].join("");
         var value_ = parseFloat(msg_);        // Messege is given by [packetID,value];
-        console.log(value_);
+        //console.log(value_);
         if(!isNaN(value_)){
             gauge.update(value_);
             setGaugeLive(id);
