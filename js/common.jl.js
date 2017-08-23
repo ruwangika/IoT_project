@@ -1277,11 +1277,17 @@ function addGraph() {
         var widgetID = "widget_map"+widgetIndex;
         var chartID = "map"+widgetIndex;
         var locationList = globalLocationList;
+        //var coordinates = {};
+        var location;
+        // for (i = 0; i < locationList.length; i++) {
+        //     location = locationList[i];
+        //     coordinates[location["id"]] = [null];
+        // }
         var cData = {
             // ip: ip,
             // title: title,
             locations: locationList,
-            coordinates: [],
+            //coordinates: coordinates,
             type: "map",
             chartTitle: chartTitle
         };

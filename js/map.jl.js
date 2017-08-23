@@ -14,7 +14,8 @@ function addLocName() {
     var location = {
         name: locName,
         id: locID,
-        ip: locIP
+        ip: locIP,
+        coordinates: [null]
     };
     globalLocationList.push(location);   
     $("#locNameText").val("");
@@ -37,28 +38,31 @@ function addMap(widgetID, graphID, data, w, h, x, y) {
     var div = '<div class="widget-color"><p id="title_'+graphID+'" class="chart-title-font">'+data.chartTitle+'</p><div class="widget-color" id="'+graphID+'"style="display: block; margin: 0px auto; height: 285px; overflow: hidden;"><div id="'+graphID+'_" class="widget-color map-div" style=""></div></div></div>';
     
     addDivtoWidget(div, w, h, x, y, widgetID);
-        var map = new google.maps.Map(document.getElementById(chartID), {
+    var map = new google.maps.Map(document.getElementById(graphID), {
         zoom: 1,
         center: { lat: 0, lng: -180 },
         mapTypeId: 'roadmap'
     });
-
-    var client;
-    var location;
-    //client = initMQTTClientMap(graphID, data.ip, data.title, data.interval);
-    for (var i = 0; i < data.locations.length; i++) {
-        location = data.locations[i];
-        client = initMQTTClientMap(graphID, location["ip"], location["id"], map);
-    }
-
-    mapIndex++;
+    
     graphs[graphID] = {};
     graphs[graphID]["type"] = "map";
     graphs[graphID]["chartData"] = data;
+
+    var client;
+    var location;
+    
+    for (var i = 0; i < data.locations.length; i++) {
+        location = data.locations[i];
+        client = initMQTTClientMap(graphID, i, map);
+    }
+
+    mapIndex++;
 }
 
-function initMQTTClientMap(id, ip, title, map){
-
+function initMQTTClientMap(id, i, map){
+    updateMap(id, i, map);
+    var ip = graphs[id]["chartData"]["locations"][i]["ip"];
+    var title = graphs[id]["chartData"]["locations"][i]["id"];
     //var payload = JSON.stringify(locIDList);
     var payload = -1;
     var port = parseInt(ip.substr(ip.length - 4));
@@ -75,29 +79,10 @@ function initMQTTClientMap(id, ip, title, map){
     client.on("message", function(topic, payload) {
         var msg_ = [payload].join("");
         var value_ = JSON.parse(msg_);
-        if(!isNaN(value_)){
-            // value_ format: { lat: 37.772, lng: -122.214 }
-            graphs[id]["chartData"]["coordinates"][title].push(value_);
-            // graphs[id]["chartData"]["coordinates"] format:
-            // var coordinates = {
-            //     "L1":
-            //     [{ lat: 37.772, lng: -122.214 },
-            //     { lat: 21.291, lng: -157.821 },
-            //     { lat: -18.142, lng: 178.431 },
-            //     { lat: -27.467, lng: 153.027 }],
-            //     "L2":
-            //     [{ lat: 37.772, lng: -122.214 },
-            //     { lat: 22.291, lng: -256.821 },
-            //     { lat: -17.142, lng: 179.431 },
-            //     { lat: -28.467, lng: 154.027 },
-            //     { lat: -9.142, lng: 140.431 },],
-            //     "L3":
-            //     [{ lat: 37.772, lng: -122.214 },
-            //     { lat: 12.291, lng: -235.821 },
-            //     { lat: -27.142, lng: 210.431 },
-            //     { lat: -18.467, lng: 200.027 }]
-            // }
-            updateMap(id, title, map);
+        if((value_) && value_ != -1){
+            // value_ format: { lat: 37.772, lng: -122.214 } | {"lat": "-27", "lng": "210"}
+            graphs[id]["chartData"]["locations"][i]["coordinates"].push(value_);
+            updateMap(id, i, map);
         }
     });
     client.on("reconnect", function() {
@@ -107,25 +92,22 @@ function initMQTTClientMap(id, ip, title, map){
     return client;    
 }
 
-function updateMap(chartID, title, map) {
-    //var colCount = 0;
-    // var map = new google.maps.Map(document.getElementById(chartID), {
-    //     zoom: 1,
-    //     center: { lat: 0, lng: -180 },
-    //     mapTypeId: 'roadmap'
-    // });
-
-    //var colors = ["#FF0000", "#FFFF00", "#FF00FF", "#00FF00"];
-
+function updateMap(chartID, i, map) {
+    var location = {};
+    var locationArr = graphs[chartID]["chartData"]["locations"][i]["coordinates"].filter(Boolean);
+    for (j = 0; j < locationArr.length; j++) {
+        locationArr[j].lat = parseFloat(locationArr[j].lat);
+        locationArr[j].lng = parseFloat(locationArr[j].lng);
+    }
+    //console.log(locationArr);
 
     var flightPath = new google.maps.Polyline({
-        path: graphs[chartID]["chartData"]["coordinates"][title],
+        path: locationArr,
         geodesic: true,
-        //strokeColor: colors[colCount],
+        strokeColor: '#'+(0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6),
         strokeOpacity: 1.0,
         strokeWeight: 2
     });
-    //colCount++;
     flightPath.setMap(map);
 
     disableDrag();
