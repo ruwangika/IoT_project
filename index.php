@@ -31,8 +31,8 @@
 <link rel="stylesheet" href="css/w3.css">
 <link rel="stylesheet" href="css/common.jl.css">
 <link rel="stylesheet" href="css/bootstrap-colorpicker.min.css">
-<link rel="stylesheet" href="css/bootstrap-timepicker.css">
-<link rel="stylesheet" href="css/bootstrap-timepicker.min.css">
+<!-- <link rel="stylesheet" href="css/bootstrap-timepicker.css">
+<link rel="stylesheet" href="css/bootstrap-timepicker.min.css"> -->
 <link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css">
 <link rel="stylesheet" href="css/rangeslider.css">
 <link rel='stylesheet' href="css/spectrum.css"/>
@@ -118,7 +118,7 @@
                     <p class="label-2">Device type</p>
                 </div>
                 <div class="w3-col container-1" style="width:12%">
-                    <select id="deviceTypeCombo" class="combo-1" onchange="updateDevicesCombo(); updateDeviceChannels()">
+                    <select id="deviceTypeCombo" class="combo-1" onchange="updateDevicesCombo(); updateDeviceChannels();">
                     </select>
                 </div>
                 <div class="w3-col container-1" style="width:8%">
@@ -1095,7 +1095,7 @@
             loadTheme();
             loadGrid();
             loadUserCombo();
-            loadClientLogo();
+            //loadClientLogo();
             if (!admin)
                 eproConnect("stat");
         }

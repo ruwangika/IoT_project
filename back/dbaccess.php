@@ -438,24 +438,27 @@ function getMaxSampInterval($deviceIds) {
 
         if($data==NULL){
             return NULL;
-	}
+	    }
 
         $queue=new circularArray();
         $queue->init($data);
         $minLengthArray=getShortest($data);
+        if (json_encode($minLengthArray) == null) {
+            return;
+        }
         foreach($data as $key=>$value){
             $targetSet[$key]=1;
         }
 
         $count=0;
-	$result=array();
-
+        $result=array();
+        
         foreach($minLengthArray as $time){
-	    try{
-            $rs=cicularFind($time,$data,$queue,$targetSet,$accInt);
-	    }catch(Exception $e) {
-		continue;
-	    }
+            try{
+                $rs=cicularFind($time,$data,$queue,$targetSet,$accInt);
+            }catch(Exception $e) {
+            continue;
+            }
             if($rs!==NULL){
 
                 foreach($rs as $deviceID=>$dataSet){
@@ -464,18 +467,13 @@ function getMaxSampInterval($deviceIds) {
 
                     }
                 }
-
                 $count++;
-
             }
 
         }
-
         return $result;
-
-
-
     }
+
     function getShortest($data){
         $minLength=0;
         $minLengthArray=NULL;
@@ -599,8 +597,8 @@ function getMaxSampInterval($deviceIds) {
         $con = getConnection();  
         $d_len = count($deviceIDs);
         $start=$tarrifs[0];
-        for($i=1;$i<count($tarrifs);$i++){
-            $end=$tarrifs[$i];
+        for($j=1;$j<count($tarrifs);$j++){
+            $end=$tarrifs[$j];
             for ($d_i=0; $d_i <  $d_len; $d_i++) { 
                 $deviceID = $deviceIDs[$d_i];
                 $channelID = $channelIDs[$d_i];

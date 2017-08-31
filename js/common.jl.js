@@ -144,11 +144,11 @@ function loadGraphTypes(){
         ["Gauge", "gauge"],
         ["Indicator", "ind"],
         ["Switch", "switch"],
-        ["Color Picker", "colorpicker"],
         ["State Controller", "statecontroller"],
         ["Multi-state Indicator", "stateind"],
-        ["Map", "map"],
-        ["Weather Info", "weatherinfo"]
+        ["Tracker", "map"],
+        ["Weather Info", "weatherinfo"],
+        // ["Color Picker", "colorpicker"],
         //["Slider", "slider"],
         //["Bot", "bot"]
     ];
@@ -1271,28 +1271,16 @@ function addGraph() {
             return;
         }   
         var widgetIndex = getIndex("map");
-        // var ip = $("#indicatorIPAddress").val();
-        // var title = $("#indicatorTopic").val();
         var chartTitle = $("#chartTitleText").val();
         var widgetID = "widget_map"+widgetIndex;
         var chartID = "map"+widgetIndex;
         var locationList = globalLocationList;
-        //var coordinates = {};
         var location;
-        // for (i = 0; i < locationList.length; i++) {
-        //     location = locationList[i];
-        //     coordinates[location["id"]] = [null];
-        // }
         var cData = {
-            // ip: ip,
-            // title: title,
             locations: locationList,
-            //coordinates: coordinates,
             type: "map",
             chartTitle: chartTitle
         };
-        //var div = generateChartDiv("map" + widgetIndex);
-        //addDivtoWidget(div, width, 6, 0, graphy, widgetID);
         addMap(widgetID, chartID, cData, width, 5, 0, graphy);
 
         globalLocationList = [];
@@ -2325,6 +2313,8 @@ function addDevice() {
             $('#PSKText').val(psk);
 
             $("#deviceList").append("<li id=\"li"+psk+"\" value=\""+psk+"\" style=\"cursor:default\" data-toggle=\"tooltip\" data-placement=\"top\" title=\""+psk+"\">"+deviceName+"<button class=\"li-button\" onclick=\"copyToClipboard('"+psk+"')\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"Copy key\"><i class=\"fa fa-clipboard\" aria-hidden=\"true\"></i></button><span onclick=\"removeDevice('"+psk+"')\" class=\"w3-closebtn w3-margin-right w3-medium\">&times;</span></li>");
+            updateDevicesCombo(); 
+            updateDeviceChannels();
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
             console.log("Add Device error.");
@@ -2347,6 +2337,8 @@ function removeDevice(deviceId) {
             console.log("Remove Device: " + status);
             var li = document.getElementById("li"+deviceId);
             li.remove();
+            updateDevicesCombo(); 
+            updateDeviceChannels();
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
             console.log("Remove Device error.");

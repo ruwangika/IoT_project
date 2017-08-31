@@ -10,12 +10,15 @@ function addLocName() {
     }
 
     $("#equationListDisp").append("<li id=\"li_loc_"+locName+"\">"+locName+"<span class=\"w3-closebtn w3-margin-right w3-medium\" onclick=\"removeLoc('"+locName+"')\">&times;</span></li>");
-
+    
+    var colors = ["#e6194b", "#3cb44b", "#911eb4", "#800000", "#000080", "#000000", "#008080", "#f032e6", "#f58231", "#808000"];
+    var randNum = Math.floor(Math.random() * 9);
     var location = {
         name: locName,
         id: locID,
         ip: locIP,
-        coordinates: [null]
+        coordinates: [null],
+        color: colors[randNum]
     };
     globalLocationList.push(location);   
     $("#locNameText").val("");
@@ -95,6 +98,7 @@ function initMQTTClientMap(id, i, map){
 function updateMap(chartID, i, map) {
     var location = {};
     var locationArr = graphs[chartID]["chartData"]["locations"][i]["coordinates"].filter(Boolean);
+    var color = graphs[chartID]["chartData"]["locations"][i]["color"];
     for (j = 0; j < locationArr.length; j++) {
         locationArr[j].lat = parseFloat(locationArr[j].lat);
         locationArr[j].lng = parseFloat(locationArr[j].lng);
@@ -104,7 +108,7 @@ function updateMap(chartID, i, map) {
     var flightPath = new google.maps.Polyline({
         path: locationArr,
         geodesic: true,
-        strokeColor: '#'+(0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6),
+        strokeColor: color,
         strokeOpacity: 1.0,
         strokeWeight: 2
     });

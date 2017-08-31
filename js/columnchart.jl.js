@@ -9,7 +9,7 @@ function getRandomColor() {
     }
     return color;
 }
-function initBarChart(chartID,title, chartData, axisX) {
+function initBarChart(chartID, title, chartData, axisX) {
     //var themeId = document.getElementById("themeCombo");
     var backgroundColor, fontColor, theme;
     if (globalTheme == "dark") {
@@ -22,12 +22,24 @@ function initBarChart(chartID,title, chartData, axisX) {
         fontColor = "#0d1a26";
     }
     var subtitle = "";
-    var dp = {};
-    if (chartData[0]) dp = chartData[0].dataPoints;
-    if (!(dp.length > 0)){
+    // var dp = {};
+    // if (chartData[0]) dp = chartData[0].dataPoints;
+    // if (!(dp.length > 0)){
+    //     addNote("Data error");
+    //     return;
+    // }
+    
+    var i = 0;
+    var dp = chartData[0].dataPoints;
+    while (dp.length == 0 && i < chartData.length - 1) {
+        i++;
+        dp = chartData[i].dataPoints;
+    }
+
+    if (i == chartData.length - 1){
         addNote("Data error");
         return;
-    }
+    }    
         
     var start = formatDate(dp[0].x);
     var end = formatDate(dp[dp.length - 1].x);
@@ -98,7 +110,7 @@ function updateBarChartData(chartData) {
 }
 
 // This function will return the data array when parameters are provided
-function loadBarChartData(chartID,title,equationList, xAxis, startDate, endDate, interval, tarrifs,type) {
+function loadBarChartData(chartID, title, equationList, xAxis, startDate, endDate, interval, tarrifs,type) {
     graphs[chartID] = {};
     var cData = {
         title: title,
@@ -174,17 +186,15 @@ function loadBarChartData(chartID,title,equationList, xAxis, startDate, endDate,
                 labelAngle: -30,
                 labelFontSize: 13,
             }
-
-////////////////////////
+            
+            if(data == null){
+                initBarChart(chartID, "No Data...", chartData, axisX);
+                $(".filter-button").removeAttr("disabled");
+                return "No data";
+            }
+            
             if (type=="column") {
-                
-                if(data == null){
-                    initBarChart(chartID,"No Data...",chartData,axisX);
-                    $(".filter-button").removeAttr("disabled");
-                    return "No data";
-                }
-
-                for(i = 0; i < equationList.length; i++){
+                for(i = 0; i < equationList.length; i++) {
                     var equation = equationList[i]['equation'];
                     var eqName = equationList[i]['eqName'];
                     var equationData = [];
@@ -293,9 +303,9 @@ function loadBarChartData(chartID,title,equationList, xAxis, startDate, endDate,
 /////////////////////////////
 
             if(channelCounter == 0){
-                initBarChart(chartID,"No Data...",chartData,axisX);
+                initBarChart(chartID, "No Data...", chartData, axisX);
             }else{
-                initBarChart(chartID,title,chartData,axisX);
+                initBarChart(chartID, title, chartData, axisX);
             }
             return chartData;
         },
